@@ -1,0 +1,35 @@
+sg_ukb/
+├── client/                      # React frontend
+│   ├── public/                  # La partie static
+│   ├── src/
+│   │   ├── components/          # Les composants react
+│   │   │   ├── Auth/            # Les composants authentification
+│   │   │   │   └── LoginForm.jsx# Le composant connexion
+│   │   │   ├── Admin/           # Le composant Admin
+│   │   │   │   └── AdminDashboard.jsx # Composant TB de l'admin
+│   │   │   ├── Student/         # Composant étudiant
+│   │   │   │   └── StudentDashboard.jsx # TB composant étudiant
+│   │   │   ├── Accountant/      # Composant Comptable
+│   │   │   │   └── AccountantDashboard.jsx # Composant TB comptable
+│   │   │   ├── RP/              # RP tableau de bord
+│   │   │   │   └── RP-Dashboard.jsx # RP TB Composant
+│   │   ├── services/            # Services pour l'appel des API
+│   │   │   └── authService.js   # Auth services (handles login, registration, etc.)
+│   │   ├── App.js               # Fonction principale App
+│   │   ├── index.js             # React point d'entré
+│   │   └── api/                 # Axios API (optionel organisation)
+│   ├── package.json             # Dépendances front-end
+│   └── .env                     # VE frontend (e.g., API URL)
+└── server/                      # Node.js backend
+    ├── config/                  # Configuration des fichier
+    │   ├── mailer.js            # Nodemailer pour la configuration des mails
+    │   └── db.js                # Connexion à la BD
+    ├── controllers/             # Configuration des points de terminaison
+    │   └── authController.js    # Authentification logique (register, verification)
+    ├── models/                  # Model de la base de données
+    │   └── user.js              # Model de l'utilisateur
+    ├── routes/                  # Point de terminaison Express
+    │   └── authRoutes.js        # Routes pour l'inscription et verification par mail
+    ├── .env                     # Backend VE (e.g., database, email config)
+    ├── server.js                # Point d'entrée pour le serveur Express
+    └── package.json             # Dépendance de la base de données
