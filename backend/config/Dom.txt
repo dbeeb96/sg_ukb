@@ -33,3 +33,21 @@ sg_ukb/
     ├── .env                     # Backend VE (e.g., database, email config)
     ├── server.js                # Point d'entrée pour le serveur Express
     └── package.json             # Dépendance de la base de données
+|---------------------------payment table -----------------------------------------------------------------
+
+ CREATE TABLE `payments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `firstName` varchar(255) DEFAULT NULL,
+  `lastName` varchar(255) DEFAULT NULL,
+  `student_id` int(11) DEFAULT NULL,
+  `filiere` varchar(255) DEFAULT NULL,
+  `totalFees` decimal(10,2) DEFAULT NULL,
+  `montantReçu` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `reste` decimal(10,2) DEFAULT 0.00,
+  `status` varchar(50) DEFAULT 'Unpaid',
+  `date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `payments_ibfk_1` (`student_id`),
+  CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=232 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

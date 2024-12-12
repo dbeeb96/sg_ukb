@@ -10,7 +10,7 @@ router.post('/register', async (req, res) => {
     const { email, password, role } = req.body;
 
     if (!email || !password || !role) {
-        return res.status(400).json({ message: 'All fields are required.' });
+        return res.status(400).json({ message: 'Tous les champs sont obligatoires.' });
     }
 
     try {
@@ -19,12 +19,12 @@ router.post('/register', async (req, res) => {
         db.query(query, [email, hashedPassword, role], (err) => {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ message: 'Error registering user.' });
+                return res.status(500).json({ message: 'Erreur lors de l\'enregistrement de l\'utilisateur.' });
             }
-            res.status(201).json({ message: 'User registered successfully.' });
+            res.status(201).json({ message: 'L\'utilisateur s\'est enregistré avec succès.' });
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error.' });
+        res.status(500).json({ message: 'Erreur de serveur.' });
     }
 });
 
@@ -33,29 +33,29 @@ router.post('/login', (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required.' });
+        return res.status(400).json({ message: 'L\'e-mail et le mot de passe sont requis.' });
     }
 
     const query = 'SELECT * FROM users WHERE email = ?';
     db.query(query, [email], async (err, results) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ message: 'Server error.' });
+            return res.status(500).json({ message: 'Erreur de serveur.' });
         }
 
         if (results.length === 0) {
-            return res.status(401).json({ message: 'Invalid email or password.' });
+            return res.status(401).json({ message: 'Email ou mot de passe invalide..' });
         }
 
         const user = results[0];
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid email or password.' });
+            return res.status(401).json({ message: 'Email ou mot de passe invalide.' });
         }
 
         res.status(200).json({
-            message: 'Login successful.',
+            message: 'Connexion réussie\n.',
             user: { id: user.id, email: user.email, role: user.role },
         });
     });
