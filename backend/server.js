@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json()); // Replacing body-parser
 app.use(express.urlencoded({ extended: true }));
 
-// MySQL Database Configuration
+// Configuration de la base de donnée.
 const db = mysql.createPool({
     host: "localhost",
     user: "dbeeb",
@@ -20,7 +20,7 @@ const db = mysql.createPool({
     connectionLimit: 10,
 });
 
-// Test database connection
+// Tester la connexion dans la base de donnée
 db.getConnection((err) => {
     if (err) {
         console.error("Database connection error:", err);

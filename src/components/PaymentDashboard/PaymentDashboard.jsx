@@ -110,23 +110,26 @@ const PaymentDashboard = () => {
     // State to store the student to delete
     const [studentToDelete, setStudentToDelete] = useState(null);
 
-// Handle deleting a student
-    const handleStudentDelete = (student) => {
-        setStudentToDelete(student); // Store the student to delete
-        setShowDeleteModal(true); // Show the delete confirmation modal
-    };
-
 // Confirm deletion
+    const confirmDelete = async () => {
+        try {
+            // Call the API to delete the student using their id
+            await axios.delete(`http://localhost:5000/api/students/${studentToDelete.id}`);
+            console.log("Student deleted:", studentToDelete.id);
 
-    const confirmDelete = () => {
-        if (studentToDelete !== null) {
-            const updatedStudents = selectedStudents.filter(student => student.id !== studentToDelete);
-            setSelectedStudents(updatedStudents);
-            setShowDeleteModal(false);
-            setStudentToDelete(null);
+            // Update the student list after deletion
+            setSelectedStudents((prevStudents) =>
+                prevStudents.filter((student) => student.id !== studentToDelete.id)
+            );
+            setShowDeleteModal(false); // Close the delete modal
+        } catch (error) {
+            console.error("Error deleting student:", error);
         }
     };
-
+    const handleStudentDelete = (student) => {
+        setStudentToDelete(student); // Store the student to delete
+        setShowDeleteModal(true);    // Show the delete confirmation modal
+    };
     // Load data from localStorage on component mount
     useEffect(() => {
         const storedData = localStorage.getItem("selectedStudents");
@@ -146,32 +149,36 @@ const PaymentDashboard = () => {
             const remainingAmount = Math.max(currentStudent.totalFees - receivedAmount, 0);
             const status = remainingAmount === 0 ? "Payé" : "Partiellement Payé";
 
-            // Update the frontend state with the new payment data
-            const updatedStudents = selectedStudents.map((student) => {
-                if (student.id === currentStudent.id) {
-                    return { ...student, montantReçu: receivedAmount, reste: remainingAmount, status };
-                }
-                return student;
-            });
+            const updatedStudent = {
+                ...currentStudent,
+                montantReçu: receivedAmount,
+                reste: remainingAmount,
+                status,
+            };
+
+            // Update in the frontend state
+            const updatedStudents = selectedStudents.map((student) =>
+                student.id === currentStudent.id ? updatedStudent : student
+            );
             setSelectedStudents(updatedStudents);
             updateTotals(updatedStudents);
 
-            // Send the payment data to the backend
+            // Send the update to the backend
             axios
-                .post("http://localhost:5000/api/payments", {
+                .put(`http://localhost:5000/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
                     montantReçu: receivedAmount,
                     reste: remainingAmount,
                     status: status,
-                    date: new Date().toISOString(), // You can add the current date here
+                    date: new Date().toISOString(),
                 })
                 .then((response) => {
-                    console.log("Payment recorded:", response.data);
-                    closePaymentPopup(); // Close the popup on successful submission
+                    console.log("Payment updated:", response.data);
+                    closePaymentPopup();
                 })
                 .catch((error) => {
-                    console.error("Error saving payment:", error);
-                    alert("Unable to save payment. Please try again later.");
+                    console.error("Error updating payment:", error);
+                    alert("Failed to update payment. Please try again later.");
                 });
         } else {
             alert("Veuillez entrer un montant valide.");
@@ -300,8 +307,8 @@ const PaymentDashboard = () => {
                     <button className="delete-close-btn" onClick={onClose}>X</button>
                     <h3 className="delete-message">Êtes-vous sûr de vouloir supprimer cet étudiant ?</h3>
                     <div className="delete-actions">
-                        <button className="delete-confirm-btn" onClick={() => onConfirm(student.id)}>Oui</button>
-                        <button className="delete-cancel-btn" onClick={onClose}>Non</button>
+                        <button onClick={onConfirm} className="confirm-delete">Oui, Supprimer</button>
+                        <button onClick={onClose} className="cancel-delete">Annuler</button>
                     </div>
                 </div>
             </div>
@@ -382,8 +389,8 @@ const PaymentDashboard = () => {
                         <tbody>
                         {selectedStudents.map((student) => (
                             <tr key={student.id}>
-                                <td>{student.firstName} {student.lastName}</td>
-                                <td>{student.subject || ""}</td>
+                                <td>{student.firstName}{student.lastName}</td>
+                                <td>{student.filiere}</td>
                                 <td>{student.totalFees.toLocaleString()} CFA</td>
                                 <td>{student.montantReçu.toLocaleString()} CFA</td>
                                 <td>{student.reste.toLocaleString()} CFA</td>

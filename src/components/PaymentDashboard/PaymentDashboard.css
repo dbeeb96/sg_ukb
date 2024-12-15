@@ -65,12 +65,15 @@ thead{
     border-collapse: collapse;
     font-family: 'Arial', sans-serif;
     font-size: 20px;
+    color: #ffffff;
 }
 
 .payment-table th, .payment-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    text-align: center;
+
 }
 
 .popup-overlay {
@@ -173,10 +176,12 @@ thead{
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+    background-color: #151212;
+    gap: 20px;
 }
 
 .counter {
-    background-color: #f9f9f9;
+    background-color: #1f1f1f;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -188,7 +193,7 @@ thead{
 .counter h3 {
     margin-bottom: 10px;
     font-size: 1.2rem;
-    color: #333;
+    color: #ffffff;
 }
 
 .counter p {
@@ -292,25 +297,21 @@ thead{
 /* Style for the delete popup */
 .delete-popup {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
     z-index: 1000;
 }
 
-.delete-popup-content {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
+.popup-content input.receive-payment {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .delete-close-btn {
@@ -371,5 +372,6 @@ thead{
     border-radius: 25px 25px;
     border-color: #007bff;
 }
+
 
 

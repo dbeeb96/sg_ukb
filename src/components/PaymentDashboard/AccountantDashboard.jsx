@@ -63,7 +63,7 @@ const AccountantDashboard = () => {
 
                 {/* Dashboard Content */}
                 <div className="dashboard-cards">
-                    <div className="card">
+                    <div className="cards">
                         <h3>Gestion des étudiants</h3>
                         <p>Cliquez sur le bouton pour gérer la gestion des étudiants.</p>
                         <button
@@ -73,7 +73,7 @@ const AccountantDashboard = () => {
                             Gérer les étudiants
                         </button>
                     </div>
-                    <div className="card">
+                    <div className="cards">
                         <h3>Gestion des paiements</h3>
                         <p>Cliquez sur le bouton pour gérer la gestion des paiements.</p>
                         <button
@@ -83,7 +83,7 @@ const AccountantDashboard = () => {
                             Gérer les paiements
                         </button>
                     </div>
-                    <div className="card">
+                    <div className="cards">
                         <h3>Statistiques</h3>
                         <p>Générer et examiner des rapports et des analyses financiers.</p>
                         <button
@@ -93,7 +93,7 @@ const AccountantDashboard = () => {
                             Voir les statistiques
                         </button>
                     </div>
-                    <div className="card">
+                    <div className="cards">
                         <h3>Gestion du personnel</h3>
                         <p>Notes, attestations, etc.</p>
                         <button

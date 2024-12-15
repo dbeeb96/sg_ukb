@@ -20,6 +20,7 @@
 
 /* Counter Section */
 .dashboard-counters {
+    background-color: #1a252f;
     display: flex;
     justify-content: space-around;
     margin: 20px 0;
@@ -69,21 +70,6 @@ button{
     color: #2c3e50;
 }
 /* Redirect Button Style */
-.redirect-button {
-    display: inline-block;
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
-    width: 25%;
-}
 
 .redirect-button:hover {
     background-color: #2980b9;

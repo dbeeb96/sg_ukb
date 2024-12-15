@@ -1,3 +1,24 @@
+
+/* Ensure Cards Look Consistent */
+.dashboard-cards .cards{
+    text-align: center;
+    border: 1px solid #010101;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #151212;
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+.dashboard-cards .cards h3{
+    color: #ffffff;
+    font-size: 24px;
+}
+.dashboard-cards .cards p{
+    color: #ffffff;
+    font-size: 20px;
+}
+
 /* Title Section */
 .dashboard-title {
     background-color: #2c3e50;
@@ -20,25 +41,26 @@
 
 /* Counter Section */
 .dashboard-counters {
+    background-color: #151212;
     display: flex;
     justify-content: space-around;
     margin: 20px 0;
     gap: 20px;
 }
 
-.counter-card {
-    background-color: #f4f6f7;
+.dashboard-counters .counter-card {
+    background-color: #1f1f1f;
     padding: 5px;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
     flex: 1;
     border: 1px solid #dcdfe1;
 }
 
-.counter-card h3 {
+.dashboard-counters .counter-card h3 {
     font-size: 20px;
-    color: #333;
+    color: #ffffff;
     margin: 10px 0;
 }
 
@@ -59,6 +81,7 @@
     .dashboard-counters {
         flex-direction: column;
         align-items: center;
+
     }
 
     .counter-card {
@@ -88,27 +111,5 @@ button{
 .redirect-button:hover {
     background-color: #2980b9;
 }
-/* Footer Styling */
-.dashboard-footer {
-    text-align: center;
-    background-color: #2c3e50;
-    color: white;
-    padding: 10px;
-    font-size: 15px;
-    margin-top: 20px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 10;
 
-}
-/* Ensure Cards Look Consistent */
-.dashboard-cards .card {
-    text-align: center;
-    border: 1px solid #dcdfe1;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background-color: #f4f6f7;
-    margin-bottom: 15px;
-}
 

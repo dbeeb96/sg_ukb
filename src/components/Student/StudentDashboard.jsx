@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaUserGraduate, FaChalkboardTeacher, FaEdit, FaTrash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaUserGraduate, FaStudiovinari,  FaChalkboardTeacher, FaEdit, FaTrash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import './StudentDashboard.css';
 import axios from 'axios';
 
@@ -48,6 +48,7 @@ const StudentDashboard = () => {
             'firstName', 'lastName', 'age', 'phoneNumber', 'studentId',
             'address', 'monthlyFees', 'totalFees', 'startDate', 'endDate','subject'
         ];
+
 
         requiredFields.forEach(field => {
             if (!newStudent[field]) {
@@ -253,7 +254,7 @@ const StudentDashboard = () => {
                 {showModal && (
                     <div className="modal">
                         <div className="modal-content">
-                            <h2>{currentStudent === null ? 'Add' : 'Edit'} Student</h2>
+                  <h2><FaStudiovinari />{currentStudent === null ? 'AJOUTER UN ' : 'ETUDIANT'} Student</h2>
                             {validationErrors.length > 0 && (
                                 <div className="awesome-validation-popup">
                                     <h3>Please fix the following errors:</h3>
@@ -273,14 +274,14 @@ const StudentDashboard = () => {
                                 <input
                                     type="text"
                                     name="firstName"
-                                    placeholder="First Name"
+                                    placeholder="Prénom"
                                     value={newStudent.firstName}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="text"
                                     name="lastName"
-                                    placeholder="Last Name"
+                                    placeholder="Nom"
                                     value={newStudent.lastName}
                                     onChange={handleChange}
                                 />
@@ -294,71 +295,71 @@ const StudentDashboard = () => {
                                 <input
                                     type="text"
                                     name="phoneNumber"
-                                    placeholder="Phone Number"
+                                    placeholder="Numéro de téléphone"
                                     value={newStudent.phoneNumber}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="text"
                                     name="studentId"
-                                    placeholder="Student ID"
+                                    placeholder="Identifiant de l'étudiant"
                                     value={newStudent.studentId}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="text"
                                     name="address"
-                                    placeholder="Address"
+                                    placeholder="Addresse"
                                     value={newStudent.address}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="number"
                                     name="monthlyFees"
-                                    placeholder="Monthly Fees"
+                                    placeholder="Frais mensuel"
                                     value={newStudent.monthlyFees}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="number"
                                     name="totalFees"
-                                    placeholder="Total Fees"
+                                    placeholder="Montant total"
                                     value={newStudent.totalFees}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="text"
                                     name="teachers"
-                                    placeholder="Teachers"
+                                    placeholder="Professeur"
                                     value={newStudent.teachers}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="date"
                                     name="startDate"
-                                    placeholder="Start Date"
+                                    placeholder="Date de début de formation"
                                     value={newStudent.startDate}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="date"
                                     name="endDate"
-                                    placeholder="End Date"
+                                    placeholder="Date de fin de formation"
                                     value={newStudent.endDate}
                                     onChange={handleChange}
                                 />
                                 <input
                                     type="text"
                                     name="subject"
-                                    placeholder="Subject"
+                                    placeholder="Fillière"
                                     value={newStudent.subject}
                                     onChange={handleChange}
                                 />
                                 <button type="button" onClick={handleSaveStudent}>
-                                    {currentStudent === null ? 'Add' : 'Update'} Student
+                                    {currentStudent === null ? 'Ajouter un ' : 'Mettre à jour'} étudiant
                                 </button>
                                 <button type="button" onClick={resetForm}>
-                                    Cancel
+                                    Annuler
                                 </button>
                             </form>
                         </div>

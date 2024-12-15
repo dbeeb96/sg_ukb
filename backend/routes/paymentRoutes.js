@@ -1,8 +1,6 @@
 const express = require('express');
 const mysql = require("mysql");
 const router = express.Router(); // Use Router instance
-const validStatus = ['Paid', 'Partial', 'Unpaid'];
-const status = "Unpaid"; // Replace "Non Payé" with "Unpaid"
 
 // MySQL connection setup
 const db = mysql.createConnection({
@@ -12,9 +10,12 @@ const db = mysql.createConnection({
     database: 'ukb_st'
 });
 
-// Handle POST request to save payment
+const validStatus = ['Paid', 'Partial', 'Unpaid'];
+const status = "Unpaid"; // Replace "Non Payé" with "Unpaid"
+
+// POST request to add a payment
 router.post("/", (req, res) => {
-    const { student_id, montantReçu, reste, status, date } = req.body;
+    const { student_id, filiere,  montantReçu, reste, status, date } = req.body;
 
     // Query to fetch student first name, last name, subject, and totalFees
     const getStudentQuery = 'SELECT firstName, lastName, subject, totalFees FROM students WHERE id = ?';
@@ -30,7 +31,6 @@ router.post("/", (req, res) => {
         }
 
         const { firstName, lastName, subject, totalFees } = results[0];
-
         const filiere = subject || "Unknown";
 
         // Format the date before inserting into the database
@@ -40,7 +40,7 @@ router.post("/", (req, res) => {
 
         const finalMontantReçu = montantReçu || 0.00;
         const finalReste = reste || 0.00;
-        const finalStatus = status || "Non Payé"; // Default status
+        const finalStatus = status || "Unpaid"; // Default status
 
         const query = `
             INSERT INTO payments 
@@ -78,27 +78,6 @@ router.get("/", (req, res) => {
             return res.status(500).json({ message: "Error fetching payments.", error });
         }
         res.status(200).json(results);
-    });
-});
-
-// Handle DELETE request to remove payment
-router.delete("/:id", (req, res) => {
-    const paymentId = req.params.id;
-
-    // Query to delete a payment by ID
-    const deleteQuery = 'DELETE FROM payments WHERE id = ?';
-
-    db.query(deleteQuery, [paymentId], (error, results) => {
-        if (error) {
-            console.error("Error deleting payment:", error);
-            return res.status(500).json({ message: "Error deleting payment.", error });
-        }
-
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: "Payment not found." });
-        }
-
-        res.status(200).json({ message: "Payment deleted successfully." });
     });
 });
 
