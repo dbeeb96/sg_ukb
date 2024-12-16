@@ -254,7 +254,7 @@ const StudentDashboard = () => {
                 {showModal && (
                     <div className="modal">
                         <div className="modal-content">
-                  <h2><FaStudiovinari />{currentStudent === null ? 'AJOUTER UN ' : 'ETUDIANT'} Student</h2>
+                  <h2><FaStudiovinari />{currentStudent === null ? 'AJOUTER UN ' : 'ETUDIANT'} ETUDIANT</h2>
                             {validationErrors.length > 0 && (
                                 <div className="awesome-validation-popup">
                                     <h3>Please fix the following errors:</h3>

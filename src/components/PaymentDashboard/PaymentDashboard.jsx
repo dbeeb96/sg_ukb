@@ -39,7 +39,7 @@ const PaymentDashboard = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
-        // Fetch the students from the database
+        // Récupérer les étudiants de la base de données
         axios
             .get("http://localhost:5000/api/students")
             .then((response) => setStudents(response.data))
@@ -47,12 +47,11 @@ const PaymentDashboard = () => {
                 console.error("Error fetching students:", error);
                 alert("Unable to fetch student data. Please try again later.");
             });
-
-        // Fetch the payment records for selected students
+        // Récupérer les relevés de paiement des étudiants sélectionnés
         axios
             .get("http://localhost:5000/api/payments")
             .then((response) => {
-                // Map the payments to students and set them in selectedStudents state
+                //Mappez les paiements aux étudiants et définissez-les dans l'état selectedStudents
                 const studentsWithPayments = response.data.map(payment => {
                     const student = students.find(s => s.id === payment.student_id);
                     return { ...student, ...payment };
@@ -62,9 +61,9 @@ const PaymentDashboard = () => {
             .catch((error) => {
                 console.error("Error fetching payment records:", error);
             });
-    }, []);  // This will run only once when the component mounts
+    }, []);  // Cela ne s'exécutera qu'une seule fois lors du montage du composant
 
-// Handle adding a student to the table
+// Gérer l'ajout d'un étudiant à la table
     const handleStudentChange = (e) => {
         const studentId = e.target.value;
         const student = students.find((s) => s.id === parseInt(studentId, 10));
@@ -78,7 +77,7 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            // Save the selected student to the database automatically
+            // Enregistrer automatiquement l'étudiant sélectionné dans la base de données
             axios.post("http://localhost:5000/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
@@ -96,21 +95,21 @@ const PaymentDashboard = () => {
         }
     };
 
-    // Open the payment popup
+    // Ouvrir la fenêtre contextuelle de paiement
     const openPaymentPopup = (student) => {
         setCurrentStudent(student);
         setShowPopup(true);
     };
 
-    // Close the payment popup
+    // Fermer la fenêtre contextuelle de paiement
     const closePaymentPopup = () => {
         setShowPopup(false);
         setCurrentStudent(null);
     };
-    // State to store the student to delete
+    // État pour stocker l'étudiant à supprimer
     const [studentToDelete, setStudentToDelete] = useState(null);
 
-// Confirm deletion
+// Confirmer la suppression
     const confirmDelete = async () => {
         try {
             // Call the API to delete the student using their id
@@ -130,7 +129,7 @@ const PaymentDashboard = () => {
         setStudentToDelete(student); // Store the student to delete
         setShowDeleteModal(true);    // Show the delete confirmation modal
     };
-    // Load data from localStorage on component mount
+    // Charger les données depuis localStorage lors du montage du composant
     useEffect(() => {
         const storedData = localStorage.getItem("selectedStudents");
         if (storedData) {
@@ -138,25 +137,43 @@ const PaymentDashboard = () => {
         }
     }, []);
 
-// Cancel deletion
+// Annuler la suppression
     const cancelDelete = () => {
         setShowDeleteModal(false); // Close the delete modal without deleting
     };
-    // Handle payment submission
+    // Gérer la soumission des paiements
     const handlePaymentSubmit = (montantReçu) => {
         if (currentStudent && montantReçu) {
             const receivedAmount = parseFloat(montantReçu) || 0;
-            const remainingAmount = Math.max(currentStudent.totalFees - receivedAmount, 0);
-            const status = remainingAmount === 0 ? "Payé" : "Partiellement Payé";
+            const previousReceived = currentStudent.montantReçu || 0; // Get previously received amount
+            const remainingAmount = currentStudent.reste || currentStudent.totalFees - previousReceived; // Remaining balance
+            const totalAllowedPayment = currentStudent.totalFees; // Total fees allowed for the student
+
+            // Validation: Ensure entered amount is within [0, Total des Paiements]
+            if (receivedAmount <= 0) {
+                alert("Veuillez entrer un montant supérieur à 0 CFA.");
+                return;
+            }
+
+            if (receivedAmount + previousReceived > totalAllowedPayment) {
+                alert(
+                    `Le montant saisi dépasse le "Total des Paiements (${totalAllowedPayment} CFA)". Veuillez entrer un montant valide.`
+                );
+                return;
+            }
+
+            const totalReceived = previousReceived + receivedAmount; // Accumulate payments
+            const newRemainingAmount = Math.max(totalAllowedPayment - totalReceived, 0); // Calculate remaining balance
+            const status = newRemainingAmount === 0 ? "Payé" : "Partiellement Payé";
 
             const updatedStudent = {
                 ...currentStudent,
-                montantReçu: receivedAmount,
-                reste: remainingAmount,
+                montantReçu: totalReceived, // Update to total received
+                reste: newRemainingAmount, // Update to new remaining amount
                 status,
             };
 
-            // Update in the frontend state
+            // Update in frontend state
             const updatedStudents = selectedStudents.map((student) =>
                 student.id === currentStudent.id ? updatedStudent : student
             );
@@ -167,8 +184,8 @@ const PaymentDashboard = () => {
             axios
                 .put(`http://localhost:5000/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
-                    montantReçu: receivedAmount,
-                    reste: remainingAmount,
+                    montantReçu: totalReceived, // Send total received to backend
+                    reste: newRemainingAmount, // Send new remaining amount
                     status: status,
                     date: new Date().toISOString(),
                 })
@@ -178,7 +195,7 @@ const PaymentDashboard = () => {
                 })
                 .catch((error) => {
                     console.error("Error updating payment:", error);
-                    alert("Failed to update payment. Please try again later.");
+                    alert("Échec de la mise à jour du paiement. Veuillez réessayer plus tard.");
                 });
         } else {
             alert("Veuillez entrer un montant valide.");
@@ -187,7 +204,7 @@ const PaymentDashboard = () => {
 
 
 
-    // Update total payments and remaining amounts
+    // Mettre à jour les paiements totaux et les montants restants
     const updateTotals = (students) => {
         const newTotalPayments = students.reduce((acc, student) => acc + (student.montantReçu || 0), 0);
         const newTotalRemaining = students.reduce((acc, student) => acc + (student.reste || 0), 0);
@@ -195,7 +212,7 @@ const PaymentDashboard = () => {
         setTotalRemaining(newTotalRemaining);
     };
 
-// Function to handle printing the invoice
+// Fonction permettant de gérer l'impression de la facture
     const printInvoice = (student) => {
         const currentDate = new Date();
 
@@ -206,12 +223,12 @@ const PaymentDashboard = () => {
             year: "numeric",
         }).toUpperCase(); // Ensures the month is in uppercase
 
-        // Format the time to 24-hour format
+        // Format 24-hour format
         const formattedTime = currentDate.toLocaleTimeString("fr-FR", {
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
-            hourCycle: "h23", // 24-hour time format
+            hourCycle: "h23", // 24-hour format
         });
 
         const invoiceWindow = window.open("", "_blank");
@@ -264,16 +281,17 @@ const PaymentDashboard = () => {
                 </div>
             </div>
             <div class="details">
-                <p>Nom de l'étudiant: ${student.firstName} ${student.lastName}</p>
-                <p>Montant Reçu: ${student.montantReçu.toLocaleString()} CFA</p>
-                <p>Reste: ${student.reste.toLocaleString()} CFA</p>
-                <p>Status: <span class="status">${student.status}</span></p>
+                <p>Nom de l'étudiant: ${student.firstName || "N/A"} ${student.lastName || "N/A"}</p>
+                <p>Dernier Montant Reçu: ${(student.lastReceived || "Aucun").toLocaleString()} CFA</p>
+                <p>Montant Total Reçu: ${(student.montantReçu || 0).toLocaleString()} CFA</p>
+                <p>Reste: ${(student.reste || 0).toLocaleString()} CFA</p>
+                <p>Status: <span class="status">${student.status || "N/A"}</span></p>
             </div>
             Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature)<hr>
             <br /> <br /> <br /> <br /> <br />  <br />
             -------------------------------------------------------------------------------------------
             -----------------------------
-            <br /> <br /> <br /> <br /> <br /> <br />
+            <br /> <br /> <br /> <br /> 
             <div class="header">
                 <img src="/img.png" alt="Logo" class="logo" />
                 <div class="university-name">
@@ -287,11 +305,13 @@ const PaymentDashboard = () => {
                 </div>
             </div>
             <div class="details">
-                <p>Nom de l'étudiant: ${student.firstName} ${student.lastName}</p>
-                <p>Montant Reçu: ${student.montantReçu.toLocaleString()} CFA</p>
-                <p>Reste: ${student.reste.toLocaleString()} CFA</p>
-                <p>Status: <span class="status">${student.status}</span></p>
+                <p>Nom de l'étudiant: ${student.firstName || "N/A"} ${student.lastName || "N/A"}</p>
+                <p>Dernier Montant Reçu: ${(student.lastReceived || 0).toLocaleString()} CFA</p>
+                <p>Montant Total Reçu: ${(student.montantReçu || 0).toLocaleString()} CFA</p>
+                <p>Reste: ${(student.reste || 0).toLocaleString()} CFA</p>
+                <p>Status: <span class="status">${student.status || "N/A"}</span></p>
             </div>
+
             Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature)<hr>
         </body>
         </html>
