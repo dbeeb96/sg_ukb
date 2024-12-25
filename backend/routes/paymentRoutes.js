@@ -96,29 +96,34 @@ router.get("/:id", (req, res) => {
         SELECT
             s.firstName,
             s.lastName,
-            p.montantReçu AS lastReceived,
+            latest_payment.montantReçu AS lastReceived,
             SUM(p.montantReçu) AS montantReçu,
-            p.reste,
-            p.status
+            latest_payment.reste,
+            latest_payment.status
         FROM
             students s
                 LEFT JOIN
-            payments p
-            ON
-                s.id = p.student_id
+            payments p ON s.id = p.student_id
                 LEFT JOIN (
-                SELECT student_id, MAX(date) AS last_payment_date
-                FROM payments
-                GROUP BY student_id
+                SELECT
+                    student_id,
+                    montantReçu,
+                    reste,
+                    status,
+                    MAX(date) AS last_payment_date
+                FROM
+                    payments
+                GROUP BY
+                    student_id
             ) latest_payment
-                          ON p.student_id = latest_payment.student_id AND p.date = latest_payment.last_payment_date
+                          ON s.id = latest_payment.student_id
         WHERE
             s.id = ?
         GROUP BY
-            s.id, p.montantReçu, p.reste, p.status
+            s.id, latest_payment.montantReçu, latest_payment.reste, latest_payment.status
         ORDER BY
             latest_payment.last_payment_date DESC
-            LIMIT 1;
+        LIMIT 1;
     `;
 
     db.query(query, [id], (error, results) => {
@@ -131,5 +136,33 @@ router.get("/:id", (req, res) => {
         res.status(200).json(results[0]); // Send the first result
     });
 });
+
+// Suppression d'un paiement
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    console.log("Deleting payment with ID:", id); // Debug
+    if (!id) {
+        return res.status(400).json({ message: 'ID is required.' });
+    }
+
+    const startTime = Date.now();
+    const query = 'DELETE FROM payments WHERE id = ?';
+    db.query(query, [id], (error, results) => {
+        const endTime = Date.now();
+        console.log(`Delete query took ${endTime - startTime} ms`);
+
+        if (error) {
+            console.error("Error deleting payment:", error);
+            return res.status(500).json({ message: 'Error deleting payment.', error });
+        }
+        if (results.affectedRows === 0) {
+            console.warn("No payment found with ID:", id);
+            return res.status(404).json({ message: 'Payment not found.' });
+        }
+        res.status(200).json({ message: 'Payment deleted successfully.' });
+    });
+});
+
+
 
 module.exports = router;

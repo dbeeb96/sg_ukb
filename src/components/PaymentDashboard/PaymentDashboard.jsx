@@ -37,6 +37,8 @@ const PaymentDashboard = () => {
     const [totalPayments, setTotalPayments] = useState(0);
     const [totalRemaining, setTotalRemaining] = useState(0);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [payments, setPayments] = useState([]);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         // Récupérer les étudiants de la base de données
@@ -47,6 +49,7 @@ const PaymentDashboard = () => {
                 console.error("Error fetching students:", error);
                 alert("Unable to fetch student data. Please try again later.");
             });
+
         // Récupérer les relevés de paiement des étudiants sélectionnés
         axios
             .get("http://localhost:5000/api/payments")
@@ -110,25 +113,40 @@ const PaymentDashboard = () => {
     const [studentToDelete, setStudentToDelete] = useState(null);
 
 // Confirmer la suppression
-    const confirmDelete = async () => {
-        try {
-            // Call the API to delete the student using their id
-            await axios.delete(`http://localhost:5000/api/students/${studentToDelete.id}`);
-            console.log("Student deleted:", studentToDelete.id);
+    const confirmDelete = (id) => {
+        const start = performance.now();
 
-            // Update the student list after deletion
-            setSelectedStudents((prevStudents) =>
-                prevStudents.filter((student) => student.id !== studentToDelete.id)
-            );
-            setShowDeleteModal(false); // Close the delete modal
-        } catch (error) {
-            console.error("Error deleting student:", error);
+        // Find the payment to delete
+        const studentToDelete = selectedStudents.find((student) => student.id === id);
+        if (!studentToDelete) {
+            console.error(`No student found with ID: ${id}`);
+            return;
+        }
+
+        // Optimistic update
+        setSelectedStudents((prev) => prev.filter((student) => student.id !== id));
+
+        // Delete from backend
+        axios.delete(`http://localhost:5000/api/payments/${id}`)
+            .then(() => {
+                console.log("Delete succeeded");
+            })
+            .catch((error) => {
+                console.error("Error deleting:", error);
+                // Revert optimistic update in case of failure
+                setSelectedStudents((prev) => [...prev, studentToDelete]);
+            });
+
+        console.log("Handler execution time:", performance.now() - start);
+    };
+
+    // Handle delete confirmation and then call delete function
+    const handleDelete = (id) => {
+        if (window.confirm("Are you sure you want to delete this payment?")) {
+            confirmDelete(id);
         }
     };
-    const handleStudentDelete = (student) => {
-        setStudentToDelete(student); // Store the student to delete
-        setShowDeleteModal(true);    // Show the delete confirmation modal
-    };
+
     // Charger les données depuis localStorage lors du montage du composant
     useEffect(() => {
         const storedData = localStorage.getItem("selectedStudents");
@@ -145,11 +163,10 @@ const PaymentDashboard = () => {
     const handlePaymentSubmit = (montantReçu) => {
         if (currentStudent && montantReçu) {
             const receivedAmount = parseFloat(montantReçu) || 0;
-            const previousReceived = currentStudent.montantReçu || 0; // Get previously received amount
-            const remainingAmount = currentStudent.reste || currentStudent.totalFees - previousReceived; // Remaining balance
-            const totalAllowedPayment = currentStudent.totalFees; // Total fees allowed for the student
+            const previousReceived = currentStudent.montantReçu || 0;
+            const totalAllowedPayment = currentStudent.totalFees;
+            const remainingAmount = Math.max(totalAllowedPayment - (previousReceived + receivedAmount), 0);
 
-            // Validation: Ensure entered amount is within [0, Total des Paiements]
             if (receivedAmount <= 0) {
                 alert("Veuillez entrer un montant supérieur à 0 CFA.");
                 return;
@@ -162,35 +179,33 @@ const PaymentDashboard = () => {
                 return;
             }
 
-            const totalReceived = previousReceived + receivedAmount; // Accumulate payments
-            const newRemainingAmount = Math.max(totalAllowedPayment - totalReceived, 0); // Calculate remaining balance
-            const status = newRemainingAmount === 0 ? "Payé" : "Partiellement Payé";
+            const totalReceived = previousReceived + receivedAmount;
+            const status = remainingAmount === 0 ? "Payé" : "mois Payé";
 
             const updatedStudent = {
                 ...currentStudent,
-                montantReçu: totalReceived, // Update to total received
-                reste: newRemainingAmount, // Update to new remaining amount
+                montantReçu: totalReceived,
+                reste: remainingAmount,
                 status,
+                lastReceived: receivedAmount, // Add this line to track the last received amount
             };
 
-            // Update in frontend state
             const updatedStudents = selectedStudents.map((student) =>
                 student.id === currentStudent.id ? updatedStudent : student
             );
             setSelectedStudents(updatedStudents);
             updateTotals(updatedStudents);
 
-            // Send the update to the backend
             axios
                 .put(`http://localhost:5000/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
-                    montantReçu: totalReceived, // Send total received to backend
-                    reste: newRemainingAmount, // Send new remaining amount
+                    montantReçu: totalReceived,
+                    reste: remainingAmount,
                     status: status,
+                    lastReceived: receivedAmount, // Send this to the backend
                     date: new Date().toISOString(),
                 })
-                .then((response) => {
-                    console.log("Payment updated:", response.data);
+                .then(() => {
                     closePaymentPopup();
                 })
                 .catch((error) => {
@@ -215,21 +230,8 @@ const PaymentDashboard = () => {
 // Fonction permettant de gérer l'impression de la facture
     const printInvoice = (student) => {
         const currentDate = new Date();
-
-        // Format the date to '12 JAN 2024'
-        const formattedDate = currentDate.toLocaleDateString("fr-FR", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-        }).toUpperCase(); // Ensures the month is in uppercase
-
-        // Format 24-hour format
-        const formattedTime = currentDate.toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hourCycle: "h23", // 24-hour format
-        });
+        const formattedDate = currentDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
+        const formattedTime = currentDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
 
         const invoiceWindow = window.open("", "_blank");
         invoiceWindow.document.write(`
@@ -237,34 +239,13 @@ const PaymentDashboard = () => {
         <head>
             <title>Reçu du Paiement</title>
             <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 20px;
-                }
-                .header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 20px;
-                }
-                .logo {
-                    height: 60px;
-                }
-                .university-name {
-                    text-align: center;
-                    font-weight: bold;
-                    font-size: 1.2em;
-                }
-                .details {
-                    margin: 20px 0;
-                }
-                .details p {
-                    margin: 5px 0;
-                }
-                .status {
-                    font-weight: bold;
-                    color: ${student.status === "Payé" ? "green" : "red"};
-                }
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+                .logo { height: 60px; }
+                .university-name { text-align: center; font-weight: bold; font-size: 1.2em; }
+                .details { margin: 20px 0; }
+                .details p { margin: 5px 0; }
+                .status { font-weight: bold; color: ${student.status === "Payé" ? "green" : "red"}; }
             </style>
         </head>
         <body>
@@ -273,32 +254,8 @@ const PaymentDashboard = () => {
                 <div class="university-name">
                     KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
                     DE SAINT-LOUIS<br />
-                    MENSUALITE: ${student.subject || "N/A"}
-                </div>
-                <div>
-                    <p>Date: ${formattedDate}</p>
-                    <p>Heure: ${formattedTime}</p>
-                </div>
-            </div>
-            <div class="details">
-                <p>Nom de l'étudiant: ${student.firstName || "N/A"} ${student.lastName || "N/A"}</p>
-                <p>Dernier Montant Reçu: ${(student.lastReceived || "Aucun").toLocaleString()} CFA</p>
-                <p>Montant Total Reçu: ${(student.montantReçu || 0).toLocaleString()} CFA</p>
-                <p>Reste: ${(student.reste || 0).toLocaleString()} CFA</p>
-                <p>Status: <span class="status">${student.status || "N/A"}</span></p>
-            </div>
-            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature)<hr>
-            <br /> <br /> <br /> <br /> <br />  <br />
-            -------------------------------------------------------------------------------------------
-            -----------------------------
-            <br /> <br /> <br /> <br /> 
-            <div class="header">
-                <img src="/img.png" alt="Logo" class="logo" />
-                <div class="university-name">
-                    KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
-                    DE SAINT-LOUIS<br />
-                    MENSUALITE: ${student.subject || "N/A"}
-                </div>
+                    MENSUALITE: ${student.filiere || "N/A"}
+                </div>   
                 <div>
                     <p>Date: ${formattedDate}</p>
                     <p>Heure: ${formattedTime}</p>
@@ -311,8 +268,54 @@ const PaymentDashboard = () => {
                 <p>Reste: ${(student.reste || 0).toLocaleString()} CFA</p>
                 <p>Status: <span class="status">${student.status || "N/A"}</span></p>
             </div>
-
-            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature)<hr>
+            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
+            <br>
+            <br>
+            <br>
+            <br>
+            
+            <hr>
+            <br>
+            <br>
+            <br>
+            <br>
+            ----------------------------------------------------------------------------------------------
+            ----------------------------------- <br>
+            
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+                       <div class="header">
+                <img src="./img.png" alt="Logo" class="logo" />
+                <div class="university-name">
+                    KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
+                    DE SAINT-LOUIS<br />
+                    MENSUALITE: ${student.filiere || "N/A"}
+                </div>   
+                <div>
+                    <p>Date: ${formattedDate}</p>
+                    <p>Heure: ${formattedTime}</p>
+                </div>
+            </div>
+             <div class="details">
+                <p>Nom de l'étudiant: ${student.firstName || "N/A"} ${student.lastName || "N/A"}</p>
+                <p>Dernier Montant Reçu: ${(student.lastReceived || 0).toLocaleString()} CFA</p>
+                <p>Montant Total Reçu: ${(student.montantReçu || 0).toLocaleString()} CFA</p>
+                <p>Reste: ${(student.reste || 0).toLocaleString()} CFA</p>
+                <p>Status: <span class="status">${student.status || "N/A"}</span></p>
+            </div>
+            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
+            <hr>
+            <br>
         </body>
         </html>
     `);
@@ -321,20 +324,25 @@ const PaymentDashboard = () => {
     };
 
     const DeleteModal = ({ student, onConfirm, onClose }) => {
+        const handleDelete = () => {
+            // Call the onConfirm function passed as prop to trigger deletion
+            onConfirm(student.id);  // Assuming `student.id` contains the ID of the student or payment to delete
+            onClose();  // Close the modal after confirming the deletion
+        };
+
         return (
             <div className="delete-popup">
                 <div className="delete-popup-content">
                     <button className="delete-close-btn" onClick={onClose}>X</button>
                     <h3 className="delete-message">Êtes-vous sûr de vouloir supprimer cet étudiant ?</h3>
                     <div className="delete-actions">
-                        <button onClick={onConfirm} className="confirm-delete">Oui, Supprimer</button>
+                        <button onClick={handleDelete} className="confirm-delete">Oui, Supprimer</button>
                         <button onClick={onClose} className="cancel-delete">Annuler</button>
                     </div>
                 </div>
             </div>
         );
     };
-
     return (
         <div className="payment-dashboard">
             <div className="sidebar">
@@ -421,26 +429,26 @@ const PaymentDashboard = () => {
                                     <button className="icon-btn4" onClick={() => openPaymentPopup(student)}>
                                         💰
                                     </button>
-                                    <button className="icon-btn5" onClick={() => handleStudentDelete(student.id)}>
+                                    <button className="icon-btn5" onClick={() => handleDelete(student.id)}>
                                         <FaTrash/>
                                     </button>
-
-                                    {showDeleteModal && (
-                                        <DeleteModal
-                                            student={studentToDelete}
-                                            onConfirm={confirmDelete}
-                                            onClose={cancelDelete}
-                                        />
-                                    )}
                                     <button className="icon-btn6" onClick={() => printInvoice(student)}>
                                         <FaPrint/>
                                     </button>
                                 </td>
 
+                                {/*
+                                {showDeleteModal && (
+                                    <DeleteModal
+                                        student={studentToDelete}
+                                        onConfirm={confirmDelete}
+                                        onClose={cancelDelete}
+                                    />
+                                )}
+                             */}
                             </tr>
                         ))}
                         </tbody>
-
                     </table>
                 </div>
             </div>
