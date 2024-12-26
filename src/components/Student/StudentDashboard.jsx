@@ -180,7 +180,6 @@ const StudentDashboard = () => {
                 <button className="add-student-btn" onClick={() => setShowModal(true)}>
                     Ajouter un étudiant
                 </button>
-
                 <div className="search-filter-container">
                     <input
                         type="text"
@@ -190,7 +189,6 @@ const StudentDashboard = () => {
                         onChange={(e) => setFilteredSubjects(e.target.value)}
                     />
                 </div>
-
                 <table className="student-table">
                     <thead>
                     <tr>

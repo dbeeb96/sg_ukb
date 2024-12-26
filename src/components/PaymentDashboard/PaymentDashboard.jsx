@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./PaymentDashboard.css";
-import { FaUserGraduate, FaChalkboardTeacher, FaTrash, FaMoneyCheckAlt } from "react-icons/fa";
+import {FaUserGraduate, FaChalkboardTeacher, FaTrash, FaMoneyCheckAlt, FaArrowLeft, FaArrowRight} from "react-icons/fa";
 import { FaMoneyCheckDollar } from "react-icons/fa6";
 import { FaPrint,} from "react-icons/fa"; // Add this import for the printer icon
 const PaymentModal = ({ student, onSubmit, onClose }) => {
@@ -30,6 +30,7 @@ const PaymentModal = ({ student, onSubmit, onClose }) => {
 };
 
 const PaymentDashboard = () => {
+    const [searchQuery, setSearchQuery] = useState(""); // Declare searchQuery
     const [students, setStudents] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
@@ -39,6 +40,9 @@ const PaymentDashboard = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [payments, setPayments] = useState([]);
     const [isDeleting, setIsDeleting] = useState(false);
+   // const [filteredStudents, setFilteredStudents] = useState([]); // Declare filteredStudents state
+    const rowsPerPage = 5;
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         // Récupérer les étudiants de la base de données
@@ -98,6 +102,8 @@ const PaymentDashboard = () => {
         }
     };
 
+    // Filter students based on the search query
+
     // Ouvrir la fenêtre contextuelle de paiement
     const openPaymentPopup = (student) => {
         setCurrentStudent(student);
@@ -154,6 +160,15 @@ const PaymentDashboard = () => {
             setSelectedStudents(JSON.parse(storedData));
         }
     }, []);
+// Filter students based on the search query
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+
+    const filteredStudents = selectedStudents.filter((student) => {
+        const fullName = `${student.firstName} ${student.lastName}`.toLowerCase();
+        return fullName.includes(searchQuery.toLowerCase());
+    });
+
 
 // Annuler la suppression
     const cancelDelete = () => {
@@ -241,7 +256,7 @@ const PaymentDashboard = () => {
             <style>
                 body { font-family: Arial, sans-serif; margin: 20px; }
                 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-                .logo { height: 60px; }
+                .logo { height: 50px; }
                 .university-name { text-align: center; font-weight: bold; font-size: 1.2em; }
                 .details { margin: 20px 0; }
                 .details p { margin: 5px 0; }
@@ -250,7 +265,7 @@ const PaymentDashboard = () => {
         </head>
         <body>
            <div class="header">
-                <img src="./img.png" alt="Logo" class="logo" />
+                <img src="../../../public/static/img.png" alt="Logo" class="logo" />
                 <div class="university-name">
                     KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
                     DE SAINT-LOUIS<br />
@@ -269,12 +284,11 @@ const PaymentDashboard = () => {
                 <p>Status: <span class="status">${student.status || "N/A"}</span></p>
             </div>
             Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
+          <hr>
             <br>
             <br>
             <br>
             <br>
-            
-            <hr>
             <br>
             <br>
             <br>
@@ -295,7 +309,7 @@ const PaymentDashboard = () => {
             <br>
             <br>
                        <div class="header">
-                <img src="./img.png" alt="Logo" class="logo" />
+                <img src="../../../public/static/img.png " alt="Logo" class="logo" />
                 <div class="university-name">
                     KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
                     DE SAINT-LOUIS<br />
@@ -315,12 +329,18 @@ const PaymentDashboard = () => {
             </div>
             Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
             <hr>
+            
             <br>
         </body>
         </html>
     `);
-        invoiceWindow.document.close();
-        invoiceWindow.print();
+
+        //invoiceWindow.document.close();
+       // invoiceWindow.focus();  // Focus on the window before printing
+        invoiceWindow.print();  // Trigger the print dialog
+
+        // Optionally, you can close the window after printing
+        invoiceWindow.close();
     };
 
     const DeleteModal = ({ student, onConfirm, onClose }) => {
@@ -371,15 +391,15 @@ const PaymentDashboard = () => {
             <div className="main-content">
                 <div className="dashboard-counters">
                     <div className="counter">
-                    <center className="money-icon">
-                            <FaMoneyCheckDollar />
+                        <center className="money-icon">
+                            <FaMoneyCheckDollar/>
                         </center>
                         <h3>Total des Paiements (CFA)</h3>
                         <p>{totalPayments.toLocaleString()} CFA</p>
                     </div>
                     <div className="counter">
                         <center className="money-icon1">
-                            <FaMoneyCheckAlt />
+                            <FaMoneyCheckAlt/>
                         </center>
                         <h3>Reste (CFA)</h3>
                         <p>{totalRemaining.toLocaleString()} CFA</p>
@@ -391,7 +411,7 @@ const PaymentDashboard = () => {
                 </div>
 
                 <div className="student-selection">
-                    <select  className="selected_st" onChange={handleStudentChange}>
+                    <select className="selected_st" onChange={handleStudentChange}>
                         <option value="">-- Sélectionnez un étudiant --</option>
                         {students.map((student) => (
                             <option key={student.id} value={student.id}>
@@ -399,6 +419,13 @@ const PaymentDashboard = () => {
                             </option>
                         ))}
                     </select>
+                    <input
+                        type="text"
+                        placeholder="Rechercher par nom..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}  // Updates search query
+                        className="filter_st"
+                    />
                 </div>
 
                 <div className="payment-section">
@@ -415,41 +442,59 @@ const PaymentDashboard = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {selectedStudents.map((student) => (
-                            <tr key={student.id}>
-                                <td>{student.firstName}{student.lastName}</td>
-                                <td>{student.filiere}</td>
-                                <td>{student.totalFees.toLocaleString()} CFA</td>
-                                <td>{student.montantReçu.toLocaleString()} CFA</td>
-                                <td>{student.reste.toLocaleString()} CFA</td>
-                                <td className={student.status === "Payé" ? "status-paid" : "status-unpaid"}>
-                                    {student.status}
-                                </td>
-                                <td style={{textAlign: "right"}}>
-                                    <button className="icon-btn4" onClick={() => openPaymentPopup(student)}>
-                                        💰
-                                    </button>
-                                    <button className="icon-btn5" onClick={() => handleDelete(student.id)}>
-                                        <FaTrash/>
-                                    </button>
-                                    <button className="icon-btn6" onClick={() => printInvoice(student)}>
-                                        <FaPrint/>
-                                    </button>
-                                </td>
-
-                                {/*
-                                {showDeleteModal && (
-                                    <DeleteModal
-                                        student={studentToDelete}
-                                        onConfirm={confirmDelete}
-                                        onClose={cancelDelete}
-                                    />
-                                )}
-                             */}
+                        {filteredStudents.length > 0 ? (
+                            filteredStudents.map((student) => (
+                                <tr key={student.id}>
+                                    <td>{student.firstName} {student.lastName}</td>
+                                    <td>{student.filiere}</td>
+                                    <td>{student.totalFees.toLocaleString()} CFA</td>
+                                    <td>{student.montantReçu.toLocaleString()} CFA</td>
+                                    <td>{student.reste.toLocaleString()} CFA</td>
+                                    <td className={student.status === "Payé" ? "status-paid" : "status-unpaid"}>
+                                        {student.status}
+                                    </td>
+                                    <td style={{textAlign: "right"}}>
+                                        <button className="icon-btn4" onClick={() => openPaymentPopup(student)}>
+                                            💰
+                                        </button>
+                                        <button className="icon-btn5" onClick={() => handleDelete(student.id)}>
+                                            <FaTrash/>
+                                        </button>
+                                        <button className="icon-btn6" onClick={() => printInvoice(student)}>
+                                            <FaPrint/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="7">Aucun étudiant trouvé.</td>
                             </tr>
-                        ))}
+                        )}
                         </tbody>
                     </table>
+                    <div className="pagination">
+                        <button
+                            className="pagination-btn"
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
+                        >
+                            <FaArrowLeft/>
+                        </button>
+                        <span className="pagination-info">
+        Page {currentPage} of {Math.ceil(filteredStudents.length / rowsPerPage) || 1}
+    </span>
+                        <button
+                            className="pagination-btn"
+                            disabled={currentPage === Math.ceil(filteredStudents.length / rowsPerPage)}
+                            onClick={() => setCurrentPage((prevPage) =>
+                                Math.min(prevPage + 1, Math.ceil(filteredStudents.length / rowsPerPage))
+                            )}
+                        >
+                            <FaArrowRight/>
+                        </button>
+                    </div>
+
                 </div>
             </div>
 

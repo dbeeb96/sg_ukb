@@ -212,6 +212,16 @@ thead{
     border-radius: 25px 25px;
     border-color: #007bff;
 }
+.filter_st{
+    height: 50px;
+    font-size: 15px;
+    border-radius: 25px 25px;
+    border-color: #007bff;
+}
+.student-selection{
+    display: flex;
+    justify-content: space-between;
+}
 .selected-students {
     margin-bottom: 20px;
 }
