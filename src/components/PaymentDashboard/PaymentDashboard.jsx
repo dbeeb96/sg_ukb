@@ -363,6 +363,7 @@ const PaymentDashboard = () => {
             </div>
         );
     };
+    const currentRows = filteredStudents.slice(indexOfFirstRow, indexOfLastRow); // Now it's defined here
     return (
         <div className="payment-dashboard">
             <div className="sidebar">
@@ -427,7 +428,6 @@ const PaymentDashboard = () => {
                         className="filter_st"
                     />
                 </div>
-
                 <div className="payment-section">
                     <table className="payment-table">
                         <thead>
@@ -443,7 +443,7 @@ const PaymentDashboard = () => {
                         </thead>
                         <tbody>
                         {filteredStudents.length > 0 ? (
-                            filteredStudents.map((student) => (
+                            currentRows.map((student) => (
                                 <tr key={student.id}>
                                     <td>{student.firstName} {student.lastName}</td>
                                     <td>{student.filiere}</td>
@@ -473,6 +473,8 @@ const PaymentDashboard = () => {
                         )}
                         </tbody>
                     </table>
+
+                    {/* Pagination Controls */}
                     <div className="pagination">
                         <button
                             className="pagination-btn"
@@ -482,8 +484,8 @@ const PaymentDashboard = () => {
                             <FaArrowLeft/>
                         </button>
                         <span className="pagination-info">
-        Page {currentPage} of {Math.ceil(filteredStudents.length / rowsPerPage) || 1}
-    </span>
+                    Page {currentPage} of {Math.ceil(filteredStudents.length / rowsPerPage) || 1}
+                </span>
                         <button
                             className="pagination-btn"
                             disabled={currentPage === Math.ceil(filteredStudents.length / rowsPerPage)}
@@ -494,10 +496,9 @@ const PaymentDashboard = () => {
                             <FaArrowRight/>
                         </button>
                     </div>
-
                 </div>
-            </div>
 
+            </div>
             {showPopup && currentStudent && (
                 <PaymentModal
                     student={currentStudent}
