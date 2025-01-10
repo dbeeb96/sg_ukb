@@ -1812,6 +1812,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fortawesome/fontawesome-free@npm:^6.7.2":
+  version: 6.7.2
+  resolution: "@fortawesome/fontawesome-free@npm:6.7.2"
+  checksum: 10c0/e27fb8b846f0bcf40c904acc210829a640329fc7b7ec4e42a7c43cb53739ed6052d78df90810f555a5c80bc608fee5a5174db3fa6da617f582d6210009a19278
+  languageName: node
+  linkType: hard
+
 "@fortawesome/free-solid-svg-icons@npm:^6.7.1":
   version: 6.7.1
   resolution: "@fortawesome/free-solid-svg-icons@npm:6.7.1"
@@ -4308,6 +4315,15 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 10c0/e4b53deb4f2b85c52be0e21a273f2045c7b6a6ea002b0e139c744cb6f95e9ec044439a52883b0d74dedd1ff3da55ed140cfdddfed7fb0cccbed373de5dce1bcf
+  languageName: node
+  linkType: hard
+
+"bootstrap@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "bootstrap@npm:5.3.3"
+  peerDependencies:
+    "@popperjs/core": ^2.11.8
+  checksum: 10c0/bb68ca7b763977b9cce40cb5b8c676ae19a716d2f5d15009fa7bdbcec9dea426968e3cb748fbed7592fbf10edd7c749aea841c2920996a7c1aa5e0a6e2d4c2ad
   languageName: node
   linkType: hard
 
@@ -12319,6 +12335,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "sg_ukb@workspace:."
   dependencies:
+    "@fortawesome/fontawesome-free": "npm:^6.7.2"
     "@fortawesome/free-solid-svg-icons": "npm:^6.7.1"
     "@fortawesome/react-fontawesome": "npm:^0.2.2"
     "@testing-library/jest-dom": "npm:^5.14.1"
@@ -12328,6 +12345,7 @@ __metadata:
     bcrypt: "npm:^5.1.1"
     bcryptjs: "npm:^2.4.3"
     body-parser: "npm:^1.20.3"
+    bootstrap: "npm:^5.3.3"
     cors: "npm:^2.8.5"
     express: "npm:^4.21.1"
     jspdf: "npm:^2.5.2"

@@ -29,12 +29,12 @@ const RegisterForm = () => {
                 <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 <select value={role} onChange={(e) => setRole(e.target.value)}>
-                    <option value="student">Student</option>
+                    <option value="student">Etudiant</option>
                     <option value="admin">Admin</option>
-                    <option value="accountant">Accountant</option>
+                    <option value="accountant">Comptable</option>
                     <option value="rp">RP</option>
                 </select>
-                <button type="submit">Register</button>
+                <button type="submit">S'enregistrer</button>
                 <p>{message}</p>
             </form>
         </div>

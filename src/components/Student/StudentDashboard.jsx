@@ -11,16 +11,18 @@ const StudentDashboard = () => {
     const [newStudent, setNewStudent] = useState({
         firstName: '',
         lastName: '',
-        age: '',
         phoneNumber: '',
         studentId: '',
         address: '',
+        birthDay: '',
+        academicYear:'',
         monthlyFees: '',
         totalFees: '',
         teachers: '',
         startDate: '',
         endDate: '',
         subject: '',
+        level: '',
     });
     const [currentPage, setCurrentPage] = useState(1);
     const [validationErrors, setValidationErrors] = useState([]);
@@ -42,11 +44,15 @@ const StudentDashboard = () => {
         setNewStudent({ ...newStudent, [name]: value });
     };
 
+    const [birthDay, setBirthDay] = useState("");
+
+
+
     const validateForm = () => {
         const errors = [];
         const requiredFields = [
-            'firstName', 'lastName', 'age', 'phoneNumber', 'studentId',
-            'address', 'monthlyFees', 'totalFees', 'startDate', 'endDate','subject'
+            'firstName', 'lastName', 'level', 'phoneNumber', 'studentId',
+            'address', 'birthDay', 'academicYear', 'monthlyFees', 'totalFees', 'startDate', 'endDate','subject'
         ];
 
 
@@ -70,10 +76,12 @@ const StudentDashboard = () => {
         const studentData = {
             firstName: newStudent.firstName,
             lastName: newStudent.lastName,
-            age: newStudent.age,
+            level: newStudent.level,
             phoneNumber: newStudent.phoneNumber,
             studentId: newStudent.studentId,
             address: newStudent.address,
+            birthDay: newStudent.birthDay,
+            academicYear: newStudent.academicYear,
             monthlyFees: newStudent.monthlyFees,
             totalFees: newStudent.totalFees,
             subject: newStudent.subject,
@@ -111,9 +119,10 @@ const StudentDashboard = () => {
         setNewStudent({
             firstName: '',
             lastName: '',
-            age: '',
             phoneNumber: '',
             studentId: '',
+            birthDay: '',
+            academicYear:'',
             address: '',
             monthlyFees: '',
             totalFees: '',
@@ -121,6 +130,7 @@ const StudentDashboard = () => {
             startDate: '',
             endDate: '',
             subject: '',
+            level: '',
         });
         setShowModal(false);
         setCurrentStudent(null);
@@ -143,6 +153,11 @@ const StudentDashboard = () => {
                 console.error('Error deleting student:', error);
                 alert('There was an error deleting the student. Please try again.');
             });
+
+        if (currentPage > 1 && currentStudents.length === 1) {
+            setCurrentPage(currentPage - 1);
+        }
+
     };
 
     const indexOfLastRow = currentPage * rowsPerPage;
@@ -194,15 +209,17 @@ const StudentDashboard = () => {
                     <tr>
                         <th>Nom</th>
                         <th>prénom</th>
-                        <th>Age</th>
                         <th>TEL</th>
                         <th>N° Carte</th>
-                        <th>Address</th>
+                        <th>Lieu de Naissance</th>
+                        <th>Date de Naissance</th>
+                        <th>Année Académique</th>
                         <th>Frai mensuel (en CFA)</th>
                         <th>Total des paiements (en CFA)</th>
                         <th>Date de début</th>
                         <th>Date de fin</th>
                         <th>Filière</th>
+                        <th>Niveau</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -211,18 +228,20 @@ const StudentDashboard = () => {
                         <tr key={index}>
                             <td>{student.firstName}</td>
                             <td>{student.lastName}</td>
-                            <td>{student.age}</td>
                             <td>{student.phoneNumber}</td>
                             <td>{student.studentId}</td>
                             <td>{student.address}</td>
+                            <td>{student.birthDay}</td>
+                            <td>{student.academicYear}</td>
                             <td>{student.monthlyFees}</td>
                             <td>{student.totalFees}</td>
                             <td>{student.startDate}</td>
                             <td>{student.endDate}</td>
                             <td>{student.subject}</td>
-                            <td>
-                                <button onClick={() => handleEdit(index)}><FaEdit /></button>
-                                <button onClick={() => handleDelete(index)}><FaTrash /></button>
+                            <td>{student.level}</td>
+                            <td className="btn">
+                                <button onClick={() => handleEdit(index)}><FaEdit/></button>
+                                <button onClick={() => handleDelete(index)}><FaTrash/></button>
                             </td>
                         </tr>
                     ))}
@@ -284,10 +303,10 @@ const StudentDashboard = () => {
                                     onChange={handleChange}
                                 />
                                 <input
-                                    type="number"
-                                    name="age"
-                                    placeholder="Age"
-                                    value={newStudent.age}
+                                    type="text"
+                                    name="level"
+                                    placeholder="level"
+                                    value={newStudent.level}
                                     onChange={handleChange}
                                 />
                                 <input
@@ -312,6 +331,20 @@ const StudentDashboard = () => {
                                     onChange={handleChange}
                                 />
                                 <input
+                                    type="date"
+                                    name="birthDay"
+                                    placeholder="Date de naissance"
+                                    value={newStudent.birthDay}
+                                    onChange={handleChange}
+                                />
+                                <input
+                                    type="text"
+                                    name="academicYear"
+                                    placeholder="Année Académique"
+                                    value={newStudent.academicYear}
+                                    onChange={handleChange}
+                                />
+                                <input
                                     type="number"
                                     name="monthlyFees"
                                     placeholder="Frais mensuel"
@@ -323,13 +356,6 @@ const StudentDashboard = () => {
                                     name="totalFees"
                                     placeholder="Montant total"
                                     value={newStudent.totalFees}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="teachers"
-                                    placeholder="Professeur"
-                                    value={newStudent.teachers}
                                     onChange={handleChange}
                                 />
                                 <input

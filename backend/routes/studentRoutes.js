@@ -39,11 +39,11 @@ router.get('/:id', (req, res) => {
 
 // POST new student
 router.post('/', (req, res) => {
-    const { firstName, lastName, age, phoneNumber, studentId, address, monthlyFees, totalFees, subject, startDate, endDate } = req.body;
+    const { firstName, lastName, phoneNumber, studentId, address, birthDay, monthlyFees, totalFees, subject, level, startDate, endDate } = req.body;
 
-    const query = `INSERT INTO students (firstName, lastName, age, phoneNumber, studentId, address, monthlyFees, totalFees, subject, startDate, endDate)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    db.query(query, [firstName, lastName, age, phoneNumber, studentId, address, monthlyFees, totalFees, subject, startDate, endDate], (err, result) => {
+    const query = `INSERT INTO students (firstName, lastName, phoneNumber, studentId, address, birthDay, academicYear,  monthlyFees, totalFees, subject, level, startDate, endDate)
+                   VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?)`;
+    db.query(query, [firstName, lastName, phoneNumber, studentId, address, birthDay, academicYear,  monthlyFees, totalFees, subject, level, startDate, endDate], (err, result) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ error: 'Database error' });
@@ -54,11 +54,11 @@ router.post('/', (req, res) => {
 
 // PUT update student
 router.put('/:id', (req, res) => {
-    const { firstName, lastName, age, phoneNumber, studentId, address, monthlyFees, totalFees, subject, startDate, endDate } = req.body;
+    const { firstName, lastName, phoneNumber, studentId, address, birthDay, academicYear,  monthlyFees, totalFees, subject, level, startDate, endDate } = req.body;
 
-    const query = `UPDATE students SET firstName = ?, lastName = ?, age = ?, phoneNumber = ?, studentId = ?, address = ?, monthlyFees = ?, totalFees = ?, subject = ?, startDate = ?, endDate = ? 
+    const query = `UPDATE students SET firstName = ?, lastName = ?, phoneNumber = ?, studentId = ?, address = ?, birthDay= ?, academicYear = ?, monthlyFees = ?, totalFees = ?, subject = ?, level = ?,  startDate = ?, endDate = ? 
                    WHERE id = ?`; // Use 'id' in WHERE clause
-    db.query(query, [firstName, lastName, age, phoneNumber, studentId, address, monthlyFees, totalFees, subject, startDate, endDate, req.params.id], (err, result) => {
+    db.query(query, [firstName, lastName, phoneNumber, studentId, address, birthDay, academicYear, monthlyFees, totalFees, subject, level,  startDate, endDate, req.params.id], (err, result) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ error: 'Database error' });

@@ -1,0 +1,100 @@
+/* Title Section */
+.dashboard-title {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+}
+
+.dashboard-title h1 {
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Counter Section */
+.dashboard-counters {
+    background-color: #1a252f;
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    gap: 20px;
+}
+
+.counter-card {
+    background-color: #f4f6f7;
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    flex: 1;
+    border: 1px solid #dcdfe1;
+}
+
+.counter-card h3 {
+    font-size: 20px;
+    color: #333;
+    margin: 10px 0;
+}
+
+.counter-card p {
+    font-size: 28px;
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.counter-icon {
+    font-size: 40px;
+    color: #2980b9;
+    margin-bottom: 10px;
+}
+
+/* Responsive Design for Counters */
+@media (max-width: 768px) {
+    .dashboard-counters {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .counter-card {
+        margin-bottom: 15px;
+    }
+}
+button{
+    color: #2c3e50;
+}
+/* Redirect Button Style */
+
+.redirect-button:hover {
+    background-color: #2980b9;
+}
+/* Footer Styling */
+.dashboard-footer {
+    text-align: center;
+    background-color: #2c3e50;
+    color: white;
+    padding: 10px;
+    font-size: 15px;
+    margin-top: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
+
+}
+/* Ensure Cards Look Consistent */
+.dashboard-cards .card {
+    text-align: center;
+    border: 1px solid #dcdfe1;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #f4f6f7;
+    margin-bottom: 15px;
+}
+

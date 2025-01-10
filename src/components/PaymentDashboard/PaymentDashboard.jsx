@@ -265,7 +265,7 @@ const PaymentDashboard = () => {
         </head>
         <body>
            <div class="header">
-                <img src="../../../public/static/img.png" alt="Logo" class="logo" />
+                <img src="../../../public/img.png" alt="Logo" class="logo" />
                 <div class="university-name">
                     KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
                     DE SAINT-LOUIS<br />
@@ -308,8 +308,8 @@ const PaymentDashboard = () => {
             <br>
             <br>
             <br>
-                       <div class="header">
-                <img src="../../../public/static/img.png " alt="Logo" class="logo" />
+               <div class="header">
+                <img src="./assets/logo_2.png" alt="Logo" class="logo" />
                 <div class="university-name">
                     KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
                     DE SAINT-LOUIS<br />
@@ -335,7 +335,7 @@ const PaymentDashboard = () => {
         </html>
     `);
 
-        //invoiceWindow.document.close();
+       // invoiceWindow.document.close();
        // invoiceWindow.focus();  // Focus on the window before printing
         invoiceWindow.print();  // Trigger the print dialog
 

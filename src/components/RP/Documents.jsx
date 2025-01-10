@@ -1,7 +1,7 @@
 import React from 'react';
 import { logout } from '../../utils/authUtils';
 import { Link, useNavigate } from 'react-router-dom';
-import './AccountantDashboard.css';
+import './Documents.css';
 import { FaUserCog, FaUsers, FaChartBar, FaSignOutAlt, FaUserGraduate, FaChalkboardTeacher, FaBuilding } from 'react-icons/fa'; // Import icons
 
 const AccountantDashboard = () => {
@@ -11,10 +11,10 @@ const AccountantDashboard = () => {
         <div className="admin-dashboard">
             <div className="sidebar">
                 <div className="sidebar-header">
-                    <h2>GESTION DES ETUDIANTS</h2>
+                    <h2>GESTION DES NOTES</h2>
                 </div>
                 <ul className="sidebar-menu">
-                    <li><Link to="/accountant"><FaUserGraduate/>Tableau de bord</Link></li>
+                    <li><Link to="/rp"><FaUserGraduate/>Tableau de bord</Link></li>
                     <li><Link to="/student/manage"><FaChalkboardTeacher/> Manage Students</Link></li>
                 </ul>
             </div>
@@ -23,7 +23,7 @@ const AccountantDashboard = () => {
 
                 {/* Header */}
                 <header className="dashboard-header">
-                    <h1>Welcome, Accountant!</h1>
+                    <h1>Bienvenue, Responsable pédagogique!</h1>
                     <div className="user-profile">
                         <img
                             src="/public/user-icon.png" // Replace with dynamic user image
@@ -42,39 +42,19 @@ const AccountantDashboard = () => {
                 <div className="dashboard-title">
                     <h1>UNIVERSITE KOCC BARMA DE SAINT-LOUIS</h1>
                 </div>
-                {/* Counter Section */}
-                <div className="dashboard-counters">
-                    <div className="counter-card">
-                        <FaUserGraduate className="counter-icon"/>
-                        <h3>Students</h3>
-                        <p>1,200</p>
-                    </div>
-                    <div className="counter-card">
-                        <FaChalkboardTeacher className="counter-icon"/>
-                        <h3>Teachers</h3>
-                        <p>150</p>
-                    </div>
-                    <div className="counter-card">
-                        <FaBuilding className="counter-icon"/>
-                        <h3>Personnel</h3>
-                        <p>80</p>
-                    </div>
-                </div>
-
-                {/* Dashboard Content */}
                 <div className="dashboard-cards">
                     <div className="cards">
-                        <h3>Gestion des étudiants</h3>
+                        <h3>Notes des étudiants</h3>
                         <p>Cliquez sur le bouton pour gérer la gestion des étudiants.</p>
                         <button
                             className="redirect-button"
-                            onClick={() => navigate('/student')}
+                            onClick={() => navigate('/rp/notes')}
                         >
                             Gérer les étudiants
                         </button>
                     </div>
                     <div className="cards">
-                        <h3>Gestion des paiements</h3>
+                        <h3>Certfication </h3>
                         <p>Cliquez sur le bouton pour gérer la gestion des paiements.</p>
                         <button
                             className="redirect-button"
@@ -84,17 +64,17 @@ const AccountantDashboard = () => {
                         </button>
                     </div>
                     <div className="cards">
-                        <h3>Statistiques</h3>
+                        <h3>Calendrier</h3>
                         <p>Générer et examiner des rapports et des analyses financiers.</p>
                         <button
                             className="redirect-button"
                             onClick={() => navigate('/accountant/statistics')}
                         >
-                            Voir les statistiques
+                            Consulter
                         </button>
                     </div>
                     <div className="cards">
-                        <h3>Gestion du personnel</h3>
+                        <h3>Rapports</h3>
                         <p>Notes, attestations, etc.</p>
                         <button
                             className="redirect-button"
@@ -113,6 +93,5 @@ const AccountantDashboard = () => {
 
     );
 };
-
 
 export default AccountantDashboard;

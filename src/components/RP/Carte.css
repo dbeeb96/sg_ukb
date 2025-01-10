@@ -1,0 +1,272 @@
+.card-container {
+    position: relative;
+    /*width: 3508px;
+    height: 2480px;*/
+    max-width: 800px; /* Adjust width */
+    margin: auto;
+}
+.student-selection{
+    background: #1a252f;
+    color: #ffffff;
+    font-size: 24px;
+}
+.form-select{
+    width: 225px;
+    height: 35px;
+    margin: 0 20px;
+}
+.form-control input{
+    width: 225px;
+    height: 35px;
+    margin: 0 20px;
+}
+.card-image {
+    width: 100%;
+    display: block;
+}
+
+/* Centered text overlay */
+.text-overlay {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: flex;
+}
+.pr, .nm, .dn, .ln , .sb, .ac, .nd{
+    font-size: 20px;
+}
+.info{
+    position: absolute;
+    top: 32%;
+    left: 35%;
+    font-size: 15px;
+}
+
+.info h3{
+    font-weight: lighter;
+    font-family: italic;
+}
+
+
+/* Other text positions */
+.top-right {
+    position: absolute;
+    top: 5%;
+    width: 600px;
+    right: 15%;
+    text-align: center;
+    font-size: 15px;
+    color: #555;
+    font-weight: bold;
+}
+.top-header h2{
+    position: absolute;
+    font-weight: 1000;
+    top: 5px;
+    left: 235px;
+    font-size: 20px;
+    color: #000000;
+}
+.top-header-1{
+    position: absolute;
+    width: 320px;
+    top: 25px;
+    left: 249px;
+}
+.top-header-2{
+    position: absolute;
+    width: 420px;
+    top : 45px;
+    left: 200px;
+}
+.top-header-3{
+    position: absolute;
+    width: 420px;
+    top : 65px;
+    left: 200px;
+}.top-header-4{
+     position: absolute;
+     width: 420px;
+     top : 86px;
+     left: 200px;
+ }
+.top-header-5{
+    position: absolute;
+    width: 510px;
+    top : 110px;
+    left: 160px;
+    font-size: 12px;
+}
+.bottom-left {
+    position: absolute;
+    bottom: 10%;
+    left: 10%;
+    font-size: 18px;
+    color: #555;
+    font-weight: bold;
+}
+.footer-info{
+    display: inline-block;
+    width: 350px;
+    position: absolute;
+    left: 160px;
+    top: 295px;
+    font-size: 11px;
+}
+.logo1{
+    position: absolute;
+    top: 5%;
+    left: 0;
+    width: 205px;
+}
+.profil{
+    position: absolute;
+    top: 38%;
+    left: 25px;
+    width: 155px;
+    border: 1px solid #000,
+}
+.footer-left{
+    position: absolute;
+    top: 70%;
+    left: 2%;
+    text-align: center;
+    font-weight: bold;
+    font-family: Georgia;
+}
+.footer-left h3{
+    font-size: 36px;
+}
+.footer-left p{
+    font-size: 15px;
+    position: absolute;
+    bottom: -5px;
+    left: 45px;
+    font-weight: bold;
+}
+.line-1{
+    position: absolute;
+    width: 20%;
+    height: 2px;
+    background: #838383;
+    top: 160px;
+    left: 430px;
+}
+.line-2{
+    position: absolute;
+    width: 20%;
+    height: 2px;
+    background: #838383;
+    top: 465px;
+    left: 430px;
+}
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.menu-item .icon {
+    font-size: 20px;
+    color: #007bff;
+}
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .top-right {
+        width: 100%;
+        right: 0;
+        font-size: 14px;
+    }
+
+    .info {
+        left: 30%;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-container {
+        max-width: 50px;
+        width: 25%;
+    }
+
+    .top-header h2 {
+        font-size: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .top-header-1,
+    .top-header-2,
+    .top-header-3,
+    .top-header-4,
+    .top-header-5 {
+        width: 25%;
+        left: 5%;
+        text-align: center;
+    }
+
+    .footer-info {
+        width: 280px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 10px;
+    }
+
+    .profil {
+        top: 35%;
+        left: 10px;
+        width: 140px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-container {
+        max-width: 20%;
+        padding: 10px;
+    }
+
+    .text-overlay {
+        font-size: 16px;
+        padding: 8px 12px;
+    }
+
+    .pr, .nm, .dn, .ln, .sb, .ac, .nd {
+        font-size: 12px;
+    }
+
+    .top-header h2 {
+        font-size: 10px;
+        top: 10px;
+    }
+
+    .top-header-1,
+    .top-header-2,
+    .top-header-3,
+    .top-header-4,
+    .top-header-5 {
+        width: 20%;
+        left: 0;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .footer-left h3 {
+        font-size: 12px;
+    }
+
+    .footer-left p {
+        font-size: 12px;
+        left: 20px;
+    }
+}
+
+
