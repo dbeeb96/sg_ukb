@@ -3,9 +3,11 @@ import { logout } from '../../utils/authUtils';
 import { Link, useNavigate } from 'react-router-dom';
 import './RP-Dashboard.css';
 import { FaUserCog, FaUsers, FaChartBar, FaSignOutAlt, FaUserGraduate, FaChalkboardTeacher, FaBuilding } from 'react-icons/fa'; // Import icons
+import { useState, useEffect } from "react";
 
 const AccountantDashboard = () => {
     const navigate = useNavigate(); // Hook to programmatically navigate
+    const [studentCount, setStudentCount] = useState(0);
 
     return (
         <div className="admin-dashboard">
@@ -47,7 +49,7 @@ const AccountantDashboard = () => {
                     <div className="counter-card">
                         <FaUserGraduate className="counter-icon"/>
                         <h3>ETUDIANTS</h3>
-                        <p>1,200</p>
+                        <p>{studentCount.toLocaleString()}</p>
                     </div>
                     <div className="counter-card">
                         <FaChalkboardTeacher className="counter-icon"/>

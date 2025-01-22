@@ -1,10 +1,24 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { logout } from '../../utils/authUtils';
 import { Link, useNavigate } from 'react-router-dom';
 import './AccountantDashboard.css';
 import { FaUserCog, FaUsers, FaChartBar, FaSignOutAlt, FaUserGraduate, FaChalkboardTeacher, FaBuilding } from 'react-icons/fa'; // Import icons
 
 const AccountantDashboard = () => {
+
+    const [studentCount, setStudentCount] = useState(0);
+
+    useEffect(() => {
+        fetch("http://localhost:5000/api/students/count")
+            .then((response) => response.json())
+            .then((data) => {
+                setStudentCount(data.count);
+            })
+            .catch((error) => {
+                console.error("Erreur lors de la récupération du nombre d'étudiants :", error);
+            });
+    }, []);
+
     const navigate = useNavigate(); // Hook to programmatically navigate
 
     return (
@@ -47,7 +61,7 @@ const AccountantDashboard = () => {
                     <div className="counter-card">
                         <FaUserGraduate className="counter-icon"/>
                         <h3>Students</h3>
-                        <p>1,200</p>
+                        <p>{studentCount}</p>
                     </div>
                     <div className="counter-card">
                         <FaChalkboardTeacher className="counter-icon"/>

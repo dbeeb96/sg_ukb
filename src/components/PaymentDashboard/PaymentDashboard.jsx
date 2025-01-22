@@ -432,8 +432,11 @@ const PaymentDashboard = () => {
                     <table className="payment-table">
                         <thead>
                         <tr>
+                            <th>Id</th>
                             <th>Étudiant</th>
                             <th>Filière</th>
+                            <th>Niveau</th>
+                            <th>N°Dossier</th>
                             <th>Total des Paiements (CFA)</th>
                             <th>Montant Reçu (CFA)</th>
                             <th>Reste (CFA)</th>
@@ -445,8 +448,11 @@ const PaymentDashboard = () => {
                         {filteredStudents.length > 0 ? (
                             currentRows.map((student) => (
                                 <tr key={student.id}>
+                                    <td>{student.id}</td>
                                     <td>{student.firstName} {student.lastName}</td>
                                     <td>{student.filiere}</td>
+                                    <td>{student.level}</td>
+                                    <td>{student.studentId}</td>
                                     <td>{student.totalFees.toLocaleString()} CFA</td>
                                     <td>{student.montantReçu.toLocaleString()} CFA</td>
                                     <td>{student.reste.toLocaleString()} CFA</td>

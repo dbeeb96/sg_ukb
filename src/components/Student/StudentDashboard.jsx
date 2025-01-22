@@ -29,6 +29,21 @@ const StudentDashboard = () => {
     const [filteredSubjects, setFilteredSubjects] = useState('');
     const rowsPerPage = 5;
 
+    const formatDate = (dateString) => {
+        if (!dateString) return "N/A";  // Handle empty values safely
+
+        const date = new Date(dateString);
+
+        // Check if the date object is valid
+        if (isNaN(date.getTime())) return "Invalid Date";
+
+        return date.toLocaleDateString("fr-FR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        })
+    };
+
     useEffect(() => {
         axios.get('http://localhost:5000/api/students')
             .then(response => {
@@ -39,14 +54,12 @@ const StudentDashboard = () => {
             });
     }, []);
 
-    const handleChange = (e) => {
+    const               handleChange = (e) => {
         const { name, value } = e.target;
         setNewStudent({ ...newStudent, [name]: value });
     };
 
     const [birthDay, setBirthDay] = useState("");
-
-
 
     const validateForm = () => {
         const errors = [];
@@ -54,7 +67,6 @@ const StudentDashboard = () => {
             'firstName', 'lastName', 'level', 'phoneNumber', 'studentId',
             'address', 'birthDay', 'academicYear', 'monthlyFees', 'totalFees', 'startDate', 'endDate','subject'
         ];
-
 
         requiredFields.forEach(field => {
             if (!newStudent[field]) {
@@ -179,7 +191,6 @@ const StudentDashboard = () => {
                     <li><Link to="/students"><FaChalkboardTeacher/>Etudiants</Link></li>
                     <li><Link to="/payment"><FaChalkboardTeacher/>Paiements</Link></li>
                     <li><Link to="/payment"><FaChalkboardTeacher/>Personnel</Link></li>
-
                 </ul>
             </div>
 
@@ -207,6 +218,7 @@ const StudentDashboard = () => {
                 <table className="student-table">
                     <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Nom</th>
                         <th>prénom</th>
                         <th>TEL</th>
@@ -226,17 +238,18 @@ const StudentDashboard = () => {
                     <tbody>
                     {currentStudents.map((student, index) => (
                         <tr key={index}>
+                            <td>{student.id}</td>
                             <td>{student.firstName}</td>
                             <td>{student.lastName}</td>
                             <td>{student.phoneNumber}</td>
                             <td>{student.studentId}</td>
                             <td>{student.address}</td>
-                            <td>{student.birthDay}</td>
+                            <td>{formatDate(student.birthDay)}</td>
                             <td>{student.academicYear}</td>
                             <td>{student.monthlyFees}</td>
                             <td>{student.totalFees}</td>
-                            <td>{student.startDate}</td>
-                            <td>{student.endDate}</td>
+                            <td>{formatDate(student.startDate)}</td>
+                            <td>{formatDate(student.endDate)}</td>
                             <td>{student.subject}</td>
                             <td>{student.level}</td>
                             <td className="btn">
@@ -245,6 +258,7 @@ const StudentDashboard = () => {
                             </td>
                         </tr>
                     ))}
+
                     </tbody>
                 </table>
 
@@ -305,7 +319,7 @@ const StudentDashboard = () => {
                                 <input
                                     type="text"
                                     name="level"
-                                    placeholder="level"
+                                    placeholder="Niveau"
                                     value={newStudent.level}
                                     onChange={handleChange}
                                 />
@@ -330,7 +344,9 @@ const StudentDashboard = () => {
                                     value={newStudent.address}
                                     onChange={handleChange}
                                 />
+                                <label htmlFor="birthDay">Date de naissance</label>
                                 <input
+
                                     type="date"
                                     name="birthDay"
                                     placeholder="Date de naissance"
@@ -358,6 +374,7 @@ const StudentDashboard = () => {
                                     value={newStudent.totalFees}
                                     onChange={handleChange}
                                 />
+                                <label htmlFor="birthDay">Date de début</label>
                                 <input
                                     type="date"
                                     name="startDate"
@@ -365,6 +382,7 @@ const StudentDashboard = () => {
                                     value={newStudent.startDate}
                                     onChange={handleChange}
                                 />
+                                <label htmlFor="birthDay">Date de fin</label>
                                 <input
                                     type="date"
                                     name="endDate"
@@ -388,7 +406,7 @@ const StudentDashboard = () => {
                             </form>
                         </div>
                     </div>
-                )}
+                )}carte
             </div>
         </div>
     );

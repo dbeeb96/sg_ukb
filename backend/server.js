@@ -37,6 +37,7 @@ const paymentRoutes = require("./routes/paymentRoutes");
 app.use('/api', authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/carte",studentRoutes);
 
 // Default route
 app.get("/", (req, res) => {
@@ -44,7 +45,9 @@ app.get("/", (req, res) => {
         message: "API is running...",
         routes: [
             { method: "GET", path: "/api/students", description: "Retrieve student data" },
-            { method: "POST", path: "/api/payments", description: "Create a payment" },
+            { method: "GET", path: "/api/payments", description: "Create a payment" },
+            { method: "GET", path: "/api/carte", description: "Create a card" },
+
         ],
     });
 });

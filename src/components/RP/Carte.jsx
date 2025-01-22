@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { logout } from '../../utils/authUtils';
 import { Link } from 'react-router-dom';
 import './Carte.css';
+import axios from 'axios';
+
 import {
     FaUserCog,
     FaUsers,
@@ -11,18 +13,77 @@ import {
     FaChalkboardTeacher,
     FaBuilding,
     FaTrash, FaPrint
-} from 'react-icons/fa'; // Import icons
+}
+from 'react-icons/fa'; // Import icons
 import UploadProfilePicture from './UploadProfilePicture'; // Import the UploadProfilePicture component
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import axios from "axios";
 import {FaNoteSticky} from "react-icons/fa6";
 
 const CarteComponent = () => {
-    const [students, setStudents] = useState([]);
+    const [carte, setcarte] = useState([]);
+    const [currentStudent, setCurrentStudent] = useState(null);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [imageSrc, setImageSrc] = useState("/CARTEPNG.png"); // Default image
+    const [newStudent, setNewStudent] = useState({
+        firstName: '',
+        lastName: '',
+        studentId: '',
+        birthDay: '',
+        subject: '',
+        academicYear:'',
+        profilePicture:'',
+        level: '',
+    });
+    const studentData = {
+        firstName: newStudent.firstName,
+        lastName: newStudent.lastName,
+        level: newStudent.level,
+        phoneNumber: newStudent.phoneNumber,
+        studentId: newStudent.studentId,
+        address: newStudent.address,
+        birthDay: newStudent.birthDay,
+        academicYear: newStudent.academicYear,
+        monthlyFees: newStudent.monthlyFees,
+        totalFees: newStudent.totalFees,
+        subject: newStudent.subject,
+        startDate: newStudent.startDate,
+        endDate: newStudent.endDate,
+    };
+    const [showModal, setShowModal] = useState(false);
+
+    const resetForm = () => {
+        setNewStudent({
+            firstName: '',
+            lastName: '',
+            studentId: '',
+            birthDay: '',
+            subject: '',
+            academicYear:'',
+            profilePicture:'',
+            level: '',
+        });
+        setShowModal(false);
+        setCurrentStudent(null);
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return "N/A";  // Handle empty values safely
+
+        const date = new Date(dateString);
+
+        // Check if the date object is valid
+        if (isNaN(date.getTime())) return "Invalid Date";
+
+        return date.toLocaleDateString("fr-FR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        })
+    };
+
     const handleFileChange = (event) => {
+
 
         const file = event.target.files[0];
         if (file) {
@@ -42,18 +103,79 @@ const CarteComponent = () => {
 
     const handleStudentChange = (event) => {
         const studentId = event.target.value;
-        const student = students.find((s) => s.id === parseInt(studentId, 10));
+        const student = carte.find((s) => s.id === parseInt(studentId, 10));
         setSelectedStudent(student);
     };
 
-    const filteredStudents = students.filter((student) =>
+    const filteredStudents = carte.filter((student) =>
         `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    const saveStudentToCarte = async () => {
+        if (!selectedStudent) return;
+
+        try {
+            const response = await fetch('/api/carte', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    firstName: selectedStudent.firstName,
+                    lastName: selectedStudent.lastName,
+                    studentId: selectedStudent.studentId,
+                    birthDate: selectedStudent.endDate, // Adjust based on actual field name
+                    subject: selectedStudent.subject,
+                    academicYear: selectedStudent.academicYear,
+                    profilePicture: imageSrc || "/default-profile.jpg",
+                    level: selectedStudent.level
+                })
+            });
+
+            const data = await response.json();
+            alert(data.message);
+        } catch (error) {
+            console.error("Error saving student:", error);
+        }
+    };
+    const [carteData, setCarteData] = useState([]);
+
+    if (currentStudent === null) {
+        axios.post('http://localhost:5000/api/carte', studentData)
+            .then(response => {
+                setcarte([...carte, response.data]);
+                resetForm();
+            })
+            .catch(error => {
+                console.error('Error adding student:', error);
+                alert('There was an error adding the student. Please try again.');
+            });
+    } else {
+        axios.put(`http://localhost:5000/api/carte/${carte[currentStudent].id}`, studentData) // Use 'id' from students array
+            .then(response => {
+                const updatedStudents = carte.map(student =>
+                    student.id === carte[currentStudent].id ? response.data : student
+                );
+                setcarte(updatedStudents);
+                resetForm();
+            })
+            .catch(error => {
+                console.error('Error updating student:', error);
+                alert('There was an error updating the student. Please try again.');
+            });
+    }
+    useEffect(() => {
+        axios
+            .get("http://localhost:5000/api/carte")
+            .then((response) => setcarte(response.data))
+            .catch((error) => {
+                console.error("Error fetching students:", error);
+                alert("Impossible de récupérer les données de la carte . Veuillez réessayer plus tard.");
+            });
+    }, []);
 
     useEffect(() => {
         axios
             .get("http://localhost:5000/api/students")
-            .then((response) => setStudents(response.data))
+            .then((response) => setcarte(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
                 alert("Impossible de récupérer les données des étudiants. Veuillez réessayer plus tard.");
