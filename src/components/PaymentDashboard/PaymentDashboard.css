@@ -1,6 +1,17 @@
-.payment-dashboard {
-    font-family: Arial, sans-serif;
-    width: 85%;
+/* Base Styles */
+.sidebar-toggle-btn {
+    background: none;
+    border: none;
+    color: #ecf0f1;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+.sidebar-toggle-btn:hover {
+    background-color: #34495e;
 }
 
 .table-header {
@@ -11,51 +22,39 @@
     font-size: 35px;
 }
 
-.icon-btn1 {
+.icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6 {
     background-color: #010101;
     color: white;
     border: none;
     padding: 8px 12px;
     cursor: pointer;
     border-radius: 4px;
-    width: 15%;
     margin-right: 10px;
-
+    width: auto;
+    min-width: 100px;
 }
 
 .icon-btn2 {
     background-color: #58a64f;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    width: 15%;
 }
-.icon-btn3{
-    width: 25%;
-    background-color: #1f1f1f;
-    color: #ffffff;
-}
-.icon-btn4{
-    width: 25%;
-    background-color: #0880ff;
-    color: #ffffff;
-    margin: 5px;
-}
-.icon-btn5 {
-    width: 25%;
-    background-color: #f8152b;
-    color: #ffffff;
-    margin: 5px;
 
-}
-.icon-btn6 {
-    width: 25%;
+.icon-btn3 {
     background-color: #1f1f1f;
-    color: #ffffff;
-    margin: 2px;
 }
-thead{
+
+.icon-btn4 {
+    background-color: #0880ff;
+}
+
+.icon-btn5 {
+    background-color: #f8152b;
+}
+
+.icon-btn6 {
+    background-color: #1f1f1f;
+}
+
+thead {
     background: #010101;
     color: #ffffff;
 }
@@ -73,7 +72,6 @@ thead{
     padding: 8px;
     text-align: left;
     text-align: center;
-
 }
 
 .popup-overlay {
@@ -93,7 +91,8 @@ thead{
     background: white;
     padding: 20px;
     border-radius: 8px;
-    width: 400px;
+    width: 90%;
+    max-width: 400px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -117,7 +116,7 @@ thead{
     justify-content: flex-end;
 }
 
-.cancel-btn {
+.cancel-btn, .submit-btn {
     background: #f44336;
     color: white;
     border: none;
@@ -128,21 +127,9 @@ thead{
 
 .submit-btn {
     background: #4caf50;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
 }
+
 /* Sidebar */
-.sidebar {
-    width: 200px;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    position: fixed;
-    height: 100%;
-    padding: 20px 0;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
 
 .sidebar ul {
     list-style-type: none;
@@ -166,18 +153,13 @@ thead{
     padding: 20px;
 }
 
-.icon-btn4:hover {
-    background-color: #1a252f;
-}
-.popup h2{
-    color: #1a252f;
-}
 .dashboard-counters {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     background-color: #151212;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .counter {
@@ -188,6 +170,7 @@ thead{
     flex: 1;
     text-align: center;
     margin: 0 10px;
+    min-width: 200px;
 }
 
 .counter h3 {
@@ -200,28 +183,25 @@ thead{
     font-size: 1.5rem;
     font-weight: bold;
     color: #4CAF50;
-
 }
 
 .student-selection {
     margin-bottom: 20px;
-}
-.selected_st{
-    height: 50px;
-    font-size: 15px;
-    border-radius: 25px 25px;
-    border-color: #007bff;
-}
-.filter_st{
-    height: 50px;
-    font-size: 15px;
-    border-radius: 25px 25px;
-    border-color: #007bff;
-}
-.student-selection{
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
 }
+
+.selected_st, .filter_st {
+    height: 50px;
+    font-size: 15px;
+    border-radius: 25px;
+    border-color: #007bff;
+    flex: 1;
+    min-width: 200px;
+}
+
 .selected-students {
     margin-bottom: 20px;
 }
@@ -238,6 +218,7 @@ thead{
     margin-bottom: 5px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
 .payment-popup {
     position: fixed;
     top: 0;
@@ -255,7 +236,8 @@ thead{
     background: white;
     padding: 20px;
     border-radius: 8px;
-    width: 400px;
+    width: 90%;
+    max-width: 400px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -276,17 +258,19 @@ thead{
     background-color: #007bff;
     color: white;
 }
-.money-icon{
+
+.money-icon, .money-icon1 {
     font-size: 100px;
     color: #007bff;
 }
-.money-icon1{
-    font-size: 100px;
+
+.money-icon1 {
     color: #f8152b;
 }
+
 .status-paid {
-    background-color: #d4edda; /* Light green */
-    color: #155724;          /* Dark green text */
+    background-color: #d4edda;
+    color: #155724;
     font-weight: bold;
     text-align: center;
     border-radius: 4px;
@@ -294,18 +278,19 @@ thead{
 }
 
 .status-unpaid {
-    background-color: #f8d7da; /* Light red */
-    color: #721c24;           /* Dark red text */
+    background-color: #f8d7da;
+    color: #721c24;
     font-weight: bold;
     text-align: center;
     border-radius: 4px;
     padding: 5px;
 }
+
 .logo {
     height: 60px;
     width: auto;
 }
-/* Style for the delete popup */
+
 .delete-popup {
     position: fixed;
     top: 50%;
@@ -315,14 +300,8 @@ thead{
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     z-index: 1000;
-}
-
-.popup-content input.receive-payment {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    width: 90%;
+    max-width: 400px;
 }
 
 .delete-close-btn {
@@ -376,13 +355,72 @@ thead{
 .delete-cancel-btn:hover {
     background-color: #aaa;
 }
-.receive-payment{
+
+.receive-payment {
     width: 100%;
     height: 50px;
     font-size: 20px;
-    border-radius: 25px 25px;
+    border-radius: 25px;
     border-color: #007bff;
 }
 
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .table-header {
+        font-size: 28px;
+    }
 
+    .sidebar {
+        width: 100%;
+        max-width: 100%;
+        position: static;
+        height: auto;
+    }
 
+    .main-content {
+        margin-left: 0;
+    }
+
+    .dashboard-counters {
+        flex-direction: column;
+    }
+
+    .counter {
+        margin: 10px 0;
+    }
+
+    .student-selection {
+        flex-direction: column;
+    }
+
+    .selected_st, .filter_st {
+        width: 100%;
+    }
+
+    .payment-table th, .payment-table td {
+        font-size: 16px;
+    }
+
+    .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6 {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .table-header {
+        font-size: 24px;
+    }
+
+    .payment-table th, .payment-table td {
+        font-size: 14px;
+    }
+
+    .popup {
+        width: 95%;
+    }
+
+    .delete-popup {
+        width: 95%;
+    }
+}

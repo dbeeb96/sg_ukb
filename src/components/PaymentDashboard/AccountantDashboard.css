@@ -1,6 +1,183 @@
+/* General Styles */
+.admin-dashboard {
+    display: flex;
+    min-height: 100vh;
+    background-color: #2c3e50;
+    font-family: Arial, sans-serif;
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    position: fixed; /* Fix sidebar position */
+    height: 100vh; /* Full height */
+    z-index: 1000; /* Ensure sidebar is above other content */
+    overflow-y: auto; /* Add scroll if content overflows */
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sidebar-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 0; /* Remove default margin */
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0; /* Remove default margin */
+}
+
+.sidebar-menu li {
+    margin-bottom: 15px;
+}
+
+.sidebar-menu a {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar-menu a:hover {
+    background-color: #34495e;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    display: none; /* Hide by default */
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001; /* Ensure the button is above the sidebar */
+}
+
+.sidebar-toggle:hover {
+    background-color: #2980b9;
+}
+
+/* Main Content Styles */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #34495e;
+    margin-left: 250px; /* Offset for sidebar */
+    transition: margin-left 0.3s ease; /* Smooth transition for sidebar toggle */
+}
+
+/* Header Styles */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0; /* Remove default margin */
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-btn {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-btn:hover {
+    background-color: #2980b9;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 1;
+}
+
+.dropdown-content button {
+    background: none;
+    border: none;
+    color: #2c3e50;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-content button:hover {
+    background-color: #f4f4f4;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
 
 /* Ensure Cards Look Consistent */
-.dashboard-cards .cards{
+.dashboard-cards .cards {
     text-align: center;
     border: 1px solid #010101;
     border-radius: 10px;
@@ -8,15 +185,19 @@
     background: #151212;
     margin-bottom: 15px;
     margin-top: 10px;
+    padding: 20px;
 }
 
-.dashboard-cards .cards h3{
+.dashboard-cards .cards h3 {
     color: #ffffff;
     font-size: 24px;
+    margin: 0; /* Remove default margin */
 }
-.dashboard-cards .cards p{
+
+.dashboard-cards .cards p {
     color: #ffffff;
     font-size: 20px;
+    margin: 0; /* Remove default margin */
 }
 
 /* Title Section */
@@ -28,14 +209,13 @@
     border-radius: 10px;
     margin: 20px 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
 }
 
 .dashboard-title h1 {
     font-size: 28px;
     font-weight: bold;
     letter-spacing: 1px;
-    margin: 0;
+    margin: 0; /* Remove default margin */
     text-transform: uppercase;
 }
 
@@ -50,7 +230,7 @@
 
 .dashboard-counters .counter-card {
     background-color: #1f1f1f;
-    padding: 5px;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -68,6 +248,7 @@
     font-size: 28px;
     color: #4CAF50;
     font-weight: bold;
+    margin: 0; /* Remove default margin */
 }
 
 .counter-icon {
@@ -76,21 +257,6 @@
     margin-bottom: 10px;
 }
 
-/* Responsive Design for Counters */
-@media (max-width: 768px) {
-    .dashboard-counters {
-        flex-direction: column;
-        align-items: center;
-
-    }
-
-    .counter-card {
-        margin-bottom: 15px;
-    }
-}
-button{
-    color: #2c3e50;
-}
 /* Redirect Button Style */
 .redirect-button {
     display: inline-block;
@@ -105,11 +271,50 @@ button{
     cursor: pointer;
     text-transform: uppercase;
     transition: background-color 0.3s ease;
-    width: 25%;
+    width: 100%;
 }
 
 .redirect-button:hover {
     background-color: #2980b9;
 }
 
+/* Footer Styles */
+.dashboard-footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    margin-top: 20px;
+}
 
+/* Responsive Design for Counters */
+@media (max-width: 768px) {
+    .dashboard-counters {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .counter-card {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+}
+
+/* Responsive Design for Sidebar */
+@media (max-width: 768px) {
+    .sidebar {
+        left: -250px; /* Hide sidebar by default on smaller screens */
+    }
+
+    .sidebar.active {
+        left: 0; /* Show sidebar when active */
+    }
+
+    .sidebar-toggle {
+        display: block; /* Show toggle button on smaller screens */
+    }
+
+    .main-content {
+        margin-left: 0; /* Remove margin when sidebar is hidden */
+    }
+}

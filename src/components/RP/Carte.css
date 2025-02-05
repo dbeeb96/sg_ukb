@@ -1,31 +1,30 @@
 .card-container {
     position: relative;
-    /*width: 3508px;
-    height: 2480px;*/
-    max-width: 800px; /* Adjust width */
+    max-width: 100%; /* Adjust width */
     margin: auto;
+    padding: 20px;
+    box-sizing: border-box;
 }
-.student-selection{
+
+.student-selection {
     background: #1a252f;
     color: #ffffff;
     font-size: 24px;
 }
-.form-select{
-    width: 225px;
+
+.form-select, .form-control input {
+    width: 100%;
+    max-width: 225px;
     height: 35px;
-    margin: 0 20px;
+    margin: 10px 0;
 }
-.form-control input{
-    width: 225px;
-    height: 35px;
-    margin: 0 20px;
-}
+
 .card-image {
     width: 100%;
+    height: auto;
     display: block;
 }
 
-/* Centered text overlay */
 .text-overlay {
     position: absolute;
     top: 40%;
@@ -38,72 +37,62 @@
     padding: 10px 15px;
     border-radius: 5px;
     display: flex;
-}
-.pr, .nm, .dn, .ln , .sb, .ac, .nd{
-    font-size: 20px;
-}
-.info{
-    position: absolute;
-    top: 32%;
-    left: 35%;
-    font-size: 15px;
+    flex-direction: column;
+    align-items: center;
 }
 
-.info h3{
+.pr, .nm, .dn, .ln, .sb, .ac, .nd {
+    font-size: 20px;
+}
+
+.info {
+    position: absolute;
+    top: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 15px;
+    text-align: center;
+}
+
+.info h3 {
     font-weight: lighter;
     font-family: italic;
 }
 
-
-/* Other text positions */
 .top-right {
     position: absolute;
     top: 5%;
-    width: 600px;
-    right: 15%;
+    width: 90%;
+    right: 5%;
     text-align: center;
     font-size: 15px;
     color: #555;
     font-weight: bold;
 }
-.top-header h2{
+
+.top-header h2 {
     position: absolute;
     font-weight: 1000;
     top: 5px;
-    left: 235px;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 20px;
     color: #000000;
 }
-.top-header-1{
+
+.top-header-1, .top-header-2, .top-header-3, .top-header-4, .top-header-5 {
     position: absolute;
-    width: 320px;
-    top: 25px;
-    left: 249px;
+    width: 90%;
+    left: 5%;
+    text-align: center;
 }
-.top-header-2{
-    position: absolute;
-    width: 420px;
-    top : 45px;
-    left: 200px;
-}
-.top-header-3{
-    position: absolute;
-    width: 420px;
-    top : 65px;
-    left: 200px;
-}.top-header-4{
-     position: absolute;
-     width: 420px;
-     top : 86px;
-     left: 200px;
- }
-.top-header-5{
-    position: absolute;
-    width: 510px;
-    top : 110px;
-    left: 160px;
-    font-size: 12px;
-}
+
+.top-header-1 { top: 25px; }
+.top-header-2 { top: 45px; }
+.top-header-3 { top: 65px; }
+.top-header-4 { top: 86px; }
+.top-header-5 { top: 110px; font-size: 12px; }
+
 .bottom-left {
     position: absolute;
     bottom: 10%;
@@ -112,28 +101,35 @@
     color: #555;
     font-weight: bold;
 }
-.footer-info{
+
+.footer-info {
     display: inline-block;
-    width: 350px;
+    width: 90%;
     position: absolute;
-    left: 160px;
+    left: 5%;
     top: 295px;
     font-size: 11px;
+    text-align: center;
 }
-.logo1{
+
+.logo1 {
     position: absolute;
     top: 5%;
-    left: 0;
-    width: 205px;
+    left: 5%;
+    width: 20%;
+    max-width: 205px;
 }
-.profil{
+
+.profil {
     position: absolute;
     top: 38%;
-    left: 25px;
-    width: 155px;
-    border: 1px solid #000,
+    left: 5%;
+    width: 20%;
+    max-width: 155px;
+    border: 1px solid #000;
 }
-.footer-left{
+
+.footer-left {
     position: absolute;
     top: 70%;
     left: 2%;
@@ -141,32 +137,30 @@
     font-weight: bold;
     font-family: Georgia;
 }
-.footer-left h3{
+
+.footer-left h3 {
     font-size: 36px;
 }
-.footer-left p{
+
+.footer-left p {
     font-size: 15px;
     position: absolute;
     bottom: -5px;
-    left: 45px;
+    left: 50%;
+    transform: translateX(-50%);
     font-weight: bold;
 }
-.line-1{
+
+.line-1, .line-2 {
     position: absolute;
     width: 20%;
     height: 2px;
     background: #838383;
-    top: 160px;
-    left: 430px;
 }
-.line-2{
-    position: absolute;
-    width: 20%;
-    height: 2px;
-    background: #838383;
-    top: 465px;
-    left: 430px;
-}
+
+.line-1 { top: 160px; left: 40%; }
+.line-2 { top: 465px; left: 40%; }
+
 .menu-item {
     display: flex;
     align-items: center;
@@ -178,59 +172,47 @@
     font-size: 20px;
     color: #007bff;
 }
+
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
     .top-right {
-        width: 100%;
-        right: 0;
         font-size: 14px;
     }
 
     .info {
-        left: 30%;
         font-size: 14px;
     }
 }
 
 @media (max-width: 768px) {
     .card-container {
-        max-width: 50px;
-        width: 25%;
+        max-width: 100%;
     }
 
     .top-header h2 {
         font-size: 18px;
-        left: 50%;
-        transform: translateX(-50%);
     }
 
-    .top-header-1,
-    .top-header-2,
-    .top-header-3,
-    .top-header-4,
-    .top-header-5 {
-        width: 25%;
+    .top-header-1, .top-header-2, .top-header-3, .top-header-4, .top-header-5 {
+        width: 90%;
         left: 5%;
-        text-align: center;
     }
 
     .footer-info {
-        width: 280px;
-        left: 50%;
-        transform: translateX(-50%);
+        width: 90%;
+        left: 5%;
         font-size: 10px;
     }
 
     .profil {
         top: 35%;
-        left: 10px;
-        width: 140px;
+        left: 5%;
+        width: 20%;
     }
 }
 
 @media (max-width: 480px) {
     .card-container {
-        max-width: 20%;
         padding: 10px;
     }
 
@@ -248,14 +230,7 @@
         top: 10px;
     }
 
-    .top-header-1,
-    .top-header-2,
-    .top-header-3,
-    .top-header-4,
-    .top-header-5 {
-        width: 20%;
-        left: 0;
-        text-align: center;
+    .top-header-1, .top-header-2, .top-header-3, .top-header-4, .top-header-5 {
         font-size: 14px;
     }
 
@@ -265,8 +240,6 @@
 
     .footer-left p {
         font-size: 12px;
-        left: 20px;
+        left: 50%;
     }
 }
-
-

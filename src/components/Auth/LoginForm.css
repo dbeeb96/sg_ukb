@@ -3,10 +3,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('/public/slide3.jpg') no-repeat center center/cover;
+        url('/public/slide3.jpg') no-repeat center center/cover;
     font-family: Arial, sans-serif;
+    padding: 1rem; /* Use rem for padding */
 }
 
 /* Login Card Styling */
@@ -15,22 +16,23 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    background: rgba(0, 0, 0, 0.8);
     border-radius: 16px;
-    padding: 40px;
-    width: 350px;
+    padding: 2rem; /* Use rem for padding */
+    width: 100%;
+    max-width: 400px; /* Slightly larger for better use of space */
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
     color: white;
     text-align: center;
-    opacity: 0; /* Start invisible for animation */
-    transform: translateY(-50px); /* Slide effect */
-    animation: slideIn 1s ease forwards; /* Smooth slide-in animation */
+    opacity: 0;
+    transform: translateY(-50px);
+    animation: slideIn 1s ease forwards;
 }
 
 /* Header Styling */
 h2 {
-    margin-bottom: 20px;
-    font-size: 32px;
+    margin-bottom: 1.5rem; /* Use rem for margin */
+    font-size: 2rem; /* Use rem for font size */
     font-weight: bold;
     color: #fff;
     text-transform: uppercase;
@@ -39,19 +41,27 @@ h2 {
 /* Input Group Styling */
 .input-group {
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem; /* Use rem for margin */
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem; /* Use rem for margin */
+    font-size: 1rem; /* Use rem for font size */
+    color: #ddd;
 }
 
 .input-group input {
     width: 100%;
-    padding: 14px;
+    padding: 1rem; /* Use rem for padding */
     border: 2px solid #ddd;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 1rem; /* Use rem for font size */
     background-color: #f9f9f9;
     color: #333;
-    margin-top: 12px;
     transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+    box-sizing: border-box; /* Ensure padding is included in the width */
 }
 
 /* Input Hover and Focus Effects */
@@ -59,7 +69,7 @@ h2 {
     border-color: #4CAF50;
     outline: none;
     box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
-    transform: scale(1.02); /* Slight zoom on focus */
+    transform: scale(1.02);
 }
 
 .input-group input:hover {
@@ -69,34 +79,125 @@ h2 {
 /* Button Styling */
 button {
     width: 100%;
-    padding: 14px;
+    padding: 1rem; /* Use rem for padding */
     border: none;
     background-color: #4CAF50;
     color: white;
-    font-size: 18px;
+    font-size: 1rem; /* Use rem for font size */
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s;
+    box-sizing: border-box; /* Ensure padding is included in the width */
 }
 
-button:hover {
+button:hover:not(:disabled) {
     background-color: #45a049;
     box-shadow: 0 8px 15px rgba(76, 175, 80, 0.4);
-    transform: translateY(-2px); /* Lift effect on hover */
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 /* Error Message Styling */
 .error-message {
     color: #ff4d4d;
-    margin-bottom: 10px;
-    font-size: 14px;
-    animation: fadeIn 1s ease-in-out; /* Error message fade-in */
+    margin-bottom: 0.75rem; /* Use rem for margin */
+    font-size: 0.875rem; /* Use rem for font size */
+    animation: fadeIn 1s ease-in-out;
 }
 
-/* Responsive Design */
+/* Forgot Password Link */
+.forgot-password {
+    margin-top: 0.75rem; /* Use rem for margin */
+    font-size: 0.875rem; /* Use rem for font size */
+}
+
+.forgot-password a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design for Smaller Screens */
 @media (max-width: 768px) {
     .login-card {
-        width: 90%;
-        padding: 20px;
+        padding: 1.5rem; /* Adjust padding for smaller screens */
+        max-width: 90%; /* Allow more width for smaller screens */
+    }
+
+    h2 {
+        font-size: 1.75rem; /* Adjust font size for smaller screens */
+    }
+
+    .input-group input {
+        padding: 0.875rem; /* Adjust padding for smaller screens */
+    }
+
+    button {
+        padding: 0.875rem; /* Adjust padding for smaller screens */
+    }
+}
+
+/* Responsive Design for Very Small Screens (Phones) */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 1rem; /* Further adjust padding for very small screens */
+    }
+
+    h2 {
+        font-size: 1.5rem; /* Further adjust font size for very small screens */
+    }
+
+    .input-group input {
+        padding: 0.75rem; /* Further adjust padding for very small screens */
+    }
+
+    button {
+        padding: 0.75rem; /* Further adjust padding for very small screens */
+    }
+}
+
+/* Responsive Design for Very Large Screens (32-inch monitors) */
+@media (min-width: 1200px) {
+    .login-card {
+        max-width: 450px; /* Further increase max-width for very large screens */
+        padding: 2.5rem; /* Further increase padding for very large screens */
+    }
+
+    h2 {
+        font-size: 2.5rem; /* Further increase font size for very large screens */
+    }
+
+    .input-group input {
+        padding: 1.25rem; /* Further increase padding for very large screens */
+        font-size: 1.125rem; /* Further increase font size for very large screens */
+    }
+
+    button {
+        padding: 1.25rem; /* Further increase padding for very large screens */
+        font-size: 1.125rem; /* Further increase font size for very large screens */
+    }
+}
+
+/* Animations */
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }
