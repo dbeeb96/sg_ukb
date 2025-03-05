@@ -1,6 +1,7 @@
+/* General Styles */
 .card-container {
     position: relative;
-    max-width: 100%; /* Adjust width */
+    max-width: 100%; /* Ensure it fits any screen width */
     margin: auto;
     padding: 20px;
     box-sizing: border-box;
@@ -10,13 +11,16 @@
     background: #1a252f;
     color: #ffffff;
     font-size: 24px;
+    text-align: center;
+    padding: 10px;
 }
 
 .form-select, .form-control input {
     width: 100%;
-    max-width: 225px;
+    max-width: 225px; /* Adjusted for smaller screens */
     height: 35px;
     margin: 10px 0;
+    font-size: 16px;
 }
 
 .card-image {
@@ -72,7 +76,7 @@
 
 .top-header h2 {
     position: absolute;
-    font-weight: 1000;
+    font-weight: bold;
     top: 5px;
     left: 50%;
     transform: translateX(-50%);
@@ -174,72 +178,73 @@
 }
 
 /* Responsive Adjustments */
+@media (max-width: 1366px) {
+    .card-container {
+        padding: 15px;
+    }
+    .top-header h2 {
+        font-size: 18px;
+    }
+    .footer-left h3 {
+        font-size: 30px;
+    }
+}
+
 @media (max-width: 1024px) {
     .top-right {
         font-size: 14px;
     }
-
     .info {
         font-size: 14px;
+    }
+    .footer-info {
+        font-size: 10px;
     }
 }
 
 @media (max-width: 768px) {
     .card-container {
         max-width: 100%;
+        padding: 10px;
     }
-
+    .student-selection {
+        font-size: 20px;
+    }
     .top-header h2 {
-        font-size: 18px;
+        font-size: 16px;
     }
-
     .top-header-1, .top-header-2, .top-header-3, .top-header-4, .top-header-5 {
-        width: 90%;
-        left: 5%;
+        font-size: 14px;
     }
-
-    .footer-info {
-        width: 90%;
-        left: 5%;
-        font-size: 10px;
+    .footer-left h3 {
+        font-size: 24px;
     }
-
-    .profil {
-        top: 35%;
-        left: 5%;
-        width: 20%;
+    .footer-left p {
+        font-size: 12px;
     }
 }
 
 @media (max-width: 480px) {
     .card-container {
-        padding: 10px;
+        padding: 5px;
     }
-
     .text-overlay {
-        font-size: 16px;
+        font-size: 14px;
         padding: 8px 12px;
     }
-
     .pr, .nm, .dn, .ln, .sb, .ac, .nd {
         font-size: 12px;
     }
-
     .top-header h2 {
-        font-size: 10px;
-        top: 10px;
-    }
-
-    .top-header-1, .top-header-2, .top-header-3, .top-header-4, .top-header-5 {
         font-size: 14px;
     }
-
-    .footer-left h3 {
+    .top-header-1, .top-header-2, .top-header-3, .top-header-4, .top-header-5 {
         font-size: 12px;
     }
-
+    .footer-left h3 {
+        font-size: 18px;
+    }
     .footer-left p {
-        font-size: 12px;
-        left: 50%;
+        font-size: 10px;
     }
 }

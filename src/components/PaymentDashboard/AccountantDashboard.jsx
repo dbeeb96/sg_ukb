@@ -18,20 +18,20 @@ const AccountantDashboard = () => {
                 console.error("Erreur lors de la récupération du nombre d'étudiants :", error);
             });
     }, []);
-
+    
     const navigate = useNavigate(); // Hook to programmatically navigate
-
+    
     const toggleSidebar = () => {
         setIsSidebarVisible(!isSidebarVisible); // Toggle sidebar visibility
     };
-
+    
     return (
         <div className="admin-dashboard">
             {/* Sidebar Toggle Button */}
             <button className="sidebar-toggle" onClick={toggleSidebar}>
                 {isSidebarVisible ? <FaTimes /> : <FaBars />} Menu
             </button>
-
+    
             {/* Sidebar */}
             <div className={`sidebar ${isSidebarVisible ? 'active' : ''}`}>
                 <div className="sidebar-header">
@@ -45,7 +45,7 @@ const AccountantDashboard = () => {
                     <li><Link to="/student/manage"><FaChalkboardTeacher /> Manage Students</Link></li>
                 </ul>
             </div>
-
+    
             {/* Main Content Area */}
             <div className={`main-content ${isSidebarVisible ? 'shifted' : ''}`}>
                 {/* Header */}
@@ -65,12 +65,12 @@ const AccountantDashboard = () => {
                         </div>
                     </div>
                 </header>
-
+    
                 {/* Title Section */}
                 <div className="dashboard-title">
                     <h1>UNIVERSITE KOCC BARMA DE SAINT-LOUIS</h1>
                 </div>
-
+    
                 {/* Counter Section */}
                 <div className="dashboard-counters">
                     <div className="counter-card">
@@ -89,7 +89,7 @@ const AccountantDashboard = () => {
                         <p>80</p>
                     </div>
                 </div>
-
+    
                 {/* Dashboard Content */}
                 <div className="dashboard-cards">
                     <div className="cards">
@@ -134,7 +134,7 @@ const AccountantDashboard = () => {
                     </div>
                 </div>
             </div>
-
+    
             {/* Footer */}
             <footer className="dashboard-footer">
                 <p>Copyright © Developed by SupportInformatique | AppliCodeTech</p>

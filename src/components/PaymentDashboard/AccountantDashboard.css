@@ -318,3 +318,30 @@
         margin-left: 0; /* Remove margin when sidebar is hidden */
     }
 }
+
+/* Additional Responsive Styles for Larger Screens */
+@media (max-width: 1366px) {
+    .sidebar {
+        width: 200px; /* Adjust sidebar width */
+    }
+
+    .main-content {
+        margin-left: 200px; /* Adjust margin for main content */
+    }
+
+    .dashboard-header h1 {
+        font-size: 24px; /* Adjust header font size */
+    }
+
+    .dashboard-title h1 {
+        font-size: 24px; /* Adjust title font size */
+    }
+
+    .dashboard-counters .counter-card h3 {
+        font-size: 18px; /* Adjust counter card title font size */
+    }
+
+    .dashboard-counters .counter-card p {
+        font-size: 24px; /* Adjust counter card paragraph font size */
+    }
+}

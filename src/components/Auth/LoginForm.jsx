@@ -59,7 +59,7 @@ const LoginForm = () => {
     return (
         <div className="login-container">
             <form onSubmit={handleLogin} className="login-card">
-                <h2>Login</h2>
+                <h2>Se connecter</h2>
                 <div className="input-group">
                     <label htmlFor="email">Email</label>
                     <input
@@ -85,7 +85,7 @@ const LoginForm = () => {
                     />
                 </div>
                 <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Connexion en cours...' : 'Login'}
+                    {isLoading ? 'Connexion en cours...' : 'Connexion'}
                 </button>
                 {errorMessage && (
                     <p className="error-message" id="email-error">
@@ -93,7 +93,7 @@ const LoginForm = () => {
                     </p>
                 )}
                 <p className="forgot-password">
-                    <a href="/forgot-password">Forgot Password?</a>
+                    <a href="/forgot-password">Mot de passe oublié?</a>
                 </p>
             </form>
         </div>
