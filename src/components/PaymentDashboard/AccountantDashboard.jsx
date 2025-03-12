@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { logout } from '../../utils/authUtils';
 import { Link, useNavigate } from 'react-router-dom';
 import './AccountantDashboard.css';
-import { FaUserCog, FaUsers, FaChartBar, FaSignOutAlt, FaUserGraduate, FaChalkboardTeacher, FaBuilding, FaBars, FaTimes } from 'react-icons/fa'; // Import icons
+import {FaSignOutAlt, FaUserGraduate, FaChalkboardTeacher, FaBuilding, FaBars, FaTimes } from 'react-icons/fa'; // Import icons
 
 const AccountantDashboard = () => {
     const [studentCount, setStudentCount] = useState(0);

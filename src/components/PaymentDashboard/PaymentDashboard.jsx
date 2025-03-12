@@ -4,89 +4,9 @@ import "./PaymentDashboard.css";
 import {FaUserGraduate, FaChalkboardTeacher, FaTrash, FaMoneyCheckAlt, FaArrowLeft, FaArrowRight} from "react-icons/fa";
 import { FaMoneyCheckDollar } from "react-icons/fa6";
 import { FaPrint,} from "react-icons/fa"; // Add this import for the printer icon
-const PaymentModal = ({ student, onSubmit, onClose }) => {
-    const [amount, setAmount] = useState("");
+import { useMediaQuery } from 'react-responsive'
+import InvoicesModal from "./InvoicesModal"; // Adjust path if needed
 
-    return (
-        <div className="payment-popup">
-            <div className="popup-content">
-                <h3>
-                    Entrer le Montant Reçu pour {student.firstName} {student.lastName}
-                </h3>
-                <input
-                    className="receive-payment"
-                    type="number"
-                    placeholder="Montant Reçu (CFA)"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                />
-                <div className="popup-actions">
-                    <button onClick={() => onSubmit(amount)}>Valider</button>
-                    <button onClick={onClose}>Fermer</button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-
-const printAllInvoices = async (studentId) => {
-    try {
-      const url = `/api/invoices?studentId=${studentId}`;
-      console.log(url);
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const contentType = response.headers.get("Content-Type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Invalid response: expected JSON");
-      }
-      const invoices = await response.json();
-      if (invoices.length === 0) {
-        alert("Aucune facture trouvée pour cet étudiant.");
-        return;
-      }
-      const invoiceWindow = window.open("", "_blank");
-      invoiceWindow.document.write(`
-        <html>
-          <head>
-            <title>Historique des Factures</title>
-            <style>
-              body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-              }
-              .status {
-                font-weight: bold;
-              }
-            </style>
-          </head>
-          <body>
-            <h2>Historique des Factures</h2>
-      `);
-      invoices.forEach((invoice, index) => {
-        invoiceWindow.document.write(`
-          <div>
-            <h3>Facture #${index + 1}</h3>
-            <p>Date: ${new Date(invoice.datePaiement).toLocaleDateString("fr-FR")}</p>
-            <p>Montant Payé: ${(invoice.montant || 0).toLocaleString()} CFA</p>
-            <p>Reste: ${(invoice.reste || 0).toLocaleString()} CFA</p>
-            <p>Status: <span class="status" style="color:${invoice.status === 'Payé' ? 'green' : 'red'}">${invoice.status || "N/A"}</span></p>
-          </div>
-          <hr>
-        `);
-      });
-      invoiceWindow.document.write("</body></html>");
-      invoiceWindow.document.close();
-      invoiceWindow.print();
-    } catch (error) {
-      console.error("Erreur lors de la récupération des factures:", error);
-      alert("Erreur lors du chargement des factures.");
-    }
-  };
-  
-  
 
 const PaymentDashboard = () => {
     const [searchQuery, setSearchQuery] = useState(""); // Declare searchQuery
@@ -102,64 +22,100 @@ const PaymentDashboard = () => {
    // const [filteredStudents, setFilteredStudents] = useState([]); // Declare filteredStudents state
     const rowsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
+    const [invoices, setInvoices] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+        // Define media queries for responsiveness
+    const isMobile = useMediaQuery({ maxWidth: 767 });
+    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1023 });
+    const isDesktop = useMediaQuery({ minWidth: 1024 });
+    const [studentInvoices, setStudentInvoices] = useState([]);
+    const [selectedStudent, setSelectedStudent] = useState(null);
 
-    const printAllInvoices = async (studentId) => {
-        try {
-          const url = `/api/invoices?studentId=${studentId}`;
-          console.log(url);
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const contentType = response.headers.get("Content-Type");
-          if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Invalid response: expected JSON");
-          }
-          const invoices = await response.json();
-          if (invoices.length === 0) {
-            alert("Aucune facture trouvée pour cet étudiant.");
-            return;
-          }
-          const invoiceWindow = window.open("", "_blank");
-          invoiceWindow.document.write(`
-            <html>
-              <head>
-                <title>Historique des Factures</title>
-                <style>
-                  body {
-                    font-family: Arial, sans-serif;
-                    margin: 20px;
-                  }
-                  .status {
-                    font-weight: bold;
-                  }
-                </style>
-              </head>
-              <body>
-                <h2>Historique des Factures</h2>
-          `);
-          invoices.forEach((invoice, index) => {
-            invoiceWindow.document.write(`
-              <div>
-                <h3>Facture #${index + 1}</h3>
-                <p>Date: ${new Date(invoice.datePaiement).toLocaleDateString("fr-FR")}</p>
-                <p>Montant Payé: ${(invoice.montant || 0).toLocaleString()} CFA</p>
-                <p>Reste: ${(invoice.reste || 0).toLocaleString()} CFA</p>
-                <p>Status: <span class="status" style="color:${invoice.status === 'Payé' ? 'green' : 'red'}">${invoice.status || "N/A"}</span></p>
-              </div>
-              <hr>
-            `);
-          });
-          invoiceWindow.document.write("</body></html>");
-          invoiceWindow.document.close();
-          invoiceWindow.print();
-        } catch (error) {
-          console.error("Erreur lors de la récupération des factures:", error);
-          alert("Erreur lors du chargement des factures.");
-        }
-      };
-      
-    
+    const PaymentModal = ({ student, onSubmit, onClose }) => {
+        const [amount, setAmount] = useState("");
+
+
+        return (
+            <div className="payment-popup">
+                <div className="popup-content">
+                    <h3>
+                        Entrer le Montant Reçu pour {student.firstName} {student.lastName}
+                    </h3>
+                    <input
+                        className="receive-payment"
+                        type="number"
+                        placeholder="Montant Reçu (CFA)"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                    />
+                    <div className="popup-actions">
+                        <button onClick={() => onSubmit(amount)}>Valider</button>
+                        <button onClick={onClose}>Fermer</button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+
+    const printAllInvoices = async (student, invoices) => {
+        const formattedDate = new Date().toLocaleDateString("fr-FR");
+        const formattedTime = new Date().toLocaleTimeString("fr-FR");
+
+        let invoiceHtml = `
+    <html>
+      <head>
+        <title>Factures de ${student.firstName} ${student.lastName}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+          .logo { width: 100px; }
+          .university-name { font-size: 18px; font-weight: bold; text-align: center; }
+          .details { margin-top: 20px; }
+          .status { font-weight: bold; }
+          hr { margin: 20px 0; }
+        </style>
+      </head>
+      <body>`;
+
+        invoices.forEach((invoice) => {
+            invoiceHtml += `
+      <div class="header">
+        <img src="/img.png" alt="Logo" class="logo" />
+        <div class="university-name">
+          KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
+          DE SAINT-LOUIS<br />
+          MENSUALITE: ${student.filiere || "N/A"}
+        </div>
+        <div>
+          <p>Date: ${formattedDate}</p>
+          <p>Heure: ${formattedTime}</p>
+        </div>
+      </div>
+      <div class="details">
+        <p>Nom de l'étudiant: ${student.firstName} ${student.lastName}</p>
+        <p>Dernier Montant Reçu: ${(invoice.montant || 0).toLocaleString()} CFA</p>
+        <p>Montant Total Reçu: ${(student.montantReçu || 0).toLocaleString()} CFA</p>
+        <p>Reste: ${(invoice.reste || 0).toLocaleString()} CFA</p>
+        <p>Status: <span class="status">${invoice.status || "N/A"}</span></p>
+      </div>
+      <p>Le Chef du Service et des Finances et de la comptabilité (Cachet et Signature)</p>
+      <hr />`;
+        });
+
+        invoiceHtml += `
+      <script>
+        window.onload = function() { window.print(); };
+      </script>
+    </body>
+  </html>`;
+
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(invoiceHtml);
+        printWindow.document.close();
+    };
+
+
 
     useEffect(() => {
         // Récupérer les étudiants de la base de données
@@ -469,7 +425,7 @@ const PaymentDashboard = () => {
             </div>
         );
     };
-    
+
     const currentRows = filteredStudents.slice(indexOfFirstRow, indexOfLastRow); // Now it's defined here
     return (
         <div className="payment-dashboard">
@@ -577,8 +533,8 @@ const PaymentDashboard = () => {
                                     <button className="icon-btn6" onClick={() => printInvoice(student)}>
                                         <FaPrint />
                                     </button>
-                                    <button className="icon-btn7" onClick={() => printAllInvoices(student.id)}>
-                                        📜 <FaPrint />
+                                    <button className="icon-btn7" onClick={() => printAllInvoices(student, invoices)}>
+                                            📜 <FaPrint />
                                     </button>
                                  </td>
                                 </tr>
@@ -623,8 +579,16 @@ const PaymentDashboard = () => {
                     onClose={closePaymentPopup}
                 />
             )}
+            {showModal && (
+                <InvoicesModal
+                    invoices={studentInvoices}
+                    student={selectedStudent}
+                    onClose={() => setShowModal(false)}
+                />
+            )}
+
         </div>
     );
 };
 
-export default PaymentDashboard;    
+export default PaymentDashboard;

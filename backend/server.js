@@ -16,7 +16,7 @@ const db = mysql.createPool({
     host: "localhost",
     user: "dbeeb",
     password: "papesaloum",
-    database: "ukb_st",
+    database: "sgt_st",
     connectionLimit: 10, // Allows multiple connections
 });
 

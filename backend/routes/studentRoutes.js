@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const mysql2 = require('mysql2');
+const mysql = require('mysql');
 
 // Database connection
-const db = mysql2.createConnection({
-    host: 'localhost',
-    user: 'dbeeb',
-    password: 'papesaloum',
-    database: 'ukb_st'
+const db = mysql.createConnection({
+    host: 'localhost',   // Database host
+    user: 'dbeeb',        // Database username
+    password: 'papesaloum',// Database password
+    database: 'sgt_st' // Database name
 });
 
 // GET all students

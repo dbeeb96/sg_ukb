@@ -485,3 +485,49 @@ thead {
 .icon-btn7:hover {
     background-color: #45a049;
 }
+
+/* Mobile Layout */
+.mobile-table {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mobile-row {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.mobile-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Desktop Layout */
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payment-table th, .payment-table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+/* General Responsive Adjustments */
+@media (max-width: 767px) {
+    .sidebar {
+        display: none; /* Hide sidebar on mobile */
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+
+    .dashboard-counters {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
