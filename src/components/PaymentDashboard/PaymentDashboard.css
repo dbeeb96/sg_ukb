@@ -369,67 +369,6 @@ thead {
     border-color: #007bff;
 }
 
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-    .table-header {
-        font-size: 28px;
-    }
-
-    .sidebar {
-        width: 100%;
-        max-width: 100%;
-        position: static;
-        height: auto;
-    }
-
-    .main-content {
-        margin-left: 0;
-    }
-
-    .dashboard-counters {
-        flex-direction: column;
-    }
-
-    .counter {
-        margin: 10px 0;
-    }
-
-    .student-selection {
-        flex-direction: column;
-    }
-
-    .selected_st, .filter_st {
-        width: 100%;
-    }
-
-    .payment-table th, .payment-table td {
-        font-size: 16px;
-    }
-
-    .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6 {
-        width: 100%;
-        margin: 5px 0;
-    }
-}
-
-@media (max-width: 480px) {
-    .table-header {
-        font-size: 24px;
-    }
-
-    .payment-table th, .payment-table td {
-        font-size: 14px;
-    }
-
-    .popup {
-        width: 95%;
-    }
-
-    .delete-popup {
-        width: 95%;
-    }
-}
-
 /* Style for the receipt icon button */
 .icon-btn7 {
     background: none;
@@ -457,7 +396,7 @@ thead {
     background: white;
     padding: 20px;
     border-radius: 10px;
-    max-width: 500;
+    max-width: 500px;
     width: 100%;
     position: relative;
 }
@@ -516,18 +455,76 @@ thead {
     border: 1px solid #ccc;
 }
 
-/* General Responsive Adjustments */
-@media (max-width: 767px) {
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
     .sidebar {
-        display: none; /* Hide sidebar on mobile */
+        width: 180px;
     }
 
     .main-content {
-        padding: 10px;
+        margin-left: 180px;
     }
 
     .dashboard-counters {
         flex-direction: column;
+    }
+
+    .counter {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .student-selection {
+        flex-direction: column;
+    }
+
+    .selected_st, .filter_st {
+        width: 100%;
+    }
+
+    .payment-table th, .payment-table td {
+        font-size: 14px;
+    }
+
+    .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7 {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .dashboard-counters {
         gap: 10px;
+    }
+
+    .counter h3 {
+        font-size: 1rem;
+    }
+
+    .counter p {
+        font-size: 1.2rem;
+    }
+
+    .payment-table th, .payment-table td {
+        padding: 8px;
+    }
+
+    .pagination-btn {
+        padding: 6px 10px;
     }
 }
