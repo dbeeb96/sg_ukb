@@ -61,7 +61,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(port, () => {
-    console.log(`🚀 Server running at https://sg-ukb.onrender.com/:${port}`);
+    console.log(`🚀 Server running at http://sg-ukb.onrender.com/:${port}`);
 });
 
 // ✅ Export app and DB connection for reuse
