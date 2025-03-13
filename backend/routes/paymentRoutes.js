@@ -4,10 +4,12 @@ const router = express.Router();
 
 // MySQL connection setup
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'dbeeb',
-    password: 'papesaloum',
-    database: 'sgt_st',
+      host: process.env.DB_HOST || 'mysql-monpf.alwaysdata.net',
+    user: process.env.DB_USER || 'monpf',
+    password: process.env.DB_PASSWORD || 'Passer',
+    database: process.env.DB_NAME || 'monpf_ukbdb',
+    port: process.env.DB_PORT || 3306,
+    connectionLimit: 10, // Allows multiple connections
 
 });
 
