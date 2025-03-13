@@ -11,7 +11,7 @@ const RegisterForm = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/register', {
+            const response = await axios.post('https://sg-ukb.onrender.com/api/register', {
                 email,
                 password,
                 role,
