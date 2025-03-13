@@ -4,7 +4,7 @@ const mysql = require('mysql');
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'mysql-monpf.alwaysdata.net',
     user: process.env.DB_USER || 'monpf',
-    password: process.env.DB_PASSWORD || 'Passer',
+    password: process.env.DB_PASSWORD || 'Passer@25',
     database: process.env.DB_NAME || 'monpf_ukbdb',
     port: process.env.DB_PORT || 3306,
     connectionLimit: 10, // Allows multiple connections
