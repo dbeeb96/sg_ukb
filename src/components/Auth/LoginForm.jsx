@@ -24,7 +24,7 @@ const LoginForm = () => {
         }
 
         try {
-            const response = await axios.post('https://sg-ukb.onrender.com/:5000/api/login', {
+            const response = await axios.post('http://sg-ukb.onrender.com/:5000/api/login', {
                 email,
                 password,
             });
