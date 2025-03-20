@@ -13,11 +13,21 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ Database connection (Using createPool)
 const db = mysql.createPool({
-    host: "localhost",
-    user: "dbeeb",
-    password: "papesaloum",
-    database: "sgt_st",
+    host: 'localhost',   // Database host
+    user: 'dbeeb',        // Database username
+    password: 'papesaloum',// Database password
+    database: 'sgt_st' ,// Database name
     connectionLimit: 10, // Allows multiple connections
+
+    /*
+    host: process.env.DB_HOST || 'mysql-monpf.alwaysdata.net',
+    user: process.env.DB_USER || 'monpf',
+    password: process.env.DB_PASSWORD || 'Passer',
+    database: process.env.DB_NAME || 'monpf_ukbdb',
+    port: process.env.DB_PORT || 3306,
+    connectionLimit: 10, // Allows multiple connections
+
+     */
 });
 
 // ✅ Check DB connection at startup (Proper way)
