@@ -45,7 +45,7 @@ const StudentDashboard = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/students')
+        axios.get('https://sg-ukb.onrender.com/api/students')
             .then(response => {
                 setStudents(response.data);
             })
@@ -102,7 +102,7 @@ const StudentDashboard = () => {
         };
 
         if (currentStudent === null) {
-            axios.post('http://localhost:5000/api/students', studentData)
+            axios.post('https://sg-ukb.onrender.com/api/students/api/students', studentData)
                 .then(response => {
                     setStudents([...students, response.data]);
                     resetForm();
@@ -112,7 +112,7 @@ const StudentDashboard = () => {
                     alert('There was an error adding the student. Please try again.');
                 });
         } else {
-            axios.put(`http://localhost:5000/api/students/${students[currentStudent].id}`, studentData) // Use 'id' from students array
+            axios.put(`https://sg-ukb.onrender.com/api/students/api/students/${students[currentStudent].id}`, studentData) // Use 'id' from students array
                 .then(response => {
                     const updatedStudents = students.map(student =>
                         student.id === students[currentStudent].id ? response.data : student
@@ -156,7 +156,7 @@ const StudentDashboard = () => {
 
     const handleDelete = (index) => {
         const studentId = students[index].id;
-        axios.delete(`http://localhost:5000/api/students/${studentId}`)
+        axios.delete(`https://sg-ukb.onrender.com/api/students/api/students/${studentId}`)
             .then(response => {
                 const updatedStudents = students.filter((_, i) => i !== index);
                 setStudents(updatedStudents);
