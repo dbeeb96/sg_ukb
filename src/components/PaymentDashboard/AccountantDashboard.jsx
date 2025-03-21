@@ -9,7 +9,7 @@ const AccountantDashboard = () => {
     const [isSidebarVisible, setIsSidebarVisible] = useState(false); // State to manage sidebar visibility
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/students/count")
+        fetch("https://sg-ukb.onrender.com/api/students/count")
             .then((response) => response.json())
             .then((data) => {
                 setStudentCount(data.count);
