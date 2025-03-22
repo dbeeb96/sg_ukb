@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./PaymentDashboard.css";
-import {FaUserGraduate, FaChalkboardTeacher, FaTrash, FaMoneyCheckAlt, FaArrowLeft, FaArrowRight} from "react-icons/fa";
+import { FaUserGraduate, FaChalkboardTeacher, FaTrash, FaMoneyCheckAlt, FaArrowLeft, FaArrowRight, FaBars } from "react-icons/fa";
 import { FaMoneyCheckDollar } from "react-icons/fa6";
-import { FaPrint,} from "react-icons/fa"; // Add this import for the printer icon
-import { useMediaQuery } from 'react-responsive'
-import InvoicesModal from "./InvoicesModal"; // Adjust path if needed
-
+import { FaPrint } from "react-icons/fa";
+import { useMediaQuery } from 'react-responsive';
+import InvoicesModal from "./InvoicesModal";
 
 const PaymentDashboard = () => {
-    const [searchQuery, setSearchQuery] = useState(""); // Declare searchQuery
+    const [searchQuery, setSearchQuery] = useState("");
     const [students, setStudents] = useState([]);
     const [selectedStudents, setSelectedStudents] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
@@ -19,21 +18,26 @@ const PaymentDashboard = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [payments, setPayments] = useState([]);
     const [isDeleting, setIsDeleting] = useState(false);
-   // const [filteredStudents, setFilteredStudents] = useState([]); // Declare filteredStudents state
     const rowsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
     const [invoices, setInvoices] = useState([]);
     const [showModal, setShowModal] = useState(false);
-        // Define media queries for responsiveness
+    const [studentInvoices, setStudentInvoices] = useState([]);
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [isSidebarVisible, setIsSidebarVisible] = useState(true); // State to control sidebar visibility
+
+    // Define media queries for responsiveness
     const isMobile = useMediaQuery({ maxWidth: 767 });
     const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1023 });
     const isDesktop = useMediaQuery({ minWidth: 1024 });
-    const [studentInvoices, setStudentInvoices] = useState([]);
-    const [selectedStudent, setSelectedStudent] = useState(null);
+
+    // Function to toggle sidebar visibility
+    const toggleSidebar = () => {
+        setIsSidebarVisible(!isSidebarVisible);
+    };
 
     const PaymentModal = ({ student, onSubmit, onClose }) => {
         const [amount, setAmount] = useState("");
-
 
         return (
             <div className="payment-popup">
@@ -56,7 +60,6 @@ const PaymentDashboard = () => {
             </div>
         );
     };
-
 
     const printAllInvoices = async (student, invoices) => {
         const formattedDate = new Date().toLocaleDateString("fr-FR");
@@ -115,23 +118,20 @@ const PaymentDashboard = () => {
         printWindow.document.close();
     };
 
-
-
     useEffect(() => {
-        // Récupérer les étudiants de la base de données
+        // Fetch students from the database
         axios
-            .get("https://sg-ukb.onrender.com/api/students")
+            .get("http://localhost:5000/api/students")
             .then((response) => setStudents(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
                 alert("Unable to fetch student data. Please try again later.");
             });
 
-        // Récupérer les relevés de paiement des étudiants sélectionnés
+        // Fetch payment records for selected students
         axios
-            .get("https://sg-ukb.onrender.com/api/payments")
+            .get("http://localhost:5000/api/payments")
             .then((response) => {
-                //Mappez les paiements aux étudiants et définissez-les dans l'état selectedStudents
                 const studentsWithPayments = response.data.map(payment => {
                     const student = students.find(s => s.id === payment.student_id);
                     return { ...student, ...payment };
@@ -141,9 +141,8 @@ const PaymentDashboard = () => {
             .catch((error) => {
                 console.error("Error fetching payment records:", error);
             });
-    }, []);  // Cela ne s'exécutera qu'une seule fois lors du montage du composant
+    }, []);
 
-// Gérer l'ajout d'un étudiant à la table
     const handleStudentChange = (e) => {
         const studentId = e.target.value;
         const student = students.find((s) => s.id === parseInt(studentId, 10));
@@ -157,13 +156,12 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            // Enregistrer automatiquement l'étudiant sélectionné dans la base de données
-            axios.post("https://sg-ukb.onrender.com/api/payments", {
+            axios.post("http://localhost:5000/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
                 reste: student.totalFees,
                 status: "Non Payé",
-                date: new Date().toISOString(), // You can use the current date here
+                date: new Date().toISOString(),
             })
                 .then((response) => {
                     console.log("Student added to payment records:", response.data);
@@ -175,63 +173,48 @@ const PaymentDashboard = () => {
         }
     };
 
-    // Ouvrir la fenêtre contextuelle de paiement
     const openPaymentPopup = (student) => {
         setCurrentStudent(student);
         setShowPopup(true);
     };
 
-    // Fermer la fenêtre contextuelle de paiement
     const closePaymentPopup = () => {
         setShowPopup(false);
         setCurrentStudent(null);
     };
-    // État pour stocker l'étudiant à supprimer
-    const [studentToDelete, setStudentToDelete] = useState(null);
 
-// Confirmer la suppression
     const confirmDelete = (id) => {
-        const start = performance.now();
-
-        // Find the payment to delete
         const studentToDelete = selectedStudents.find((student) => student.id === id);
         if (!studentToDelete) {
             console.error(`No student found with ID: ${id}`);
             return;
         }
 
-        // Optimistic update
         setSelectedStudents((prev) => prev.filter((student) => student.id !== id));
 
-        // Delete from backend
-        axios.delete(`https://sg-ukb.onrender.com/api/payments/${id}`)
+        axios.delete(`http://localhost:5000/api/payments/${id}`)
             .then(() => {
                 console.log("Delete succeeded");
             })
             .catch((error) => {
                 console.error("Error deleting:", error);
-                // Revert optimistic update in case of failure
                 setSelectedStudents((prev) => [...prev, studentToDelete]);
             });
-
-        console.log("Handler execution time:", performance.now() - start);
     };
 
-    // Handle delete confirmation and then call delete function
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this payment?")) {
             confirmDelete(id);
         }
     };
 
-    // Charger les données depuis localStorage lors du montage du composant
     useEffect(() => {
         const storedData = localStorage.getItem("selectedStudents");
         if (storedData) {
             setSelectedStudents(JSON.parse(storedData));
         }
     }, []);
-// Filter students based on the search query
+
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
 
@@ -240,7 +223,6 @@ const PaymentDashboard = () => {
         return fullName.includes(searchQuery.toLowerCase());
     });
 
-    // Gérer la soumission des paiements
     const handlePaymentSubmit = (montantReçu) => {
         if (currentStudent && montantReçu) {
             const receivedAmount = parseFloat(montantReçu) || 0;
@@ -268,7 +250,7 @@ const PaymentDashboard = () => {
                 montantReçu: totalReceived,
                 reste: remainingAmount,
                 status,
-                lastReceived: receivedAmount, // Add this line to track the last received amount
+                lastReceived: receivedAmount,
             };
 
             const updatedStudents = selectedStudents.map((student) =>
@@ -278,12 +260,12 @@ const PaymentDashboard = () => {
             updateTotals(updatedStudents);
 
             axios
-                .put(`https://sg-ukb.onrender.com/api/payments/${currentStudent.id}`, {
+                .put(`http://localhost:5000/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
                     montantReçu: totalReceived,
                     reste: remainingAmount,
                     status: status,
-                    lastReceived: receivedAmount, // Send this to the backend
+                    lastReceived: receivedAmount,
                     date: new Date().toISOString(),
                 })
                 .then(() => {
@@ -298,7 +280,6 @@ const PaymentDashboard = () => {
         }
     };
 
-    // Mettre à jour les paiements totaux et les montants restants
     const updateTotals = (students) => {
         const newTotalPayments = students.reduce((acc, student) => acc + (student.montantReçu || 0), 0);
         const newTotalRemaining = students.reduce((acc, student) => acc + (student.reste || 0), 0);
@@ -306,7 +287,6 @@ const PaymentDashboard = () => {
         setTotalRemaining(newTotalRemaining);
     };
 
-// Fonction permettant de gérer l'impression de la facture
     const printInvoice = (student) => {
         const currentDate = new Date();
         const formattedDate = currentDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
@@ -397,19 +377,14 @@ const PaymentDashboard = () => {
         </body>
         </html>
     `);
-       // invoiceWindow.document.close();
-       // invoiceWindow.focus();  // Focus on the window before printing
-        invoiceWindow.print();  // Trigger the print dialog
-
-        // Optionally, you can close the window after printing
+        invoiceWindow.print();
         invoiceWindow.close();
     };
 
     const DeleteModal = ({ student, onConfirm, onClose }) => {
         const handleDelete = () => {
-            // Call the onConfirm function passed as prop to trigger deletion
-            onConfirm(student.id);  // Assuming `student.id` contains the ID of the student or payment to delete
-            onClose();  // Close the modal after confirming the deletion
+            onConfirm(student.id);
+            onClose();
         };
 
         return (
@@ -426,50 +401,61 @@ const PaymentDashboard = () => {
         );
     };
 
-    const currentRows = filteredStudents.slice(indexOfFirstRow, indexOfLastRow); // Now it's defined here
-    return (
-        <div className="payment-dashboard">
-            <div className="sidebar">
-                <div className="sidebar-header">
-                    <h2>GESTION DES ETUDIANTS</h2>
-                </div>
-                <ul className="sidebar-menu">
-                    <li>
-                        <a href="/accountant">
-                            <FaUserGraduate/> Tableau de bord
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/student">
-                            <FaChalkboardTeacher/> Etudiants
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/student/manage">
-                            <FaChalkboardTeacher/> Personnel
-                        </a>
-                    </li>
-                </ul>
-            </div>
+    const currentRows = filteredStudents.slice(indexOfFirstRow, indexOfLastRow);
 
+    return (
+        <div className={`payment-dashboard ${isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop'}`}>
+            {/* Sidebar Toggle Button (Only for Mobile) */}
+            {isMobile && (
+                <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
+                    <FaBars />
+                </button>
+            )}
+
+            {/* Sidebar */}
+            {isSidebarVisible && (
+                <div className="sidebar">
+                    <div className="sidebar-header">
+                        <h2>GESTION DES ETUDIANTS</h2>
+                    </div>
+                    <ul className="sidebar-menu">
+                        <li>
+                            <a href="/accountant">
+                                <FaUserGraduate /> Tableau de bord
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/student">
+                                <FaChalkboardTeacher /> Etudiants
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/student/manage">
+                                <FaChalkboardTeacher /> Personnel
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            )}
+
+            {/* Main Content */}
             <div className="main-content">
                 <div className="dashboard-counters">
                     <div className="counter">
                         <center className="money-icon">
-                            <FaMoneyCheckDollar/>
+                            <FaMoneyCheckDollar />
                         </center>
                         <h3>Total des Paiements (CFA)</h3>
                         <p>{totalPayments.toLocaleString()} CFA</p>
                     </div>
                     <div className="counter">
                         <center className="money-icon1">
-                            <FaMoneyCheckAlt/>
+                            <FaMoneyCheckAlt />
                         </center>
                         <h3>Reste (CFA)</h3>
                         <p>{totalRemaining.toLocaleString()} CFA</p>
                     </div>
                 </div>
-
 
                 <div className="dashboard-title">
                     <h1>Gestion des Paiements</h1>
@@ -488,7 +474,7 @@ const PaymentDashboard = () => {
                         type="text"
                         placeholder="Rechercher par nom..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}  // Updates search query
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="filter_st"
                     />
                 </div>
@@ -505,7 +491,7 @@ const PaymentDashboard = () => {
                             <th>Montant Reçu (CFA)</th>
                             <th>Reste (CFA)</th>
                             <th>Status</th>
-                            <th style={{textAlign: "right"}}>Actions</th>
+                            <th style={{ textAlign: "right" }}>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -524,24 +510,24 @@ const PaymentDashboard = () => {
                                         {student.status}
                                     </td>
                                     <td style={{ textAlign: "right" }}>
-                                    <button className="icon-btn4" onClick={() => openPaymentPopup(student)}>
-                                        💰
-                                    </button>
-                                    <button className="icon-btn5" onClick={() => handleDelete(student.id)}>
-                                        <FaTrash />
-                                    </button>
-                                    <button className="icon-btn6" onClick={() => printInvoice(student)}>
-                                        <FaPrint />
-                                    </button>
-                                    <button className="icon-btn7" onClick={() => printAllInvoices(student, invoices)}>
+                                        <button className="icon-btn4" onClick={() => openPaymentPopup(student)}>
+                                            💰
+                                        </button>
+                                        <button className="icon-btn5" onClick={() => handleDelete(student.id)}>
+                                            <FaTrash />
+                                        </button>
+                                        <button className="icon-btn6" onClick={() => printInvoice(student)}>
+                                            <FaPrint />
+                                        </button>
+                                        <button className="icon-btn7" onClick={() => printAllInvoices(student, invoices)}>
                                             📜 <FaPrint />
-                                    </button>
-                                 </td>
+                                        </button>
+                                    </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="7">Aucun étudiant trouvé.</td>
+                                <td colSpan="10">Aucun étudiant trouvé.</td>
                             </tr>
                         )}
                         </tbody>
@@ -554,11 +540,11 @@ const PaymentDashboard = () => {
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
                         >
-                            <FaArrowLeft/>
+                            <FaArrowLeft />
                         </button>
                         <span className="pagination-info">
-                          Page {currentPage} of {Math.ceil(filteredStudents.length / rowsPerPage) || 1}
-                       </span>
+                            Page {currentPage} of {Math.ceil(filteredStudents.length / rowsPerPage) || 1}
+                        </span>
                         <button
                             className="pagination-btn"
                             disabled={currentPage === Math.ceil(filteredStudents.length / rowsPerPage)}
@@ -566,12 +552,12 @@ const PaymentDashboard = () => {
                                 Math.min(prevPage + 1, Math.ceil(filteredStudents.length / rowsPerPage))
                             )}
                         >
-                            <FaArrowRight/>
+                            <FaArrowRight />
                         </button>
                     </div>
                 </div>
-
             </div>
+
             {showPopup && currentStudent && (
                 <PaymentModal
                     student={currentStudent}
@@ -586,7 +572,6 @@ const PaymentDashboard = () => {
                     onClose={() => setShowModal(false)}
                 />
             )}
-
         </div>
     );
 };
