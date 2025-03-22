@@ -1,15 +1,4 @@
 /* Base Styles */
-.sidebar-toggle-btn {
-    background: none;
-    border: none;
-    color: #ecf0f1;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 10px;
-    text-align: center;
-    width: 100%;
-    transition: background-color 0.3s;
-}
 .sidebar-toggle-btn:hover {
     background-color: #34495e;
 }
@@ -473,7 +462,6 @@ thead {
         margin-bottom: 10px;
     }
 }
-
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
@@ -526,5 +514,66 @@ thead {
 
     .pagination-btn {
         padding: 6px 10px;
+    }
+}
+/* Mobile Styles */
+.payment-dashboard.mobile .sidebar {
+    width: 100%;
+    position: static;
+}
+
+.payment-dashboard.mobile .main-content {
+    margin-left: 0;
+}
+
+.payment-dashboard.mobile .payment-table th,
+.payment-dashboard.mobile .payment-table td {
+    font-size: 14px;
+    padding: 8px;
+}
+
+/* Tablet Styles */
+.payment-dashboard.tablet .sidebar {
+    width: 180px;
+}
+
+.payment-dashboard.tablet .main-content {
+    margin-left: 180px;
+}
+
+/* Desktop Styles */
+.payment-dashboard.desktop .sidebar {
+    width: 250px;
+}
+
+.payment-dashboard.desktop .main-content {
+    margin-left: 250px;
+}
+.sidebar-toggle-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background: none; /* Remove background */
+    border: none; /* Remove border */
+    color: #ffffff; /* Set icon color */
+    font-size: 24px; /* Adjust icon size */
+    cursor: pointer;
+    display: none; /* Hide by default */
+    padding: 0; /* Remove padding */
+}
+
+.sidebar-toggle-btn:hover {
+    color: #ffffff; /* Change icon color on hover */
+}
+
+/* Show toggle button only on mobile */
+@media (max-width: 767px) {
+    .sidebar-toggle-btn {
+        display: block;
+        position: absolute;
+        left: 100px;
+        top : 35px;
+        background-color: none;
     }
 }
