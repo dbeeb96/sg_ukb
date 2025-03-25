@@ -590,23 +590,25 @@ const PaymentDashboard = () => {
                     </div>
 
                     {/* Pagination Controls */}
-                    <div className="pagination">
+                       <div className="pagination">
                         <button
                             className="pagination-btn"
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
                         >
-                            <FaArrowLeft />
+                            <FaArrowLeft/>
                         </button>
                         <span className="pagination-info">
-                            Page {currentPage} of {Math.ceil(filteredStudents.length / rowsPerPage) || 1}
-                        </span>
+                          Page {currentPage} of {Math.ceil(filteredStudents.length / rowsPerPage) || 1}
+                       </span>
                         <button
                             className="pagination-btn"
-                            disabled={currentPage === 1}
-                            onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
+                            disabled={currentPage === Math.ceil(filteredStudents.length / rowsPerPage)}
+                            onClick={() => setCurrentPage((prevPage) =>
+                                Math.min(prevPage + 1, Math.ceil(filteredStudents.length / rowsPerPage))
+                            )}
                         >
-                            <FaArrowLeft />
+                            <FaArrowRight/>
                         </button>
                     </div>
                 </div>
