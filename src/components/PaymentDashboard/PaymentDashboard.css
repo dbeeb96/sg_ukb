@@ -2,26 +2,21 @@
 *{
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
 }
 .sidebar-toggle-btn {
-  margin: 0;
-  padding: 0;
   position: fixed;
   top: 20px;
-  left: 20px;
+  left: 80px;
   z-index: 1001;
   background: none;
   border: none;
   color: #ffffff;
   font-size: 24px;
   cursor: pointer;
-  display: none;
-  padding: 0;
+  display: none
 }
 
-.sidebar-toggle-btn:hover {
-  background-color: #34495e;
-}
 
 .table-header {
   display: flex;
@@ -194,7 +189,7 @@ thead {
 /* Main Content Adjusted for Sidebar */
 .main-content {
   margin-left: 220px;
-  padding: 20px;
+  padding: 20px 0;
   transition: margin-left 0.3s;
 }
 
@@ -202,7 +197,7 @@ thead {
 .dashboard-counters {
   margin-left: 0;
   margin-right: 0;
-  padding: 0 10px;
+  padding: 0 0;
 }
 
 .counter {
@@ -210,7 +205,7 @@ thead {
   margin-right: 0;
   width: 100%;
   background-color: #1f1f1f;
-  padding: 20px;
+  padding: 20px 0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   flex: 1;
@@ -233,7 +228,7 @@ thead {
 .student-selection {
   margin-left: 0;
   margin-right: 0;
-  padding: 0 10px;
+  padding: 0 0;
   margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
@@ -461,7 +456,7 @@ thead {
 
 @media (max-width: 992px) {
   .sidebar {
-      left: -220px;
+      left: -100px;
   }
   
   .sidebar.active {
@@ -470,36 +465,48 @@ thead {
   
   .main-content {
       margin-left: 0;
+      padding: 20px 0;
   }
   
   .sidebar-toggle-btn {
       display: block;
       position: absolute;
-      left: 365px;
-      top: 8px;
+      left: 30px;
+      top: 0
   }
   
   .dashboard-counters {
       flex-direction: column;
       gap: 15px;
+      padding: 0 0;
   }
   
   .counter {
       min-width: 100%;
+      padding: 20px 0;
   }
 }
 
 @media (max-width: 768px) {
   /* Modified Sidebar for Mobile */
+
   .sidebar {
-      width: 280px; /* Reduced width */
-      left: -280px;
+
+      width: 500px;
+      left: -650px;
       transform: translateX(0);
+      display: block;
   }
   
+  .main-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
   .sidebar.active {
-      left: 50%;
-      transform: translateX(-50%); /* Centered */
+      left: 0;
+      transform: translateX(0);
   }
 
   .payment-table {
@@ -515,7 +522,7 @@ thead {
   .mobile-row {
       background: #1f1f1f;
       border-radius: 8px;
-      padding: 15px;
+      padding: 15px 0;
       color: white;
   }
   
@@ -523,6 +530,7 @@ thead {
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
+      padding: 0 10px;
   }
   
   .mobile-row-item strong {
@@ -534,6 +542,7 @@ thead {
       justify-content: flex-end;
       gap: 10px;
       margin-top: 15px;
+      padding: 0 10px;
   }
   
   .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, 
@@ -545,16 +554,19 @@ thead {
   
   .student-selection {
       flex-direction: column;
+      padding: 0 0;
   }
   
   .selected_st, .filter_st {
       width: 100%;
+      padding: 0 10px;
   }
+  
 }
 
 @media (max-width: 576px) {
   .main-content {
-      padding: 10px;
+      padding: 10px 0;
   }
   
   .counter h3 {
@@ -576,6 +588,7 @@ thead {
   .mobile-actions {
       flex-wrap: wrap;
       justify-content: center;
+      padding: 0 5px;
   }
   
   .icon-btn4, .icon-btn5, 
@@ -586,13 +599,13 @@ thead {
 
 @media (max-width: 400px) {
   .sidebar {
-      width: 90%; /* Slightly smaller on very small screens */
-      left: -100%;
+      width: 100%;
+      left: 0%;
   }
   
   .sidebar.active {
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
+      transform: translateX(0);
   }
   
   .popup-content {
@@ -600,17 +613,30 @@ thead {
   }
   
   .mobile-row {
-      padding: 10px;
+      padding: 10px 0;
   }
   
   .mobile-actions {
       gap: 5px;
+      padding: 0 5px;
   }
   
   .icon-btn4, .icon-btn5, 
   .icon-btn6, .icon-btn7 {
       padding: 6px;
       font-size: 14px;
+  }
+
+  .dashboard-counters {
+      padding: 0 0;
+  }
+
+  .student-selection {
+      padding: 0 0;
+  }
+
+  .mobile-row-item {
+      padding: 0 5px;
   }
 }
 
