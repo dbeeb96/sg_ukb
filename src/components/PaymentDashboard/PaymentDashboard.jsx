@@ -115,7 +115,7 @@ const PaymentDashboard = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5000/api/students")
+            .get("https://sg-ukb.onrender.com/api/students")
             .then((response) => setStudents(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
@@ -123,7 +123,7 @@ const PaymentDashboard = () => {
             });
 
         axios
-            .get("http://localhost:5000/api/payments")
+            .get("https://sg-ukb.onrender.com/api/payments")
             .then((response) => {
                 const studentsWithPayments = response.data.map(payment => {
                     const student = students.find(s => s.id === payment.student_id);
@@ -149,7 +149,7 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            axios.post("http://localhost:5000/api/payments", {
+            axios.post("https://sg-ukb.onrender.com/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
                 reste: student.totalFees,
@@ -185,7 +185,7 @@ const PaymentDashboard = () => {
 
         setSelectedStudents((prev) => prev.filter((student) => student.id !== id));
 
-        axios.delete(`http://localhost:5000/api/payments/${id}`)
+        axios.delete(`https://sg-ukb.onrender.com/api/payments/${id}`)
             .then(() => {
                 console.log("Delete succeeded");
             })
@@ -253,7 +253,7 @@ const PaymentDashboard = () => {
             updateTotals(updatedStudents);
 
             axios
-                .put(`http://localhost:5000/api/payments/${currentStudent.id}`, {
+                .put(`https://sg-ukb.onrender.com/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
                     montantReçu: totalReceived,
                     reste: remainingAmount,
