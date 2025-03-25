@@ -24,14 +24,9 @@ const PaymentDashboard = () => {
     const [showModal, setShowModal] = useState(false);
     const [studentInvoices, setStudentInvoices] = useState([]);
     const [selectedStudent, setSelectedStudent] = useState(null);
-    const [isSidebarVisible, setIsSidebarVisible] = useState(true); // State to control sidebar visibility
+    const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+    const isMobile = useMediaQuery({ maxWidth: 992 });
 
-    // Define media queries for responsiveness
-    const isMobile = useMediaQuery({ maxWidth: 767 });
-    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1023 });
-    const isDesktop = useMediaQuery({ minWidth: 1024 });
-
-    // Function to toggle sidebar visibility
     const toggleSidebar = () => {
         setIsSidebarVisible(!isSidebarVisible);
     };
@@ -100,7 +95,7 @@ const PaymentDashboard = () => {
         <p>Dernier Montant Reçu: ${(invoice.montant || 0).toLocaleString()} CFA</p>
         <p>Montant Total Reçu: ${(student.montantReçu || 0).toLocaleString()} CFA</p>
         <p>Reste: ${(invoice.reste || 0).toLocaleString()} CFA</p>
-        <p>Status: <span class="status">${invoice.status || "N/A"}</span></p>
+        <p>Statut: <span class="status">${invoice.status || "N/A"}</span></p>
       </div>
       <p>Le Chef du Service et des Finances et de la comptabilité (Cachet et Signature)</p>
       <hr />`;
@@ -119,18 +114,16 @@ const PaymentDashboard = () => {
     };
 
     useEffect(() => {
-        // Fetch students from the database
         axios
-            .get("https://sg-ukb.onrender.com/api/students")
+            .get("http://localhost:5000/api/students")
             .then((response) => setStudents(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
                 alert("Unable to fetch student data. Please try again later.");
             });
 
-        // Fetch payment records for selected students
         axios
-            .get("https://sg-ukb.onrender.com/api/payments")
+            .get("http://localhost:5000/api/payments")
             .then((response) => {
                 const studentsWithPayments = response.data.map(payment => {
                     const student = students.find(s => s.id === payment.student_id);
@@ -156,7 +149,7 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            axios.post("https://sg-ukb.onrender.com/api/payments", {
+            axios.post("http://localhost:5000/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
                 reste: student.totalFees,
@@ -192,7 +185,7 @@ const PaymentDashboard = () => {
 
         setSelectedStudents((prev) => prev.filter((student) => student.id !== id));
 
-        axios.delete(`https://sg-ukb.onrender.com/api/payments/${id}`)
+        axios.delete(`http://localhost:5000/api/payments/${id}`)
             .then(() => {
                 console.log("Delete succeeded");
             })
@@ -260,7 +253,7 @@ const PaymentDashboard = () => {
             updateTotals(updatedStudents);
 
             axios
-                .put(`https://sg-ukb.onrender.com/api/payments/${currentStudent.id}`, {
+                .put(`http://localhost:5000/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
                     montantReçu: totalReceived,
                     reste: remainingAmount,
@@ -298,12 +291,13 @@ const PaymentDashboard = () => {
         <head>
             <title>Reçu du Paiement</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
+                body { font-family: Arial, sans-serif; margin: 20;
+                border: 0.3px dashed #000; padding-left: 15px; padding-right: 15px; }
                 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
                 .logo { height: 50px; }
                 .university-name { text-align: center; font-weight: bold; font-size: 1.2em; }
                 .details { margin: 20px 0; }
-                .details p { margin: 5px 0; }
+                .details p { margin: 5px 0, font-weight:none; }
                 .status { font-weight: bold; color: ${student.status === "Payé" ? "green" : "red"}; }
             </style>
         </head>
@@ -321,38 +315,35 @@ const PaymentDashboard = () => {
                 </div>
             </div>
             <div class="details">
-                <p>Nom de l'étudiant: ${student.firstName || "N/A"} ${student.lastName || "N/A"}</p>
-                <p>Dernier Montant Reçu: ${(student.lastReceived || 0).toLocaleString()} CFA</p>
-                <p>Montant Total Reçu: ${(student.montantReçu || 0).toLocaleString()} CFA</p>
-                <p>Reste: ${(student.reste || 0).toLocaleString()} CFA</p>
-                <p>Status: <span class="status">${student.status || "N/A"}</span></p>
+               <div class="studentNameId">
+                    <p>Nom de l'étudiant: <strong>${student.firstName || "N/A"} ${student.lastName || "N/A"}</strong></p>
+                    <p> Identifiant de l'étudiant : <strong>${student.studentId}<strong> </p>
+               </div>
+                <p>Dernier Montant Reçu: <strong>${(student.lastReceived || 0).toLocaleString()} CFA </strong></p>
+                <p>Montant Total Reçu: <strong>${(student.montantReçu || 0).toLocaleString()} CFA </strong></p>
+                <p>Reste: <strong>${(student.reste || 0).toLocaleString()} CFA </strong> </p>
+                <p>Statut: <strong><span class="status">${student.status || "N/A"} </strong></span> </p>
             </div>
             Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
-          <hr>
+           <hr>
+
             <br>
             <br>
             <br>
             <br>
+
+            <center>-------------------------------------------------------------------------------------------------------
+            --------- </center> 
+             <head>
+            <title>Reçu du Paiement</title>
+            </head>
             <br>
             <br>
             <br>
             <br>
-            ----------------------------------------------------------------------------------------------
-            ----------------------------------- <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
+        
                <div class="header">
-                <img src="./assets/logo_2.png" alt="Logo" class="logo" />
+                <img src="../../../public/img.png" alt="Logo" class="logo" />
                 <div class="university-name">
                     KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
                     DE SAINT-LOUIS<br />
@@ -363,15 +354,18 @@ const PaymentDashboard = () => {
                     <p>Heure: ${formattedTime}</p>
                 </div>
             </div>
-             <div class="details">
-                <p>Nom de l'étudiant: ${student.firstName || "N/A"} ${student.lastName || "N/A"}</p>
-                <p>Dernier Montant Reçu: ${(student.lastReceived || 0).toLocaleString()} CFA</p>
-                <p>Montant Total Reçu: ${(student.montantReçu || 0).toLocaleString()} CFA</p>
-                <p>Reste: ${(student.reste || 0).toLocaleString()} CFA</p>
-                <p>Status: <span class="status">${student.status || "N/A"}</span></p>
+            <div class="details">
+               <div class="studentNameId">
+                    <p>Nom de l'étudiant: <strong>${student.firstName || "N/A"} ${student.lastName || "N/A"}</strong></p>
+                    <p> Identifiant de l'étudiant : <strong>${student.studentId}<strong> </p>
+               </div>
+                <p>Dernier Montant Reçu: <strong>${(student.lastReceived || 0).toLocaleString()} CFA </strong></p>
+                <p>Montant Total Reçu: <strong>${(student.montantReçu || 0).toLocaleString()} CFA </strong></p>
+                <p>Reste: <strong>${(student.reste || 0).toLocaleString()} CFA </strong> </p>
+                <p>Statut: <strong><span class="status">${student.status || "N/A"} </strong></span> </p>
             </div>
             Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
-            <hr>
+           <hr>
             
             <br>
         </body>
@@ -404,7 +398,7 @@ const PaymentDashboard = () => {
     const currentRows = filteredStudents.slice(indexOfFirstRow, indexOfLastRow);
 
     return (
-        <div className={`payment-dashboard ${isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop'}`}>
+        <div className="payment-dashboard">
             {/* Sidebar Toggle Button (Only for Mobile) */}
             {isMobile && (
                 <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
@@ -413,33 +407,31 @@ const PaymentDashboard = () => {
             )}
 
             {/* Sidebar */}
-            {isSidebarVisible && (
-                <div className="sidebar">
-                    <div className="sidebar-header">
-                        <h2>GESTION DES ETUDIANTS</h2>
-                    </div>
-                    <ul className="sidebar-menu">
-                        <li>
-                            <a href="/accountant">
-                                <FaUserGraduate /> Tableau de bord
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/student">
-                                <FaChalkboardTeacher /> Etudiants
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/student/manage">
-                                <FaChalkboardTeacher /> Personnel
-                            </a>
-                        </li>
-                    </ul>
+            <div className={`sidebar ${isMobile ? (isSidebarVisible ? 'active' : '') : 'active'}`}>
+                <div className="sidebar-header">
+                    <h2>GESTION DES ETUDIANTS</h2>
                 </div>
-            )}
+                <ul className="sidebar-menu">
+                    <li>
+                        <a href="/accountant">
+                            <FaUserGraduate /> Tableau de bord
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/student">
+                            <FaChalkboardTeacher /> Etudiants
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/student/manage">
+                            <FaChalkboardTeacher /> Personnel
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
             {/* Main Content */}
-            <div className="main-content">
+            <div className={`main-content ${isMobile ? (isSidebarVisible ? 'sidebar-open' : '') : ''}`}>
                 <div className="dashboard-counters">
                     <div className="counter">
                         <center className="money-icon">
@@ -478,6 +470,8 @@ const PaymentDashboard = () => {
                         className="filter_st"
                     />
                 </div>
+                
+                {/* Desktop Table */}
                 <div className="payment-section">
                     <table className="payment-table">
                         <thead>
@@ -490,7 +484,7 @@ const PaymentDashboard = () => {
                             <th>Total des Paiements (CFA)</th>
                             <th>Montant Reçu (CFA)</th>
                             <th>Reste (CFA)</th>
-                            <th>Status</th>
+                            <th>Statut</th>
                             <th style={{ textAlign: "right" }}>Actions</th>
                         </tr>
                         </thead>
@@ -533,6 +527,68 @@ const PaymentDashboard = () => {
                         </tbody>
                     </table>
 
+                    {/* Mobile Table */}
+                    <div className="mobile-table">
+                        {filteredStudents.length > 0 ? (
+                            currentRows.map((student) => (
+                                <div className="mobile-row" key={student.id}>
+                                    <div className="mobile-row-item">
+                                        <span>Étudiant:</span>
+                                        <strong>{student.firstName} {student.lastName}</strong>
+                                    </div>
+                                    <div className="mobile-row-item">
+                                        <span>Filière:</span>
+                                        <strong>{student.filiere}</strong>
+                                    </div>
+                                    <div className="mobile-row-item">
+                                        <span>Niveau:</span>
+                                        <strong>{student.level}</strong>
+                                    </div>
+                                    <div className="mobile-row-item">
+                                        <span>N°Dossier:</span>
+                                        <strong>{student.studentId}</strong>
+                                    </div>
+                                    <div className="mobile-row-item">
+                                        <span>Total:</span>
+                                        <strong>{student.totalFees.toLocaleString()} CFA</strong>
+                                    </div>
+                                    <div className="mobile-row-item">
+                                        <span>Reçu:</span>
+                                        <strong>{student.montantReçu.toLocaleString()} CFA</strong>
+                                    </div>
+                                    <div className="mobile-row-item">
+                                        <span>Reste:</span>
+                                        <strong>{student.reste.toLocaleString()} CFA</strong>
+                                    </div>
+                                    <div className="mobile-row-item">
+                                        <span>Statut:</span>
+                                        <strong className={student.status === "Payé" ? "status-paid" : "status-unpaid"}>
+                                            {student.status}
+                                        </strong>
+                                    </div>
+                                    <div className="mobile-actions">
+                                        <button className="icon-btn4" onClick={() => openPaymentPopup(student)}>
+                                            💰
+                                        </button>
+                                        <button className="icon-btn5" onClick={() => handleDelete(student.id)}>
+                                            <FaTrash />
+                                        </button>
+                                        <button className="icon-btn6" onClick={() => printInvoice(student)}>
+                                            <FaPrint />
+                                        </button>
+                                        <button className="icon-btn7" onClick={() => printAllInvoices(student, invoices)}>
+                                            📜
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="mobile-row">
+                                Aucun étudiant trouvé.
+                            </div>
+                        )}
+                    </div>
+
                     {/* Pagination Controls */}
                     <div className="pagination">
                         <button
@@ -547,12 +603,10 @@ const PaymentDashboard = () => {
                         </span>
                         <button
                             className="pagination-btn"
-                            disabled={currentPage === Math.ceil(filteredStudents.length / rowsPerPage)}
-                            onClick={() => setCurrentPage((prevPage) =>
-                                Math.min(prevPage + 1, Math.ceil(filteredStudents.length / rowsPerPage))
-                            )}
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
                         >
-                            <FaArrowRight />
+                            <FaArrowLeft />
                         </button>
                     </div>
                 </div>
