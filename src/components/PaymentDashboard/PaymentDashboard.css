@@ -492,16 +492,23 @@ thead {
 
   .sidebar {
 
-      width: 500px;
-      left: -650px;
+      width: 200px;
+      left: -200px;
       transform: translateX(0);
       display: block;
   }
-  
-  .main-content {
+  .popup-content {
     position: absolute;
+    left: 17%;
+    top: 0;
+    width: 30%;
+    height: 20%;
+}
+  .main-content {
+    position: relative;
     left: 0;
     right: 0;
+    margin-left: 0;
 }
 
   .sidebar.active {
@@ -566,7 +573,10 @@ thead {
 
 @media (max-width: 576px) {
   .main-content {
-      padding: 10px 0;
+    position: absolute;
+      padding: 0;
+      margin: 0;
+      left: 0;
   }
   
   .counter h3 {
@@ -601,6 +611,11 @@ thead {
   .sidebar {
       width: 100%;
       left: 0%;
+  }
+  .main-content{
+    position: absolute;
+    left: 0;
+    right: 0;
   }
   
   .sidebar.active {
@@ -642,9 +657,7 @@ thead {
 
 /* Print Styles */
 @media print {
-  body * {
-      visibility: hidden;
-  }
+ 
   .popup-content, .popup-content * {
       visibility: visible;
   }
