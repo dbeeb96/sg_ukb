@@ -40,7 +40,7 @@ const StudentDashboard = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/students')
+        axios.get('https://sg-ukb.onrender.com/api/students')
             .then(response => setStudents(response.data))
             .catch(error => console.error('Error fetching students:', error));
     }, []);
@@ -80,7 +80,7 @@ const StudentDashboard = () => {
         setValidationErrors([]);
 
         const endpoint = currentStudent === null ? 
-            axios.post('http://localhost:5000/api/students', newStudent) :
+            axios.post('https://sg-ukb.onrender.com/api/students', newStudent) :
             axios.put(`http://localhost:5000/api/students/${students[currentStudent].id}`, newStudent);
 
         endpoint.then(response => {
@@ -113,7 +113,7 @@ const StudentDashboard = () => {
     const handleDelete = (index) => {
         const studentId = students[index].id;
         if (window.confirm("Are you sure you want to delete this student?")) {
-            axios.delete(`http://localhost:5000/api/students/${studentId}`)
+            axios.delete(`https://sg-ukb.onrender.com/api/students/${studentId}`)
                 .then(() => {
                     setStudents(prev => prev.filter((_, i) => i !== index));
                     if (currentPage > 1 && currentStudents.length === 1) {
