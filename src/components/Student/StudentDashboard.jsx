@@ -32,6 +32,7 @@ const StudentDashboard = () => {
     const [isSidebarVisible, setIsSidebarVisible] = useState(false);
     const isMobile = useMediaQuery({ maxWidth: 768 });
 
+    // Fonction pour formater les dates en JJ/MM/AAAA pour l'affichage
     const formatDate = (dateString) => {
         if (!dateString) return "N/A";
         const date = new Date(dateString);
@@ -40,7 +41,7 @@ const StudentDashboard = () => {
     };
 
     useEffect(() => {
-        axios.get('https://sg-ukb.onrender.com/api/students')
+        axios.get('http://localhost:5000/api/students')
             .then(response => setStudents(response.data))
             .catch(error => console.error('Error fetching students:', error));
     }, []);
@@ -78,15 +79,59 @@ const StudentDashboard = () => {
     const handleSaveStudent = () => {
         if (!validateForm()) return;
         setValidationErrors([]);
-
+    
+        const formatToFrenchDate = (dateString) => {
+            if (!dateString) return null;
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) return dateString;
+            
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return null;
+            
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        };
+    
+        const studentData = {
+            ...newStudent,
+            birthDay: formatToFrenchDate(newStudent.birthDay),
+            startDate: formatToFrenchDate(newStudent.startDate),
+            endDate: formatToFrenchDate(newStudent.endDate)
+        };
+    
         const endpoint = currentStudent === null ? 
-            axios.post('https://sg-ukb.onrender.com/api/students', newStudent) :
-            axios.put(`https://sg-ukb.onrender.com/api/students/${students[currentStudent].id}`, newStudent);
-
+            axios.post('http://localhost:5000/api/students', studentData) :
+            axios.put(`http://localhost:5000/api/students/${students[currentStudent].id}`, studentData);
+    
         endpoint.then(response => {
+            // Solution 1: Rafraîchir toute la liste depuis le serveur
+            axios.get('http://localhost:5000/api/students')
+                .then(updatedResponse => {
+                    const formattedStudents = updatedResponse.data.map(student => ({
+                        ...student,
+                        birthDay: formatDateDisplay(student.birthDay),
+                        startDate: formatDateDisplay(student.startDate),
+                        endDate: formatDateDisplay(student.endDate)
+                    }));
+                    setStudents(formattedStudents);
+                    resetForm();
+                });
+    
+            // OU Solution 2: Mise à jour optimisée (alternative)
+            /*
+            const updatedStudent = {
+                ...response.data,
+                birthDay: formatDateDisplay(response.data.birthDay),
+                startDate: formatDateDisplay(response.data.startDate),
+                endDate: formatDateDisplay(response.data.endDate)
+            };
+            
             setStudents(prev => currentStudent === null ? 
-                [...prev, response.data] : 
-                prev.map(s => s.id === students[currentStudent].id ? response.data : s));
+                [...prev, updatedStudent] : 
+                prev.map(s => s.id === students[currentStudent].id ? updatedStudent : s));
+            */
+            
             resetForm();
         }).catch(error => {
             console.error('Error saving student:', error);
@@ -103,17 +148,55 @@ const StudentDashboard = () => {
         setShowModal(false);
         setCurrentStudent(null);
     };
+        // Fonction pour l'affichage dans le tableau (à conserver)
+        const formatDateDisplay = (dateString) => {
+            if (!dateString) return "N/A";
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) return dateString;
+            
+            const date = new Date(dateString);
+            return isNaN(date.getTime()) ? "Invalid Date" : 
+                date.toLocaleDateString("fr-FR", { year: "numeric", month: "2-digit", day: "2-digit" });
+        };
+        
+        const handleEdit = (index) => {
+            const student = students[index];
+            setCurrentStudent(index);
+            
+            // Fonction pour convertir la date au format attendu par l'input date (AAAA-MM-JJ)
+            const formatForDateInput = (dateString) => {
+                if (!dateString) return '';
+                
+                // Si la date est déjà au format JJ/MM/AAAA
+                if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+                    const [day, month, year] = dateString.split('/');
+                    return `${year}-${month}-${day}`;
+                }
+                
+                // Si c'est une date ISO
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '';
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+        
+            setNewStudent({
+                ...student,
+                birthDay: formatForDateInput(student.birthDay),
+                startDate: formatForDateInput(student.startDate),
+                endDate: formatForDateInput(student.endDate)
+            });
+            setShowModal(true);
+        };
 
-    const handleEdit = (index) => {
-        setCurrentStudent(index);
-        setNewStudent(students[index]);
-        setShowModal(true);
-    };
+    
 
     const handleDelete = (index) => {
         const studentId = students[index].id;
         if (window.confirm("Are you sure you want to delete this student?")) {
-            axios.delete(`https://sg-ukb.onrender.com/api/students/${studentId}`)
+            axios.delete(`http://localhost:5000/api/students/${studentId}`)
                 .then(() => {
                     setStudents(prev => prev.filter((_, i) => i !== index));
                     if (currentPage > 1 && currentStudents.length === 1) {
@@ -126,8 +209,11 @@ const StudentDashboard = () => {
 
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-    const filteredStudents = students.filter(student => 
-        student.subject.toLowerCase().includes(filteredSubjects.toLowerCase()));
+// Filtrage sécurisé avec vérification de l'existence du sujet
+const filteredStudents = students.filter(student => 
+    student.subject && student.subject.toLowerCase().includes(filteredSubjects.toLowerCase())
+);
+
     const currentStudents = filteredStudents.slice(indexOfFirstRow, indexOfLastRow);
 
     return (
@@ -203,12 +289,12 @@ const StudentDashboard = () => {
                                     <td data-label="Téléphone">{student.phoneNumber}</td>
                                     <td data-label="N° Carte">{student.studentId}</td>
                                     <td data-label="Adresse">{student.address}</td>
-                                    <td data-label="Naissance">{formatDate(student.birthDay)}</td>
+                                    <td data-label="Naissance">{formatDateDisplay(student.birthDay)}</td>
                                     <td data-label="Année Acad">{student.academicYear}</td>
                                     <td data-label="Frais Mensuel">{student.monthlyFees}</td>
                                     <td data-label="Total Payé">{student.totalFees}</td>
-                                    <td data-label="Début">{formatDate(student.startDate)}</td>
-                                    <td data-label="Fin">{formatDate(student.endDate)}</td>
+                                    <td data-label="Début">{formatDateDisplay(student.startDate)}</td>
+                                    <td data-label="Fin">{formatDateDisplay(student.endDate)}</td>
                                     <td data-label="Filière">{student.subject}</td>
                                     <td data-label="Niveau">{student.level}</td>
                                     <td className="btn" data-label="Actions">
@@ -279,17 +365,18 @@ const StudentDashboard = () => {
                                             value={newStudent[field]}
                                             onChange={handleChange}
                                         />
+                                        
                                     </div>
                                 ))}
                                 
                                 {['birthDay', 'startDate', 'endDate'].map(dateField => (
                                     <div key={dateField} className="form-group">
                                         <label>{dateField === 'birthDay' ? 'Date de naissance' : 
-                                               dateField === 'startDate' ? 'Date de début' : 'Date de fin'}</label>
+                                            dateField === 'startDate' ? 'Date de début' : 'Date de fin'}</label>
                                         <input
                                             type="date"
                                             name={dateField}
-                                            value={newStudent[dateField]}
+                                            value={newStudent[dateField] || ''}
                                             onChange={handleChange}
                                         />
                                     </div>
@@ -297,7 +384,7 @@ const StudentDashboard = () => {
 
                                 <div className="form-actions">
                                     <button type="button" onClick={handleSaveStudent} className="save-btn">
-                                        {currentStudent === null ? 'Ajouter' : 'Mettre à jour'}
+                                        {currentStudent === null ? 'AhandleSaveStudentjouter' : 'Mettre à jour'}
                                     </button>
                                     <button type="button" onClick={resetForm} className="cancel-btn">
                                         Annuler
