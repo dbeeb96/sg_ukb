@@ -81,7 +81,7 @@ const StudentDashboard = () => {
 
         const endpoint = currentStudent === null ? 
             axios.post('https://sg-ukb.onrender.com/api/students', newStudent) :
-            axios.put(`http://localhost:5000/api/students/${students[currentStudent].id}`, newStudent);
+            axios.put(`https://sg-ukb.onrender.com/api/students/${students[currentStudent].id}`, newStudent);
 
         endpoint.then(response => {
             setStudents(prev => currentStudent === null ? 
