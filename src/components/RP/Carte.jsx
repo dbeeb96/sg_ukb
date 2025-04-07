@@ -139,7 +139,7 @@ const CarteComponent = () => {
     const [carteData, setCarteData] = useState([]);
 
     if (currentStudent === null) {
-        axios.post('http://localhost:5000/api/carte', studentData)
+        axios.post('https://sg-ukb.onrender.com:5000/api/carte', studentData)
             .then(response => {
                 setcarte([...carte, response.data]);
                 resetForm();
@@ -149,7 +149,7 @@ const CarteComponent = () => {
                 alert('There was an error adding the student. Please try again.');
             });
     } else {
-        axios.put(`http://localhost:5000/api/carte/${carte[currentStudent].id}`, studentData) // Use 'id' from students array
+        axios.put(`https://sg-ukb.onrender.com:5000/api/carte/${carte[currentStudent].id}`, studentData) // Use 'id' from students array
             .then(response => {
                 const updatedStudents = carte.map(student =>
                     student.id === carte[currentStudent].id ? response.data : student
@@ -164,7 +164,7 @@ const CarteComponent = () => {
     }
     useEffect(() => {
         axios
-            .get("http://localhost:5000/api/carte")
+            .get("https://sg-ukb.onrender.com:5000/api/carte")
             .then((response) => setcarte(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
@@ -174,7 +174,7 @@ const CarteComponent = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5000/api/students")
+            .get("https://sg-ukb.onrender.com:5000/api/students")
             .then((response) => setcarte(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
