@@ -30,9 +30,7 @@ const PaymentDashboard = () => {
 
     const PaymentModal = ({ student, onSubmit, onClose }) => {
         const [amount, setAmount] = useState("");
-        const [paymentMethod, setPaymentMethod] = useState("cash");
-        const [receiptNumber, setReceiptNumber] = useState("");
-    
+
         return (
             <div className="payment-popup">
                 <div className="popup-content">
@@ -46,33 +44,8 @@ const PaymentDashboard = () => {
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                     />
-                    
-                    <div className="payment-method-section">
-                        <label>Méthode de paiement:</label>
-                        <select 
-                            value={paymentMethod} 
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                        >
-                            <option value="cash">Espèces</option>
-                            <option value="orange_money">Orange Money</option>
-                            <option value="wave">Wave</option>
-                        </select>
-                    </div>
-                    
-                    {paymentMethod !== "cash" && (
-                        <div className="receipt-number-section">
-                            <label>Numéro de transaction:</label>
-                            <input
-                                type="text"
-                                placeholder="Numéro de transaction"
-                                value={receiptNumber}
-                                onChange={(e) => setReceiptNumber(e.target.value)}
-                            />
-                        </div>
-                    )}
-                    
                     <div className="popup-actions">
-                        <button onClick={() => onSubmit(amount, paymentMethod, receiptNumber)}>Valider</button>
+                        <button onClick={() => onSubmit(amount)}>Valider</button>
                         <button onClick={onClose}>Fermer</button>
                     </div>
                 </div>
@@ -87,384 +60,101 @@ const PaymentDashboard = () => {
         'Master 1': false,
         'Master 2': false
     });
- 
-    const printAllInvoices = async (student) => {
-        try {
-            // 1. Validation améliorée de l'étudiant
-            if (!student?.id || !student.firstName || !student.lastName) {
-                throw new Error("Informations étudiant incomplètes");
-            }
-    
-            console.log(`Récupération des paiements pour ${student.firstName} ${student.lastName} (ID: ${student.id})`);
-            
-            // 2. Appel API avec gestion d'erreur renforcée
-            const response = await axios.get(`https://sg-ukb.onrender.com/api/payments/history/${student.id}`, {
-                params: {
-                    limit: 100,
-                    sort: 'date:desc'
-                },
-                timeout: 8000
-            });
-            
-            // 3. Traitement robuste des données
-            const payments = Array.isArray(response.data?.payments) 
-                ? response.data.payments.filter(p => 
-                    p && (p.montantReçu !== undefined || p.amount !== undefined)
-                  )
-                : [];
-    
-            console.log(`${payments.length} paiements valides trouvés`, payments);
-    
-            // 4. Préparation des données pour l'affichage
-            const formatCurrency = (amount) => 
-                (amount || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 });
-            
-            const totalAmount = payments.reduce((sum, p) => 
-                sum + (p.montantReçu || p.amount || 0), 0);
-    
-            // 5. Génération du document
-            const printContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>Reçu ${student.firstName} ${student.lastName}</title>
-                <style>
-                    body {
-                        font-family: 'Arial', sans-serif;
-                        margin: 1cm;
-                        color: #333;
-                        font-size: 12pt;
-                    }
-                    .header {
-                        text-align: center;
-                        margin-bottom: 20px;
-                        padding-bottom: 10px;
-                        border-bottom: 2px solid #4CAF50;
-                    }
-                    .university {
-                        font-size: 18pt;
-                        font-weight: bold;
-                        color: #2E7D32;
-                    }
-                    .student-info {
-                        background: #f8f9fa;
-                        padding: 15px;
-                        border-radius: 5px;
-                        margin: 20px 0;
-                    }
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                        margin: 20px 0;
-                    }
-                    th {
-                        background-color: #4CAF50;
-                        color: white;
-                        padding: 12px;
-                        text-align: left;
-                    }
-                    td {
-                        padding: 10px;
-                        border-bottom: 1px solid #ddd;
-                    }
-                    .total {
-                        font-weight: bold;
-                        background-color: #e8f5e9;
-                    }
-                    .no-data {
-                        text-align: center;
-                        padding: 20px;
-                        color: #d32f2f;
-                        font-weight: bold;
-                    }
-                    @media print {
-                        body {
-                            margin: 0;
-                            padding: 1cm;
-                        }
-                        @page {
-                            size: A4;
-                            margin: 1cm;
-                        }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <div class="university">UNIVERSITE KOCC BARMA DE SAINT-LOUIS</div>
-                    <div>Service des Finances - Historique des paiements</div>
-                </div>
-    
-                <div class="student-info">
-                    <p><strong>Étudiant:</strong> ${student.firstName} ${student.lastName}</p>
-                    <p><strong>Matricule:</strong> ${student.studentId || 'N/A'}</p>
-                    <p><strong>Filière/Niveau:</strong> ${[student.filiere, student.level].filter(Boolean).join(' / ') || 'N/A'}</p>
-                    <p><strong>Date d'édition:</strong> ${new Date().toLocaleDateString('fr-FR')}</p>
-                </div>
-    
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Montant (CFA)</th>
-                            <th>Méthode</th>
-                            <th>Référence</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${payments.length > 0 
-                            ? payments.map(payment => {
-                                const date = payment.date ? new Date(payment.date) : new Date();
-                                return `
-                                <tr>
-                                    <td>${date.toLocaleDateString('fr-FR')} ${date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</td>
-                                    <td>${formatCurrency(payment.montantReçu || payment.amount)}</td>
-                                    <td>${payment.paymentMethod  || '-'}</td>
-                                    <td>${payment.status || 'Complété'}</td>
-                                </tr>
-                                `;
-                            }).join('')
-                            : `<tr><td colspan="5" class="no-data">Aucun paiement enregistré</td></tr>`
-                        }
-                    </tbody>
-                    ${payments.length > 0 ? `
-                    <tfoot>
-                        <tr class="total">
-                            <td>Total</td>
-                            <td>${formatCurrency(totalAmount)}</td>
-                            <td colspan="3"></td>
-                        </tr>
-                    </tfoot>
-                    ` : ''}
-                </table>
-    
-                <script>
-                    window.onload = function() {
-                        setTimeout(function() {
-                            window.print();
-                        }, 300);
-                    };
-                </script>
-            </body>
-            </html>
-            `;
-    
-            // 6. Ouverture de la fenêtre d'impression
-            const printWindow = window.open('', '_blank', 'width=900,height=650');
-            if (!printWindow) {
-                throw new Error("Veuillez autoriser les popups pour cette fonctionnalité");
-            }
-    
-            printWindow.document.open();
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-    
-        } catch (error) {
-            console.error("Erreur lors de la génération du reçu:", error);
-            alert(`Erreur: ${error.message}\n\nConsultez la console pour plus de détails.`);
-        }
-    };
-    
-    // Fonction pour créer un paiement vide
-    function createEmptyPayment() {
-        return {
-            date: new Date(),
-            montantReçu: 0,
-            paymentMethod: "Aucun paiement",
-            status: "Non payé",
-            receiptNumber: "N/A"
-        };
-    }
-    
-    // Fonction pour générer le document HTML
-    function generatePrintableInvoice(student, payments) {
+
+    const printAllInvoices = (student) => {
         const currentDate = new Date();
-        const formattedDate = currentDate.toLocaleDateString('fr-FR', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        });
-        const formattedTime = currentDate.toLocaleTimeString('fr-FR', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    
-        const win = window.open("", "_blank");
-        
-        win.document.write(`
+        const formattedDate = currentDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
+        const formattedTime = currentDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
+
+        const invoiceWindow = window.open("", "_blank");
+        invoiceWindow.document.write(`
         <html>
         <head>
-            <title>Historique des Paiements - ${student.firstName} ${student.lastName}</title>
+            <title>Reçu du Paiement</title>
             <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 20px;
-                    color: #000;
-                }
-                .header {
-                    text-align: center;
-                    margin-bottom: 20px;
-                    border-bottom: 2px solid #4CAF50;
-                    padding-bottom: 10px;
-                }
-                .university-name {
-                    font-weight: bold;
-                    font-size: 18px;
-                }
-                .student-info {
-                    margin: 20px 0;
-                    padding: 15px;
-                    background-color: #f9f9f9;
-                    border-radius: 5px;
-                    border-left: 4px solid #4CAF50;
-                }
-                .payment-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }
-                .payment-table th {
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 12px;
-                    text-align: left;
-                }
-                .payment-table td {
-                    padding: 10px;
-                    border-bottom: 1px solid #ddd;
-                }
-                .payment-table tr:hover {
-                    background-color: #f5f5f5;
-                }
-                .total-row {
-                    font-weight: bold;
-                    background-color: #e7f3e8;
-                }
-                .signature-section {
-                    margin-top: 40px;
-                    text-align: right;
-                    border-top: 1px dashed #333;
-                    padding-top: 20px;
-                }
-                @media print {
-                    body {
-                        padding: 20px;
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                    }
-                }
+                body { font-family: Arial, sans-serif; margin: 20;
+                border: 0.3px dashed #000; padding-left: 15px; padding-right: 15px; }
+                .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+                .logo { height: 50px; }
+                .university-name { text-align: center; font-weight: bold; font-size: 1.2em; }
+                .details { margin: 20px 0; }
+                .details p { margin: 5px 0, font-weight:none; }
+                .status { font-weight: bold; color: ${student.status === "Payé" ? "green" : "red"}; }
             </style>
         </head>
         <body>
-            <div class="header">
+           <div class="header">
+                <img src="../../../public/img.png" alt="Logo" class="logo" />
                 <div class="university-name">
-                    UNIVERSITE KOCC BARMA DE SAINT-LOUIS
+                    KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
+                    DE SAINT-LOUIS<br />
+                    MENSUALITE: ${student.filiere || "N/A"}
+                </div>   
+                <div>
+                    <p>Date: ${formattedDate}</p>
+                    <p>Heure: ${formattedTime}</p>
                 </div>
-                <div>Service des Finances - Historique complet des paiements</div>
             </div>
-    
-            <div class="student-info">
-                <p><strong>Étudiant:</strong> ${student.firstName} ${student.lastName}</p>
-                <p><strong>Matricule:</strong> ${student.studentId}</p>
-                <p><strong>Filière/Niveau:</strong> ${student.filiere || "N/A"} / ${student.level || "N/A"}</p>
-                <p><strong>Date d'édition:</strong> ${formattedDate} à ${formattedTime}</p>
+            <div class="details">
+               <div class="studentNameId">
+                    <p>Nom de l'étudiant: <strong>${student.firstName || "N/A"} ${student.lastName || "N/A"}</strong></p>
+                    <p> Identifiant de l'étudiant : <strong>${student.studentId}<strong> </p>
+               </div>
+                <p>Dernier Montant Reçu: <strong>${(student.lastReceived || 0).toLocaleString()} CFA </strong></p>
+                <p>Montant Total Reçu: <strong>${(student.montantReçu || 0).toLocaleString()} CFA </strong></p>
+                <p>Reste: <strong>${(student.reste || 0).toLocaleString()} CFA </strong> </p>
+                <p>Statut: <strong><span class="status">${student.status || "N/A"} </strong></span> </p>
             </div>
-    
-            <table class="payment-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Heure</th>
-                        <th>Montant (CFA)</th>
-                        <th>Méthode</th>
-                        <th>Référence</th>
-                        <th>Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${payments.map(payment => {
-                        const paymentDate = payment.date ? new Date(payment.date) : new Date();
-                        return `
-                        <tr>
-                            <td>${paymentDate.toLocaleDateString('fr-FR')}</td>
-                            <td>${paymentDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</td>
-                            <td>${(payment.montantReçu || 0).toLocaleString('fr-FR')}</td>
-                            <td>${payment.paymentMethod || "Non spécifié"}</td>
-                            <td>${payment.receiptNumber || "-"}</td>
-                            <td>${payment.status || "N/A"}</td>
-                        </tr>
-                        `;
-                    }).join('')}
-                    <tr class="total-row">
-                        <td colspan="2"><strong>TOTAL</strong></td>
-                        <td><strong>${payments.reduce((sum, p) => sum + (p.montantReçu || 0), 0).toLocaleString('fr-FR')} CFA</strong></td>
-                        <td colspan="3"></td>
-                    </tr>
-                </tbody>
-            </table>
-    
-            <div class="signature-section">
-                <p>Le Responsable Financier,</p>
-                <p>${formattedDate}</p>
-                <p>__________________________</p>
-            </div>
-    
-            <script>
-                window.onload = function() {
-                    setTimeout(function() {
-                        window.print();
-                        window.close();
-                    }, 300);
-                };
-            </script>
-        </body>
-        </html>
-        `);
-        
-        win.document.close();
-    }
-    
-    function generateInvoice(student, payments) {
-        const currentDate = new Date();
-        const win = window.open("", "_blank");
-        
-        win.document.write(`
-        <html>
-        <!-- [VOTRE CODE HTML EXISTANT - MAIS SIMPLIFIE POUR L'EXEMPLE] -->
-        <body>
-            <!-- En-tête université -->
-            <div class="student-info">
-                <p>Étudiant: ${student.firstName} ${student.lastName}</p>
-                <p>Matricule: ${student.studentId}</p>
-            </div>
-    
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Montant</th>
-                        <th>Méthode</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${payments.map(p => `
-                    <tr>
-                        <td>${new Date(p.date).toLocaleDateString('fr-FR')}</td>
-                        <td>${p.montantReçu.toLocaleString('fr-FR')} CFA</td>
-                        <td>${p.paymentMethod}</td>
-                    </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </body>
-        </html>
-        `);
-        
-        win.document.close();
-    }
+            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
+           <hr>
 
+            <br>
+            <br>
+            <br>
+            <br>
+
+            <center>-------------------------------------------------------------------------------------------------------
+            --------- </center> 
+             <head>
+            <title>Reçu du Paiement</title>
+            </head>
+            <br>
+            <br>
+            <br>
+            <br>
+        
+               <div class="header">
+                <img src="../../../public/img.png" alt="Logo" class="logo" />
+                <div class="university-name">
+                    KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
+                    DE SAINT-LOUIS<br />
+                    MENSUALITE: ${student.filiere || "N/A"}
+                </div>   
+                <div>
+                    <p>Date: ${formattedDate}</p>
+                    <p>Heure: ${formattedTime}</p>
+                </div>
+            </div>
+            <div class="details">
+               <div class="studentNameId">
+                    <p>Nom de l'étudiant: <strong>${student.firstName || "N/A"} ${student.lastName || "N/A"}</strong></p>
+                    <p> Identifiant de l'étudiant : <strong>${student.studentId}<strong> </p>
+               </div>
+                <p>Dernier Montant Reçu: <strong>${(student.lastReceived || 0).toLocaleString()} CFA </strong></p>
+                <p>Montant Total Reçu: <strong>${(student.montantReçu || 0).toLocaleString()} CFA </strong></p>
+                <p>Reste: <strong>${(student.reste || 0).toLocaleString()} CFA </strong> </p>
+                <p>Statut: <strong><span class="status">${student.status || "N/A"} </strong></span> </p>
+            </div>
+            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
+           <hr>
+            
+            <br>
+        </body>
+        </html>
+    `);
+        invoiceWindow.print();
+        invoiceWindow.close();
+    };
     useEffect(() => {
         axios
             .get("https://sg-ukb.onrender.com/api/students")
@@ -588,93 +278,62 @@ const PaymentDashboard = () => {
         return nameMatches && selectedLevels[student.level];
     });
 
-    useEffect(() => {
-        axios
-            .get("https://sg-ukb.onrender.com/api/students")
-            .then((response) => setStudents(response.data))
-            .catch((error) => {
-                console.error("Error fetching students:", error);
-                alert("Unable to fetch student data. Please try again later.");
-            });
-    
-        axios
-            .get("https://sg-ukb.onrender.com/api/payments")
-            .then((response) => {
-                const studentsWithPayments = response.data.map(payment => {
-                    const student = students.find(s => s.id === payment.student_id);
-                    return { 
-                        ...student, 
-                        ...payment,
-                        lastReceived: payment.lastReceived || payment.montantReçu || 0 // Modification ici
-                    };
-                });
-                setSelectedStudents(studentsWithPayments);
-            })
-            .catch((error) => {
-                console.error("Error fetching payment records:", error);
-            });
-    }, []);
-    
-  const handlePaymentSubmit = (montantReçu, paymentMethod, receiptNumber) => {
-    if (currentStudent && montantReçu) {
-        const receivedAmount = parseFloat(montantReçu) || 0;
-        const previousReceived = currentStudent.montantReçu || 0;
-        const totalAllowedPayment = currentStudent.totalFees;
-        const remainingAmount = Math.max(totalAllowedPayment - (previousReceived + receivedAmount), 0);
+    const handlePaymentSubmit = (montantReçu) => {
+        if (currentStudent && montantReçu) {
+            const receivedAmount = parseFloat(montantReçu) || 0;
+            const previousReceived = currentStudent.montantReçu || 0;
+            const totalAllowedPayment = currentStudent.totalFees;
+            const remainingAmount = Math.max(totalAllowedPayment - (previousReceived + receivedAmount), 0);
 
-        if (receivedAmount <= 0) {
-            alert("Veuillez entrer un montant supérieur à 0 CFA.");
-            return;
-        }
+            if (receivedAmount <= 0) {
+                alert("Veuillez entrer un montant supérieur à 0 CFA.");
+                return;
+            }
 
-        if (receivedAmount + previousReceived > totalAllowedPayment) {
-            alert(
-                `Le montant saisi dépasse le "Total des Paiements (${totalAllowedPayment} CFA)". Veuillez entrer un montant valide.`
-            );
-            return;
-        }
+            if (receivedAmount + previousReceived > totalAllowedPayment) {
+                alert(
+                    `Le montant saisi dépasse le "Total des Paiements (${totalAllowedPayment} CFA)". Veuillez entrer un montant valide.`
+                );
+                return;
+            }
 
-        const totalReceived = previousReceived + receivedAmount;
-        const status = remainingAmount === 0 ? "Payé" : "mois Payé";
+            const totalReceived = previousReceived + receivedAmount;
+            const status = remainingAmount === 0 ? "Payé" : "mois Payé";
 
-        const updatedStudent = {
-            ...currentStudent,
-            montantReçu: totalReceived,
-            reste: remainingAmount,
-            status,
-            lastReceived: receivedAmount,
-            paymentMethod,
-            receiptNumber: paymentMethod !== "cash" ? receiptNumber : null
-        };
-
-        const updatedStudents = selectedStudents.map((student) =>
-            student.id === currentStudent.id ? updatedStudent : student
-        );
-        setSelectedStudents(updatedStudents);
-        updateTotals(updatedStudents);
-
-        axios
-            .put(`https://sg-ukb.onrender.com/api/payments/${currentStudent.id}`, {
-                student_id: currentStudent.id,
+            const updatedStudent = {
+                ...currentStudent,
                 montantReçu: totalReceived,
                 reste: remainingAmount,
-                status: status,
+                status,
                 lastReceived: receivedAmount,
-                paymentMethod,
-                receiptNumber: paymentMethod !== "cash" ? receiptNumber : null,
-                date: new Date().toISOString(),
-            })
-            .then(() => {
-                closePaymentPopup();
-            })
-            .catch((error) => {
-                console.error("Error updating payment:", error);
-                alert("Échec de la mise à jour du paiement. Veuillez réessayer plus tard.");
-            });
-    } else {
-        alert("Veuillez entrer un montant valide.");
-    }
-};
+            };
+
+            const updatedStudents = selectedStudents.map((student) =>
+                student.id === currentStudent.id ? updatedStudent : student
+            );
+            setSelectedStudents(updatedStudents);
+            updateTotals(updatedStudents);
+
+            axios
+                .put(`https://sg-ukb.onrender.com/api/payments/${currentStudent.id}`, {
+                    student_id: currentStudent.id,
+                    montantReçu: totalReceived,
+                    reste: remainingAmount,
+                    status: status,
+                    lastReceived: receivedAmount,
+                    date: new Date().toISOString(),
+                })
+                .then(() => {
+                    closePaymentPopup();
+                })
+                .catch((error) => {
+                    console.error("Error updating payment:", error);
+                    alert("Échec de la mise à jour du paiement. Veuillez réessayer plus tard.");
+                });
+        } else {
+            alert("Veuillez entrer un montant valide.");
+        }
+    };
 
     const updateTotals = (students) => {
         const newTotalPayments = students.reduce((acc, student) => acc + (student.montantReçu || 0), 0);
@@ -934,11 +593,7 @@ const PaymentDashboard = () => {
                                         <button className="icon-btn6" onClick={() => printInvoice(student)}>
                                             <FaPrint />
                                         </button>
-                                        <button 
-                                            className="icon-btn7" 
-                                            onClick={() => printAllInvoices(student)}
-                                            title="Imprimer l'historique complet"
-                                        >
+                                        <button className="icon-btn7" onClick={() => printAllInvoices(student, invoices)}>
                                             📜 <FaPrint />
                                         </button>
                                     </td>
