@@ -4,10 +4,10 @@ const mysql = require('mysql');
 
 // Database connection
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'dbeeb',
-    password: 'papesaloum',
-    database: 'sgt_st'
+  host: 'ukb.clw6e00uwrd5.eu-north-1.rds.amazonaws.com',
+    user: 'admin',
+    password: 'Passer2025',
+    database: 'ukb_db',
 });
 
 // Fonctions de conversion de dates
