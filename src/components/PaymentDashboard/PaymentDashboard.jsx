@@ -182,7 +182,7 @@ const PaymentDashboard = () => {
             });
     }, []);
 
-    const handleStudentChange = (e) => {
+     const handleStudentChange = (e) => {
         const studentId = e.target.value;
         const student = students.find((s) => s.id === parseInt(studentId, 10));
         if (student && !selectedStudents.some((s) => s.id === student.id)) {
@@ -195,7 +195,7 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            axios.post("https://sg-ukb.onrender.com/api/payments", {
+            axios.post("http://localhost:5000/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
                 reste: student.totalFees,
@@ -211,7 +211,6 @@ const PaymentDashboard = () => {
                 });
         }
     };
-
     const openPaymentPopup = (student) => {
         setCurrentStudent(student);
         setShowPopup(true);
