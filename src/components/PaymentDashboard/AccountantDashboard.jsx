@@ -2,11 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { logout } from '../../utils/authUtils';
 import { Link, useNavigate } from 'react-router-dom';
 import './AccountantDashboard.css';
-import {FaSignOutAlt, FaUserGraduate, FaChalkboardTeacher, FaBuilding, FaBars, FaTimes } from 'react-icons/fa'; // Import icons
+import {FaSignOutAlt, FaUserGraduate, FaChalkboardTeacher, FaBuilding, FaBars, FaTimes } from 'react-icons/fa';
+import { useMediaQuery } from 'react-responsive';
 
 const AccountantDashboard = () => {
     const [studentCount, setStudentCount] = useState(0);
-    const [isSidebarVisible, setIsSidebarVisible] = useState(false); // State to manage sidebar visibility
+    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+
+    // Responsive breakpoints
+    const isMobile = useMediaQuery({ maxWidth: 767 });
+    const isDesktop = useMediaQuery({ minWidth: 768 });
 
     useEffect(() => {
         fetch("http://localhost:5000/api/students/count")
@@ -17,43 +22,52 @@ const AccountantDashboard = () => {
             .catch((error) => {
                 console.error("Erreur lors de la récupération du nombre d'étudiants :", error);
             });
-    }, []);
-    
-    const navigate = useNavigate(); // Hook to programmatically navigate
-    
+
+        // Set initial sidebar state based on screen size
+        if (isMobile) {
+            setIsSidebarVisible(false);
+        }
+    }, [isMobile]);
+
+    const navigate = useNavigate();
+
     const toggleSidebar = () => {
-        setIsSidebarVisible(!isSidebarVisible); // Toggle sidebar visibility
+        setIsSidebarVisible(!isSidebarVisible);
     };
-    
+
     return (
         <div className="admin-dashboard">
-            {/* Sidebar Toggle Button */}
-            <button className="sidebar-toggle" onClick={toggleSidebar}>
-                {isSidebarVisible ? <FaTimes /> : <FaBars />} Menu
-            </button>
-    
-            {/* Sidebar */}
+            {/* Mobile Toggle Button (only shows on mobile) */}
+            {isMobile && (
+                <button className="sidebar-toggle" onClick={toggleSidebar}>
+                    {isSidebarVisible ? <FaTimes /> : <FaBars />}
+                </button>
+            )}
+
+            {/* Sidebar (visible by default on desktop) */}
             <div className={`sidebar ${isSidebarVisible ? 'active' : ''}`}>
                 <div className="sidebar-header">
                     <h2>GESTION DES ETUDIANTS</h2>
-                    <button className="sidebar-toggle" onClick={toggleSidebar}>
-                        <FaTimes /> {/* Close icon */}
-                    </button>
+                    {isMobile && (
+                        <button className="sidebar-close" onClick={toggleSidebar}>
+                            <FaTimes />
+                        </button>
+                    )}
                 </div>
                 <ul className="sidebar-menu">
                     <li><Link to="/accountant"><FaUserGraduate />Tableau de bord</Link></li>
                     <li><Link to="/student/manage"><FaChalkboardTeacher /> Manage Students</Link></li>
                 </ul>
             </div>
-    
+
             {/* Main Content Area */}
-            <div className={`main-content ${isSidebarVisible ? 'shifted' : ''}`}>
+            <div className={`main-content ${isSidebarVisible && isDesktop ? '' : 'full-width'}`}>
                 {/* Header */}
                 <header className="dashboard-header">
-                    <h1>Welcome, Accountant!</h1>
+                    <h1>Bienvenue, Comptable!</h1>
                     <div className="user-profile">
                         <img
-                            src="/public/user-icon.png" // Replace with dynamic user image
+                            src="/public/user-icon.png"
                             alt="User"
                             className="user-icon"
                         />
@@ -65,22 +79,22 @@ const AccountantDashboard = () => {
                         </div>
                     </div>
                 </header>
-    
+
                 {/* Title Section */}
                 <div className="dashboard-title">
                     <h1>UNIVERSITE KOCC BARMA DE SAINT-LOUIS</h1>
                 </div>
-    
+
                 {/* Counter Section */}
                 <div className="dashboard-counters">
                     <div className="counter-card">
                         <FaUserGraduate className="counter-icon" />
-                        <h3>Students</h3>
+                        <h3>Étudiants</h3>
                         <p>{studentCount}</p>
                     </div>
                     <div className="counter-card">
                         <FaChalkboardTeacher className="counter-icon" />
-                        <h3>Teachers</h3>
+                        <h3>Professeurs</h3>
                         <p>150</p>
                     </div>
                     <div className="counter-card">
@@ -89,7 +103,7 @@ const AccountantDashboard = () => {
                         <p>80</p>
                     </div>
                 </div>
-    
+
                 {/* Dashboard Content */}
                 <div className="dashboard-cards">
                     <div className="cards">
@@ -133,12 +147,12 @@ const AccountantDashboard = () => {
                         </button>
                     </div>
                 </div>
+
+                {/* Footer */}
+                <footer className="dashboard-footer">
+                    <p>Copyright © Developed by SupportInformatique | AppliCodeTech</p>
+                </footer>
             </div>
-    
-            {/* Footer */}
-            <footer className="dashboard-footer">
-                <p>Copyright © Developed by SupportInformatique | AppliCodeTech</p>
-            </footer>
         </div>
     );
 };

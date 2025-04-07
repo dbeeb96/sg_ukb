@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaUserGraduate, FaStudiovinari,  FaChalkboardTeacher, FaEdit, FaTrash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaUserGraduate, FaStudiovinari, FaBars, FaChalkboardTeacher, FaEdit, FaTrash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import './StudentDashboard.css';
+import { useMediaQuery } from 'react-responsive';
 import axios from 'axios';
 
 const StudentDashboard = () => {
@@ -15,7 +16,7 @@ const StudentDashboard = () => {
         studentId: '',
         address: '',
         birthDay: '',
-        academicYear:'',
+        academicYear: '',
         monthlyFees: '',
         totalFees: '',
         teachers: '',
@@ -27,174 +28,243 @@ const StudentDashboard = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [validationErrors, setValidationErrors] = useState([]);
     const [filteredSubjects, setFilteredSubjects] = useState('');
-    const rowsPerPage = 5;
+    const [filterLevel, setFilterLevel] = useState(false);
+    const rowsPerPage = 10;
+    const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+    const isMobile = useMediaQuery({ maxWidth: 768 });
+  
 
+    // Fonction pour formater les dates en JJ/MM/AAAA pour l'affichage
     const formatDate = (dateString) => {
-        if (!dateString) return "N/A";  // Handle empty values safely
-
+        if (!dateString) return "N/A";
         const date = new Date(dateString);
-
-        // Check if the date object is valid
-        if (isNaN(date.getTime())) return "Invalid Date";
-
-        return date.toLocaleDateString("fr-FR", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit"
-        })
+        return isNaN(date.getTime()) ? "Invalid Date" : 
+            date.toLocaleDateString("fr-FR", { year: "numeric", month: "2-digit", day: "2-digit" });
     };
+
+
+    
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/students')
-            .then(response => {
-                setStudents(response.data);
-            })
-            .catch(error => {
-                console.error('There was an error fetching the students!', error);
-            });
+            .then(response => setStudents(response.data))
+            .catch(error => console.error('Error fetching students:', error));
     }, []);
 
-    const               handleChange = (e) => {
-        const { name, value } = e.target;
-        setNewStudent({ ...newStudent, [name]: value });
+    const toggleSidebar = () => {
+        setIsSidebarVisible(!isSidebarVisible);
+        document.body.style.overflow = !isSidebarVisible ? 'hidden' : 'auto';
     };
 
-    const [birthDay, setBirthDay] = useState("");
+    useEffect(() => {
+        if (!isMobile) {
+            setIsSidebarVisible(false);
+            document.body.style.overflow = 'auto';
+        }
+    }, [isMobile]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setNewStudent(prev => ({ ...prev, [name]: value }));
+    };
 
     const validateForm = () => {
         const errors = [];
-        const requiredFields = [
-            'firstName', 'lastName', 'level', 'phoneNumber', 'studentId',
-            'address', 'birthDay', 'academicYear', 'monthlyFees', 'totalFees', 'startDate', 'endDate','subject'
-        ];
-
-        requiredFields.forEach(field => {
-            if (!newStudent[field]) {
-                errors.push(`${field} is required.`);
-            }
-        });
-
-        if (errors.length > 0) {
+        ['firstName', 'lastName', 'level', 'phoneNumber', 'studentId', 'address', 
+         'birthDay', 'academicYear', 'monthlyFees', 'totalFees', 'startDate', 'endDate', 'subject']
+            .forEach(field => !newStudent[field] && errors.push(`${field} is required.`));
+        
+        if (errors.length) {
             setValidationErrors(errors);
             return false;
         }
         return true;
     };
 
-    const handleSaveStudent = () => {
-        if (!validateForm()) return;
-        setValidationErrors([]);
+   const handleSaveStudent = () => {
+    if (!validateForm()) return;
+    setValidationErrors([]);
 
-        const studentData = {
-            firstName: newStudent.firstName,
-            lastName: newStudent.lastName,
-            level: newStudent.level,
-            phoneNumber: newStudent.phoneNumber,
-            studentId: newStudent.studentId,
-            address: newStudent.address,
-            birthDay: newStudent.birthDay,
-            academicYear: newStudent.academicYear,
-            monthlyFees: newStudent.monthlyFees,
-            totalFees: newStudent.totalFees,
-            subject: newStudent.subject,
-            startDate: newStudent.startDate,
-            endDate: newStudent.endDate,
-        };
-
-        if (currentStudent === null) {
-            axios.post('http://localhost:5000/api/students', studentData)
-                .then(response => {
-                    setStudents([...students, response.data]);
-                    resetForm();
-                })
-                .catch(error => {
-                    console.error('Error adding student:', error);
-                    alert('There was an error adding the student. Please try again.');
-                });
-        } else {
-            axios.put(`http://localhost:5000/api/students/${students[currentStudent].id}`, studentData) // Use 'id' from students array
-                .then(response => {
-                    const updatedStudents = students.map(student =>
-                        student.id === students[currentStudent].id ? response.data : student
-                    );
-                    setStudents(updatedStudents);
-                    resetForm();
-                })
-                .catch(error => {
-                    console.error('Error updating student:', error);
-                    alert('There was an error updating the student. Please try again.');
-                });
-        }
+    const formatToFrenchDate = (dateString) => {
+        if (!dateString) return null;
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) return dateString;
+        
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return null;
+        
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     };
 
+    const studentData = {
+        ...newStudent,
+        birthDay: formatToFrenchDate(newStudent.birthDay),
+        startDate: formatToFrenchDate(newStudent.startDate),
+        endDate: formatToFrenchDate(newStudent.endDate)
+    };
+
+
+    const endpoint = currentStudent === null ? 
+        axios.post('http://localhost:5000/api/students', studentData) :
+        axios.put(`http://localhost:5000/api/students/${students[currentStudent].id}`, studentData);
+
+    endpoint.then(response => {
+        // Solution 1: Rafraîchir toute la liste depuis le serveur
+        axios.get('http://localhost:5000/api/students')
+            .then(updatedResponse => {
+                const formattedStudents = updatedResponse.data.map(student => ({
+                    ...student,
+                    birthDay: formatDateDisplay(student.birthDay),
+                    startDate: formatDateDisplay(student.startDate),
+                    endDate: formatDateDisplay(student.endDate)
+                }));
+                setStudents(formattedStudents);
+                
+                // Si c'est un nouvel étudiant, l'ajouter aux paiements
+                if (currentStudent === null) {
+                    const newStudent = response.data;
+                    axios.post("http://localhost:5000/api/payments", {
+                        student_id: newStudent.id,
+                        montantReçu: 0,
+                        reste: newStudent.totalFees,
+                        status: "Non Payé",
+                        date: new Date().toISOString(),
+                    }).catch(error => {
+                        console.error("Error adding student to payments:", error);
+                    });
+                }
+                
+                resetForm();
+            });
+    }).catch(error => {
+        console.error('Error saving student:', error);
+        alert(`Error ${currentStudent === null ? 'adding' : 'updating'} student. Please try again.`);
+    });
+};
     const resetForm = () => {
         setNewStudent({
-            firstName: '',
-            lastName: '',
-            phoneNumber: '',
-            studentId: '',
-            birthDay: '',
-            academicYear:'',
-            address: '',
-            monthlyFees: '',
-            totalFees: '',
-            teachers: '',
-            startDate: '',
-            endDate: '',
-            subject: '',
-            level: '',
+            firstName: '', lastName: '', phoneNumber: '', studentId: '', address: '',
+            birthDay: '', academicYear: '', monthlyFees: '', totalFees: '', teachers: '',
+            startDate: '', endDate: '', subject: '', level: '',
         });
         setShowModal(false);
         setCurrentStudent(null);
     };
+        // Fonction pour l'affichage dans le tableau (à conserver)
+        const formatDateDisplay = (dateString) => {
+            if (!dateString) return "N/A";
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) return dateString;
+            
+            const date = new Date(dateString);
+            return isNaN(date.getTime()) ? "Invalid Date" : 
+                date.toLocaleDateString("fr-FR", { year: "numeric", month: "2-digit", day: "2-digit" });
+        };
+        
+        const handleEdit = (index) => {
+            const student = students[index];
+            setCurrentStudent(index);
+            
+            // Fonction pour convertir la date au format attendu par l'input date (AAAA-MM-JJ)
+            const formatForDateInput = (dateString) => {
+                if (!dateString) return '';
+                
+                // Si la date est déjà au format JJ/MM/AAAA
+                if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+                    const [day, month, year] = dateString.split('/');
+                    return `${year}-${month}-${day}`;
+                }
+                
+                // Si c'est une date ISO
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return '';
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+        
+            setNewStudent({
+                ...student,
+                birthDay: formatForDateInput(student.birthDay),
+                startDate: formatForDateInput(student.startDate),
+                endDate: formatForDateInput(student.endDate)
+            });
+            setShowModal(true);
+        };
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const handleEdit = (index) => {
-        setCurrentStudent(index);
-        setNewStudent(students[index]);
-        setShowModal(true);
-    };
+        useEffect(() => {
+            setCurrentPage(1);
+        }, [searchQuery, filteredSubjects, filterLevel]);
+    
 
     const handleDelete = (index) => {
         const studentId = students[index].id;
-        axios.delete(`http://localhost:5000/api/students/${studentId}`)
-            .then(response => {
-                const updatedStudents = students.filter((_, i) => i !== index);
-                setStudents(updatedStudents);
-            })
-            .catch(error => {
-                console.error('Error deleting student:', error);
-                alert('There was an error deleting the student. Please try again.');
-            });
-
-        if (currentPage > 1 && currentStudents.length === 1) {
-            setCurrentPage(currentPage - 1);
+        if (window.confirm("Are you sure you want to delete this student?")) {
+            axios.delete(`http://localhost:5000/api/students/${studentId}`)
+                .then(() => {
+                    setStudents(prev => prev.filter((_, i) => i !== index));
+                    if (currentPage > 1 && currentStudents.length === 1) {
+                        setCurrentPage(prev => prev - 1);
+                    }
+                })
+                .catch(error => console.error('Error deleting student:', error));
         }
-
     };
 
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
 
-    const filteredStudents = students
-        .filter(student => student.subject.toLowerCase().includes(filteredSubjects.toLowerCase()));
+    // Remplacez l'état existant pour filterLevel par :
+const [selectedLevels, setSelectedLevels] = useState({
+    L1: false,
+    L2: false,
+    L3: false,
+    'Master 1': false,
+    'Master 2': false
+});
+
+// Modifiez la fonction de filtrage :
+const filteredStudents = students.filter(student => {
+    const matchesSubject = student.subject && 
+        student.subject.toLowerCase().includes(filteredSubjects.toLowerCase());
+    
+    // Si aucun niveau n'est sélectionné, on retourne tous les étudiants qui correspondent à la filière
+    if (Object.values(selectedLevels).every(level => !level)) {
+        return matchesSubject;
+    }
+    
+    // Sinon, on filtre par niveau sélectionné
+    return matchesSubject && selectedLevels[student.level];
+});
 
     const currentStudents = filteredStudents.slice(indexOfFirstRow, indexOfLastRow);
+    const totalPages = Math.ceil(filteredStudents.length / rowsPerPage);
 
     return (
         <div className="admin-dashboard">
-            <div className="sidebar">
+            {isMobile && (
+                <button className="sidebar-toggle-btn" onClick={toggleSidebar} aria-label="Toggle sidebar">
+                    {isSidebarVisible ? '✕' : '☰'}
+                </button>
+            )}
+
+            <div className={`sidebar ${isMobile ? (isSidebarVisible ? 'active' : '') : 'active'}`}>
                 <div className="sidebar-header">
                     <h2>GESTION DES ETUDIANTS</h2>
                 </div>
                 <ul className="sidebar-menu">
-                    <li><Link to="/accountant"><FaUserGraduate/>Tableau de bord</Link></li>
-                    <li><Link to="/students"><FaChalkboardTeacher/>Etudiants</Link></li>
-                    <li><Link to="/payment"><FaChalkboardTeacher/>Paiements</Link></li>
-                    <li><Link to="/payment"><FaChalkboardTeacher/>Personnel</Link></li>
+                    <li><Link to="/accountant" onClick={() => isMobile && toggleSidebar()}><FaUserGraduate/>Tableau de bord</Link></li>
+                    <li><Link to="/students" onClick={() => isMobile && toggleSidebar()}><FaChalkboardTeacher/>Etudiants</Link></li>
+                    <li><Link to="/payment" onClick={() => isMobile && toggleSidebar()}><FaChalkboardTeacher/>Paiements</Link></li>
+                    <li><Link to="/payment" onClick={() => isMobile && toggleSidebar()}><FaChalkboardTeacher/>Personnel</Link></li>
                 </ul>
             </div>
 
-            <div className="main-content">
+            <div className={`main-content ${isMobile ? (isSidebarVisible ? 'sidebar-open' : '') : ''}`}>
                 <header className="dashboard-header">
                     <h1>Bienvenue, Comptable!</h1>
                 </header>
@@ -206,207 +276,169 @@ const StudentDashboard = () => {
                 <button className="add-student-btn" onClick={() => setShowModal(true)}>
                     Ajouter un étudiant
                 </button>
-                <div className="search-filter-container">
-                    <input
-                        type="text"
-                        placeholder="Filtrer par filière"
-                        className="filter-input"
-                        value={filteredSubjects}
-                        onChange={(e) => setFilteredSubjects(e.target.value)}
-                    />
-                </div>
-                <table className="student-table">
-                    <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Nom</th>
-                        <th>prénom</th>
-                        <th>TEL</th>
-                        <th>N° Carte</th>
-                        <th>Lieu de Naissance</th>
-                        <th>Date de Naissance</th>
-                        <th>Année Académique</th>
-                        <th>Frai mensuel (en CFA)</th>
-                        <th>Total des paiements (en CFA)</th>
-                        <th>Date de début</th>
-                        <th>Date de fin</th>
-                        <th>Filière</th>
-                        <th>Niveau</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {currentStudents.map((student, index) => (
-                        <tr key={index}>
-                            <td>{student.id}</td>
-                            <td>{student.firstName}</td>
-                            <td>{student.lastName}</td>
-                            <td>{student.phoneNumber}</td>
-                            <td>{student.studentId}</td>
-                            <td>{student.address}</td>
-                            <td>{formatDate(student.birthDay)}</td>
-                            <td>{student.academicYear}</td>
-                            <td>{student.monthlyFees}</td>
-                            <td>{student.totalFees}</td>
-                            <td>{formatDate(student.startDate)}</td>
-                            <td>{formatDate(student.endDate)}</td>
-                            <td>{student.subject}</td>
-                            <td>{student.level}</td>
-                            <td className="btn">
-                                <button onClick={() => handleEdit(index)}><FaEdit/></button>
-                                <button onClick={() => handleDelete(index)}><FaTrash/></button>
-                            </td>
-                        </tr>
-                    ))}
+                
+                    <div className="search-filter-container">
+                        <input
+                            type="text"
+                            placeholder="Filtrer par filière"
+                            value={filteredSubjects}
+                            onChange={(e) => setFilteredSubjects(e.target.value)}
+                            className="filter-input"
+                        />
+                        
+                        <div className="level-checkboxes">
+                            {['L1', 'L2', 'L3', 'Master 1', 'Master 2'].map(level => (
+                                <label key={level} className="level-checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedLevels[level]}
+                                        onChange={() => setSelectedLevels(prev => ({
+                                            ...prev,
+                                            [level]: !prev[level]
+                                        }))}
+                                    />
+                                    {level}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
 
-                    </tbody>
-                </table>
-
-                <div className="pagination">
-                    <button
-                        className="pagination-btn"
-                        disabled={currentPage === 1}
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                    >
-                        <FaArrowLeft />
-                    </button>
-                    <span className="pagination-info">
-                        Page {currentPage} of {Math.ceil(filteredStudents.length / rowsPerPage)}
-                    </span>
-                    <button
-                        className="pagination-btn"
-                        disabled={indexOfLastRow >= filteredStudents.length}
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                    >
-                        <FaArrowRight />
-                    </button>
+                <div className="table-container">
+                    <table className="student-table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>TEL</th>
+                                <th>N° Carte</th>
+                                <th>Lieu de Naissance</th>
+                                <th>Date de Naissance</th>
+                                <th>Année Académique</th>
+                                <th>Frais mensuel (CFA)</th>
+                                <th>Total (CFA)</th>
+                                <th>Date début</th>
+                                <th>Date fin</th>
+                                <th>Filière</th>
+                                <th>Niveau</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentStudents.map((student, index) => (
+                                <tr key={index}>
+                                    <td data-label="ID">{student.id}</td>
+                                    <td data-label="Nom">{student.firstName}</td>
+                                    <td data-label="Prénom">{student.lastName}</td>
+                                    <td data-label="Téléphone">{student.phoneNumber}</td>
+                                    <td data-label="N° Carte">{student.studentId}</td>
+                                    <td data-label="Adresse">{student.address}</td>
+                                    <td data-label="Naissance">{formatDateDisplay(student.birthDay)}</td>
+                                    <td data-label="Année Acad">{student.academicYear}</td>
+                                    <td data-label="Frais Mensuel">{student.monthlyFees}</td>
+                                    <td data-label="Total Payé">{student.totalFees}</td>
+                                    <td data-label="Début">{formatDateDisplay(student.startDate)}</td>
+                                    <td data-label="Fin">{formatDateDisplay(student.endDate)}</td>
+                                    <td data-label="Filière">{student.subject}</td>
+                                    <td data-label="Niveau">{student.level}</td>
+                                    <td className="btn" data-label="Actions">
+                                        <button onClick={() => handleEdit(index)} aria-label="Edit"><FaEdit/></button>
+                                        <button onClick={() => handleDelete(index)} aria-label="Delete"><FaTrash/></button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
+
+          {/* Pagination */}
+          <div className="pagination">
+                <button
+                    className="pagination-btn"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => prev - 1)}
+                >
+                    <FaArrowLeft/>
+                </button>
+                <span className="pagination-info">
+                    Page {currentPage} sur {totalPages}
+                </span>
+                <button
+                    className="pagination-btn"
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                >
+                    <FaArrowRight/>
+                </button>
+            </div>
 
                 {showModal && (
-                    <div className="modal">
+                    <div className="modal" onClick={(e) => e.target === e.currentTarget && resetForm()}>
                         <div className="modal-content">
-                  <h2><FaStudiovinari />{currentStudent === null ? 'AJOUTER UN ' : 'ETUDIANT'} ETUDIANT</h2>
+                            <h2><FaStudiovinari />{currentStudent === null ? 'AJOUTER UN ' : 'MODIFIER '}ETUDIANT</h2>
                             {validationErrors.length > 0 && (
-                                <div className="awesome-validation-popup">
-                                    <h3>Please fix the following errors:</h3>
+                                <div className="validation-errors">
+                                    <h3>Veuillez corriger les erreurs suivantes :</h3>
                                     <ul>
                                         {validationErrors.map((error, index) => (
                                             <li key={index}>{error}</li>
                                         ))}
                                     </ul>
-                                    <button
-                                        className="cancel-validation-btn"
-                                        onClick={() => setValidationErrors([])}>
-                                        Cancel
+                                    <button className="close-errors-btn" onClick={() => setValidationErrors([])}>
+                                        Fermer
                                     </button>
                                 </div>
                             )}
-                            <form>
-                                <input
-                                    type="text"
-                                    name="firstName"
-                                    placeholder="Prénom"
-                                    value={newStudent.firstName}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    placeholder="Nom"
-                                    value={newStudent.lastName}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="level"
-                                    placeholder="Niveau"
-                                    value={newStudent.level}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="phoneNumber"
-                                    placeholder="Numéro de téléphone"
-                                    value={newStudent.phoneNumber}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="studentId"
-                                    placeholder="Identifiant de l'étudiant"
-                                    value={newStudent.studentId}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="address"
-                                    placeholder="Addresse"
-                                    value={newStudent.address}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="birthDay">Date de naissance</label>
-                                <input
+                            <form onSubmit={(e) => e.preventDefault()}>
+                                {Object.entries({
+                                    firstName: 'Prénom',
+                                    lastName: 'Nom',
+                                    level: 'Niveau',
+                                    phoneNumber: 'Numéro de téléphone',
+                                    studentId: 'Identifiant étudiant',
+                                    address: 'Adresse',
+                                    academicYear: 'Année Académique',
+                                    monthlyFees: 'Frais mensuel',
+                                    totalFees: 'Montant total',
+                                    subject: 'Filière'
+                                }).map(([field, label]) => (
+                                    <div key={field} className="form-group">
+                                        <input
+                                            type={field.includes('Fees') ? 'number' : 'text'}
+                                            name={field}
+                                            placeholder={label}
+                                            value={newStudent[field]}
+                                            onChange={handleChange}
+                                        />
+                                        
+                                    </div>
+                                ))}
+                                
+                                {['birthDay', 'startDate', 'endDate'].map(dateField => (
+                                    <div key={dateField} className="form-group">
+                                        <label>{dateField === 'birthDay' ? 'Date de naissance' : 
+                                            dateField === 'startDate' ? 'Date de début' : 'Date de fin'}</label>
+                                        <input
+                                            type="date"
+                                            name={dateField}
+                                            value={newStudent[dateField] || ''}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                ))}
 
-                                    type="date"
-                                    name="birthDay"
-                                    placeholder="Date de naissance"
-                                    value={newStudent.birthDay}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="academicYear"
-                                    placeholder="Année Académique"
-                                    value={newStudent.academicYear}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="number"
-                                    name="monthlyFees"
-                                    placeholder="Frais mensuel"
-                                    value={newStudent.monthlyFees}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="number"
-                                    name="totalFees"
-                                    placeholder="Montant total"
-                                    value={newStudent.totalFees}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="birthDay">Date de début</label>
-                                <input
-                                    type="date"
-                                    name="startDate"
-                                    placeholder="Date de début de formation"
-                                    value={newStudent.startDate}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="birthDay">Date de fin</label>
-                                <input
-                                    type="date"
-                                    name="endDate"
-                                    placeholder="Date de fin de formation"
-                                    value={newStudent.endDate}
-                                    onChange={handleChange}
-                                />
-                                <input
-                                    type="text"
-                                    name="subject"
-                                    placeholder="Fillière"
-                                    value={newStudent.subject}
-                                    onChange={handleChange}
-                                />
-                                <button type="button" onClick={handleSaveStudent}>
-                                    {currentStudent === null ? 'Ajouter un ' : 'Mettre à jour'} étudiant
-                                </button>
-                                <button type="button" onClick={resetForm}>
-                                    Annuler
-                                </button>
+                                <div className="form-actions">
+                                    <button type="button" onClick={handleSaveStudent} className="save-btn">
+                                        {currentStudent === null ? 'Ajouter' : 'Mettre à jour'}
+                                    </button>
+                                    <button type="button" onClick={resetForm} className="cancel-btn">
+                                        Annuler
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>
-                )}carte
+                )}
             </div>
         </div>
     );

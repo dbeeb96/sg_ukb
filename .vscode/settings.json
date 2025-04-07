@@ -1,0 +1,17 @@
+{
+    "terminal.integrated.profiles.linux": {
+        "zsh": {
+            "path": "/usr/bin/zsh"
+        },
+        "bash": {
+            "path": "/bin/bash"
+        },
+        "sh": {
+            "path": "/bin/sh"
+        }
+    },
+    "editor.fontSize": 16,
+    "files.autoSave": "onFocusChange",
+    "editor.fontFamily": "\"editor.fontFamily\": \"'DejaVu Sans Mono for Powerline'\"",
+}
+

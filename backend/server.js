@@ -3,6 +3,7 @@ const mysql = require("mysql");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 
+
 const app = express();
 const port = 5000;
 

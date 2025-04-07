@@ -119,9 +119,9 @@ body {
     max-width: 200px;
     display: inline-block;
     background-color: #3498db;
+    border-radius: 25px;
     color: #fff;
     padding: 10px 20px;
-    border-radius: 5px;
     border: none;
     font-size: 14px;
     cursor: pointer;
@@ -175,16 +175,34 @@ body {
     font-size: 18px;
 }
 
-.student-table button:hover {
+/* Styles généraux pour les boutons d'action */
+.student-table .btn {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .student-table .btn button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    transition: transform 0.2s;
+  }
+  
+  .student-table .btn button:hover {
     color: #e74c3c;
-}
-
+    transform: scale(1.1);
+  }
 /* Pagination Styles */
 .pagination {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     margin-top: 10px;
+    color: white;
 }
 
 .pagination-btn {
@@ -212,120 +230,391 @@ body {
     font-size: 14px;
     color: #fff;
     margin-right: 10px;
+    background-color: white;
+    width: 100px;
+    height:28px;
+    line-height: 28px;
+    font-weight: bold;
+}
+.search-filter-container .filter-input {
+    margin: 0;
+    min-width: 200px;
+    padding: 0;
+    height: 50px;
+    border-radius: 25px;
+    text-align: center;
+    font-size: 18px;
 }
 
-/* Modal Styles */
+/* Styles de base pour la modal */
 .modal {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-}
-
-.modal-content {
-    background: #fff;
+    overflow-y: auto;
     padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
+    
+  }
+
+  .modal-content {
+    background: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 25px;
+    color: #333;
+    border-radius: 25px;
+  }
 
-.modal-content h2 {
-    margin-top: 0;
-    font-size: 20px;
-    margin-bottom: 10px;
+  .modal-content h2 {
     color: #005ab3;
-    font-size: 25px;
     text-align: center;
-}
+    margin-bottom: 25px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
 
-.modal-content form input {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #dcdfe1;
+  .modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .modal-content input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
-}
-
-.modal-content form button {
-    background-color: #3498db;
-    color: #fff;
-    margin: 5px;
-    border: none;
+  }
+  
+  .modal-content label {
+    font-weight: bold;
+    margin-bottom: -10px;
+  }
+  
+  .modal-content button[type="button"] {
+    padding: 12px;
     border-radius: 5px;
+    border: none;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-right: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .modal-content button[type="button"]:first-of-type {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .modal-content button[type="button"]:last-of-type {
+    background-color: #f44336;
+    color: white;
+    margin-top: 10px;
+  }
+  
+  /* Styles pour les messages d'erreur */
+  .awesome-validation-popup {
+    background-color: #f8d7da;
+    border-left: 4px solid #f44336;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+  }
+  
+  .awesome-validation-popup h3 {
+    color: #721c24;
+    margin-top: 0;
+  }
+  
+  .awesome-validation-popup ul {
+    padding-left: 20px;
+    margin: 10px 0;
+  }
+  
+  .awesome-validation-popup li {
+    color: #721c24;
+  }
+  
+  .cancel-validation-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }  
+
+/* Ajoutez ces styles à votre fichier CSS existant */
+
+  .sidebar-toggle-btn {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+    background: #2c3e50;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
 }
 
-.modal-content form button:hover {
-    background-color: #2980b9;
+/* Ajoutez ces styles à votre fichier StudentDashboard.css */
+.search-filter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* Responsive Design */
+.level-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.level-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.level-checkbox-label:hover {
+    background-color: #e0e0e0;
+}
+
+.level-checkbox-label input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.filter-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 300px;
+}
+
 @media (max-width: 768px) {
+    .level-checkboxes {
+        flex-direction: column;
+    }
+    
+    .filter-input {
+        max-width: 100%;
+    }
+}
+  
+/* Responsive Design for 768px */
+/* Responsive Design for 768px */
+@media (max-width: 768px) {
+    .sidebar-toggle-btn {
+        display: block;
+    }
+    
     .sidebar {
-        width: 100%;
-        height: auto;
-        position: static;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .main-content.sidebar-open {
+        margin-left: 250px;
+    }
+     .modal {
+        padding: 10px;
+        align-items: flex-start;
+      }
+      
+      .modal-content {
+        max-width: 80%;
+        max-height: 80vh;
+        padding: 40px;
+        margin-left: 230px;
+      }
+      
+      .modal-content h2 {
+        font-size: 20px;
+        flex-direction: column;
+        gap: 5px;
+      }
+      
+      
+      .modal-content form {
+        gap: 12px;
+        max-width: 80%;
+        max-height: 80vh;
+        margin-left: 10%;
+      }
+      
+      .modal-content input {
+        padding: 10px 12px;
+        font-size: 15px;
+      }
+      
+      .modal-content button[type="button"] {
+        padding: 10px;
+        font-size: 15px;
+      }
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: fixed;
+        left: -250px;
+        top: 0;
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .sidebar-toggle-btn {
+        display: block;
     }
 
     .main-content {
         margin-left: 0;
+        padding: 15px;
     }
 
-    .student-table th, .student-table td {
+    .student-table {
+        display: block;
+        width: 100%;
+    }
+
+    .student-table thead {
+        display: none;
+    }
+
+    .student-table tbody {
+        display: block;
+    }
+
+    .student-table tr {
+        display: block;
+        margin-bottom: 20px;
+        border: 1px solid #2c3e50;
+        border-radius: 5px;
+        padding: 10px;
+        position: relative;
+    }
+
+    .student-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 10px;
+        text-align: right;
+        border-bottom: 1px solid #34495e;
+    }
+
+    .student-table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #3498db;
+        margin-right: 10px;
+    }
+
+    /* Styles spécifiques pour les boutons */
+    .student-table td.btn {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 10px;
+        border-bottom: none;
+    }
+
+    .student-table td.btn::before {
+        content: "Actions";
+        position: absolute;
+        left: 10px;
+    }
+
+    .student-table .btn button {
+        font-size: 16px;
         padding: 8px;
-        font-size: 14px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .pagination-btn {
-        width: 25px;
-        height: 25px;
-        font-size: 12px;
-    }
-
-    .pagination-info {
-        font-size: 12px;
-    }
-
-    .modal-content {
-        width: 90%;
-        max-width: 90%;
-    }
-}
-
-@media (max-width: 480px) {
+    /* Autres styles */
     .dashboard-header h1 {
         font-size: 20px;
     }
 
     .dashboard-title h1 {
         font-size: 18px;
+        padding: 15px;
     }
 
     .add-student-btn {
         width: 100%;
-        max-width: 100%;
+        max-width: none;
+        margin-bottom: 15px;
+  
     }
 
-    .student-table {
-        font-size: 12px;
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        padding: 15px;
     }
 
     .modal-content h2 {
         font-size: 20px;
     }
 
-    .modal-content form input {
+    .pagination {
+        justify-content: center;
+    }
+
+    .pagination-info {
+        margin: 0 10px;
+    }
+}
+
+/* Pour les très petits écrans */
+@media (max-width: 480px) {
+    .student-table td {
         font-size: 14px;
+    }
+
+    .student-table .btn button {
+        font-size: 14px;
+        width: 32px;
+        height: 32px;
     }
 }

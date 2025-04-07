@@ -13,21 +13,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ Database connection (Using createPool)
 const db = mysql.createPool({
-    host: 'localhost',   // Database host
-    user: 'dbeeb',        // Database username
-    password: 'papesaloum',// Database password
-    database: 'sgt_st' ,// Database name
+    host: 'mysql-monpf.alwaysdata.net',   // Database host
+    user: 'monpf',        // Database username
+    password: 'Passer@25',// Database password
+    database: 'monpf_ukbdb' ,// Database name
     connectionLimit: 10, // Allows multiple connections
 
-    /*
-    host: process.env.DB_HOST || 'mysql-monpf.alwaysdata.net',
-    user: process.env.DB_USER || 'monpf',
-    password: process.env.DB_PASSWORD || 'Passer',
-    database: process.env.DB_NAME || 'monpf_ukbdb',
-    port: process.env.DB_PORT || 3306,
-    connectionLimit: 10, // Allows multiple connections
-
-     */
 });
 
 // ✅ Check DB connection at startup (Proper way)
@@ -70,7 +61,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(port, () => {
-    console.log(`🚀 Server running at http://localhost:${port}`);
+    console.log(`🚀 Server running at https://sg-ukb.onrender.com/:${port}`);
 });
 
 // ✅ Export app and DB connection for reuse
