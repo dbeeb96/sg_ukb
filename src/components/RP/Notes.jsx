@@ -43,7 +43,7 @@ const Notes = () => {
     });
     const [displayedNotes, setDisplayedNotes] = useState([]);
     useEffect(() => {
-        axios.get('http://localhost:5000/api/students')
+        axios.get('https://sg-ukb.onrender.com/api/students')
             .then(response => setStudents(response.data))
             .catch(error => console.error('Error fetching students:', error));
     }, []);
@@ -56,7 +56,7 @@ const [isLoading, setIsLoading] = useState(false);
 const fetchStudentNotes = async (studentId) => {
   setIsLoading(true);
   try {
-    const response = await axios.get(`http://localhost:5000/api/students/${studentId}/notes`);
+    const response = await axios.get(`https://sg-ukb.onrender.com/api/students/${studentId}/notes`);
     
     if (!response.data) {
       throw new Error('Aucune donnée reçue');
@@ -385,7 +385,7 @@ const getUENotes = (semestre, ueIndex) => {
             };
     
             const response = await axios.post(
-                `http://localhost:5000/api/students/notes/${selectedStudent.id}`,
+                `https://sg-ukb.onrender.com/api/students/notes/${selectedStudent.id}`,
                 noteData
             );
     
