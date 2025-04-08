@@ -30,7 +30,9 @@ const PaymentDashboard = () => {
 
     const PaymentModal = ({ student, onSubmit, onClose }) => {
         const [amount, setAmount] = useState("");
-
+        const [paymentMethod, setPaymentMethod] = useState("cash");
+        const [receiptNumber, setReceiptNumber] = useState("");
+    
         return (
             <div className="payment-popup">
                 <div className="popup-content">
@@ -44,8 +46,33 @@ const PaymentDashboard = () => {
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                     />
+                    
+                    <div className="payment-method-section">
+                        <label>Méthode de paiement:</label>
+                        <select 
+                            value={paymentMethod} 
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                        >
+                            <option value="cash">Espèces</option>
+                            <option value="orange_money">Orange Money</option>
+                            <option value="wave">Wave</option>
+                        </select>
+                    </div>
+                    
+                    {paymentMethod !== "cash" && (
+                        <div className="receipt-number-section">
+                            <label>Numéro de transaction:</label>
+                            <input
+                                type="text"
+                                placeholder="Numéro de transaction"
+                                value={receiptNumber}
+                                onChange={(e) => setReceiptNumber(e.target.value)}
+                            />
+                        </div>
+                    )}
+                    
                     <div className="popup-actions">
-                        <button onClick={() => onSubmit(amount)}>Valider</button>
+                        <button onClick={() => onSubmit(amount, paymentMethod, receiptNumber)}>Valider</button>
                         <button onClick={onClose}>Fermer</button>
                     </div>
                 </div>
@@ -61,103 +88,130 @@ const PaymentDashboard = () => {
         'Master 2': false
     });
 
-    const printAllInvoices = (student) => {
-        const currentDate = new Date();
-        const formattedDate = currentDate.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
-        const formattedTime = currentDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
-
-        const invoiceWindow = window.open("", "_blank");
-        invoiceWindow.document.write(`
-        <html>
-        <head>
-            <title>Reçu du Paiement</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20;
-                border: 0.3px dashed #000; padding-left: 15px; padding-right: 15px; }
-                .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-                .logo { height: 50px; }
-                .university-name { text-align: center; font-weight: bold; font-size: 1.2em; }
-                .details { margin: 20px 0; }
-                .details p { margin: 5px 0, font-weight:none; }
-                .status { font-weight: bold; color: ${student.status === "Payé" ? "green" : "red"}; }
-            </style>
-        </head>
-        <body>
-           <div class="header">
-                <img src="../../../public/img.png" alt="Logo" class="logo" />
-                <div class="university-name">
-                    KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
-                    DE SAINT-LOUIS<br />
-                    MENSUALITE: ${student.filiere || "N/A"}
-                </div>   
-                <div>
-                    <p>Date: ${formattedDate}</p>
-                    <p>Heure: ${formattedTime}</p>
-                </div>
-            </div>
-            <div class="details">
-               <div class="studentNameId">
-                    <p>Nom de l'étudiant: <strong>${student.firstName || "N/A"} ${student.lastName || "N/A"}</strong></p>
-                    <p> Identifiant de l'étudiant : <strong>${student.studentId}<strong> </p>
-               </div>
-                <p>Dernier Montant Reçu: <strong>${(student.lastReceived || 0).toLocaleString()} CFA </strong></p>
-                <p>Montant Total Reçu: <strong>${(student.montantReçu || 0).toLocaleString()} CFA </strong></p>
-                <p>Reste: <strong>${(student.reste || 0).toLocaleString()} CFA </strong> </p>
-                <p>Statut: <strong><span class="status">${student.status || "N/A"} </strong></span> </p>
-            </div>
-            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
-           <hr>
-
-            <br>
-            <br>
-            <br>
-            <br>
-
-            <center>-------------------------------------------------------------------------------------------------------
-            --------- </center> 
-             <head>
-            <title>Reçu du Paiement</title>
-            </head>
-            <br>
-            <br>
-            <br>
-            <br>
-        
-               <div class="header">
-                <img src="../../../public/img.png" alt="Logo" class="logo" />
-                <div class="university-name">
-                    KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
-                    DE SAINT-LOUIS<br />
-                    MENSUALITE: ${student.filiere || "N/A"}
-                </div>   
-                <div>
-                    <p>Date: ${formattedDate}</p>
-                    <p>Heure: ${formattedTime}</p>
-                </div>
-            </div>
-            <div class="details">
-               <div class="studentNameId">
-                    <p>Nom de l'étudiant: <strong>${student.firstName || "N/A"} ${student.lastName || "N/A"}</strong></p>
-                    <p> Identifiant de l'étudiant : <strong>${student.studentId}<strong> </p>
-               </div>
-                <p>Dernier Montant Reçu: <strong>${(student.lastReceived || 0).toLocaleString()} CFA </strong></p>
-                <p>Montant Total Reçu: <strong>${(student.montantReçu || 0).toLocaleString()} CFA </strong></p>
-                <p>Reste: <strong>${(student.reste || 0).toLocaleString()} CFA </strong> </p>
-                <p>Statut: <strong><span class="status">${student.status || "N/A"} </strong></span> </p>
-            </div>
-            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
-           <hr>
+    const printAllInvoices = async (student) => {
+        try {
+            // Validation
+            if (!student?.id || isNaN(student.id)) {
+                throw new Error("Identifiant étudiant invalide");
+            }
+    
+            console.log(`Récupération des paiements pour ${student.firstName} ${student.lastName}`);
             
-            <br>
-        </body>
-        </html>
-    `);
-        invoiceWindow.print();
-        invoiceWindow.close();
+            // Appel API
+            const response = await axios.get(`https://frontend-i916.onrender.com/api/payments/history/${student.id}`);
+            
+            if (!response.data?.success) {
+                throw new Error(response.data?.error || "Erreur du serveur");
+            }
+    
+            const payments = response.data.payments || [];
+            console.log('Paiements reçus:', payments);
+    
+            // Fonctions utilitaires
+            const formatDateTime = (dateString) => {
+                if (!dateString) return '-';
+                const date = new Date(dateString);
+                return date.toLocaleString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            };
+    
+            const formatCurrency = (amount) => {
+                return (amount || 0).toLocaleString('fr-FR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            };
+    
+            const totalAmount = payments.reduce((sum, p) => sum + (p.montantReçu || 0), 0);
+    
+            // Génération du HTML
+            const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Historique des Paiements</title>
+                <style>
+                    body { font-family: Arial; margin: 20px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { padding: 10px; border: 1px solid #ddd; }
+                    th { background-color: #4CAF50; color: white; }
+                    .total { font-weight: bold; background-color: #f5f5f5; }
+                    .no-data { text-align: center; padding: 20px; color: red; }
+                </style>
+            </head>
+            <body>
+                <h2>Historique des Paiements</h2>
+                <p><strong>Étudiant:</strong> ${student.firstName} ${student.lastName}</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date/Heure</th>
+                            <th>Montant (CFA)</th>
+                            <th>Méthode</th>
+                            <th>Référence</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${payments.length > 0 
+                            ? payments.map(payment => `
+                                <tr>
+                                    <td>${formatDateTime(payment.date)}</td>
+                                    <td>${formatCurrency(payment.montantReçu)}</td>
+                                    <td>${payment.paymentMethod || '-'}</td>
+                                    <td>${payment.receiptNumber || '-'}</td>
+                                    <td>${payment.status || 'Complété'}</td>
+                                </tr>
+                            `).join('')
+                            : `<tr><td colspan="5" class="no-data">Aucun paiement enregistré</td></tr>`
+                        }
+                    </tbody>
+                    ${payments.length > 0 ? `
+                    <tfoot>
+                        <tr class="total">
+                            <td>Total</td>
+                            <td>${formatCurrency(totalAmount)}</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                    ` : ''}
+                </table>
+    
+                <script>
+                    window.onload = function() {
+                        setTimeout(() => window.print(), 300);
+                    };
+                </script>
+            </body>
+            </html>
+            `;
+    
+            // Affichage
+            const printWindow = window.open('', '_blank', 'width=1000,height=700');
+            if (!printWindow) {
+                throw new Error("Veuillez autoriser les popups");
+            }
+    
+            printWindow.document.open();
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+    
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert(`Erreur: ${error.message}`);
+        }
     };
+    
     useEffect(() => {
         axios
-            .get("https://sg-ukb.onrender.com/api/students")
+            .get("https://frontend-i916.onrender.com/api/students")
             .then((response) => setStudents(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
@@ -165,7 +219,7 @@ const PaymentDashboard = () => {
             });
     
         axios
-            .get("https://sg-ukb.onrender.com/api/payments")
+            .get("https://frontend-i916.onrender.com/api/payments")
             .then((response) => {
                 const studentsWithPayments = response.data.map(payment => {
                     const student = students.find(s => s.id === payment.student_id);
@@ -182,7 +236,7 @@ const PaymentDashboard = () => {
             });
     }, []);
 
-     const handleStudentChange = (e) => {
+    const handleStudentChange = (e) => {
         const studentId = e.target.value;
         const student = students.find((s) => s.id === parseInt(studentId, 10));
         if (student && !selectedStudents.some((s) => s.id === student.id)) {
@@ -195,7 +249,7 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            axios.post("https://sg-ukb.onrender.com/api/payments", {
+            axios.post("https://frontend-i916.onrender.com/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
                 reste: student.totalFees,
@@ -211,6 +265,7 @@ const PaymentDashboard = () => {
                 });
         }
     };
+
     const openPaymentPopup = (student) => {
         setCurrentStudent(student);
         setShowPopup(true);
@@ -230,7 +285,7 @@ const PaymentDashboard = () => {
 
         setSelectedStudents((prev) => prev.filter((student) => student.id !== id));
 
-        axios.delete(`https://sg-ukb.onrender.com/api/payments/${id}`)
+        axios.delete(`https://frontend-i916.onrender.com/api/payments/${id}`)
             .then(() => {
                 console.log("Delete succeeded");
             })
@@ -277,49 +332,53 @@ const PaymentDashboard = () => {
         return nameMatches && selectedLevels[student.level];
     });
 
-    const handlePaymentSubmit = (montantReçu) => {
+    const handlePaymentSubmit = (montantReçu, paymentMethod, receiptNumber) => {
         if (currentStudent && montantReçu) {
             const receivedAmount = parseFloat(montantReçu) || 0;
             const previousReceived = currentStudent.montantReçu || 0;
             const totalAllowedPayment = currentStudent.totalFees;
             const remainingAmount = Math.max(totalAllowedPayment - (previousReceived + receivedAmount), 0);
-
+    
             if (receivedAmount <= 0) {
                 alert("Veuillez entrer un montant supérieur à 0 CFA.");
                 return;
             }
-
+    
             if (receivedAmount + previousReceived > totalAllowedPayment) {
                 alert(
                     `Le montant saisi dépasse le "Total des Paiements (${totalAllowedPayment} CFA)". Veuillez entrer un montant valide.`
                 );
                 return;
             }
-
+    
             const totalReceived = previousReceived + receivedAmount;
             const status = remainingAmount === 0 ? "Payé" : "mois Payé";
-
+    
             const updatedStudent = {
                 ...currentStudent,
                 montantReçu: totalReceived,
                 reste: remainingAmount,
                 status,
                 lastReceived: receivedAmount,
+                paymentMethod,
+                receiptNumber: paymentMethod !== "cash" ? receiptNumber : null
             };
-
+    
             const updatedStudents = selectedStudents.map((student) =>
                 student.id === currentStudent.id ? updatedStudent : student
             );
             setSelectedStudents(updatedStudents);
             updateTotals(updatedStudents);
-
+    
             axios
-                .put(`https://sg-ukb.onrender.com/api/payments/${currentStudent.id}`, {
+                .put(`https://frontend-i916.onrender.com/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
                     montantReçu: totalReceived,
                     reste: remainingAmount,
                     status: status,
                     lastReceived: receivedAmount,
+                    paymentMethod,
+                    receiptNumber: paymentMethod !== "cash" ? receiptNumber : null,
                     date: new Date().toISOString(),
                 })
                 .then(() => {
