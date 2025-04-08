@@ -709,7 +709,7 @@ const PaymentDashboard = () => {
                                             💰
                                         </button>
                                         <button className="icon-btn5" onClick={() => handleDelete(student.id)}>
-                                            <FaTrash />
+                                            <FaTrash /
                                         </button>
                                         <button className="icon-btn6" onClick={() => printInvoice(student)}>
                                             <FaPrint />
