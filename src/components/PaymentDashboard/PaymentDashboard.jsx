@@ -98,7 +98,7 @@ const PaymentDashboard = () => {
             console.log(`Récupération des paiements pour ${student.firstName} ${student.lastName}`);
             
             // Appel API
-            const response = await axios.get(`https://frontend-i916.onrender.com/api/payments/history/${student.id}`);
+            const response = await axios.get(`https://sg-ukb.onrender.com/api/payments/history/${student.id}`);
             
             if (!response.data?.success) {
                 throw new Error(response.data?.error || "Erreur du serveur");
@@ -211,7 +211,7 @@ const PaymentDashboard = () => {
     
     useEffect(() => {
         axios
-            .get("https://frontend-i916.onrender.com/api/students")
+            .get("https://sg-ukb.onrender.com/api/students")
             .then((response) => setStudents(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
@@ -219,7 +219,7 @@ const PaymentDashboard = () => {
             });
     
         axios
-            .get("https://frontend-i916.onrender.com/api/payments")
+            .get("https://sg-ukb.onrender.com/api/payments")
             .then((response) => {
                 const studentsWithPayments = response.data.map(payment => {
                     const student = students.find(s => s.id === payment.student_id);
@@ -249,7 +249,7 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            axios.post("https://frontend-i916.onrender.com/api/payments", {
+            axios.post("https://sg-ukb.onrender.com/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
                 reste: student.totalFees,
@@ -285,7 +285,7 @@ const PaymentDashboard = () => {
 
         setSelectedStudents((prev) => prev.filter((student) => student.id !== id));
 
-        axios.delete(`https://frontend-i916.onrender.com/api/payments/${id}`)
+        axios.delete(`https://sg-ukb.onrender.com/api/payments/${id}`)
             .then(() => {
                 console.log("Delete succeeded");
             })
@@ -371,7 +371,7 @@ const PaymentDashboard = () => {
             updateTotals(updatedStudents);
     
             axios
-                .put(`https://frontend-i916.onrender.com/api/payments/${currentStudent.id}`, {
+                .put(`https://sg-ukb.onrender.com/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
                     montantReçu: totalReceived,
                     reste: remainingAmount,
@@ -709,7 +709,7 @@ const PaymentDashboard = () => {
                                             💰
                                         </button>
                                         <button className="icon-btn5" onClick={() => handleDelete(student.id)}>
-                                            <FaTrash /
+                                            <FaTrash />
                                         </button>
                                         <button className="icon-btn6" onClick={() => printInvoice(student)}>
                                             <FaPrint />
