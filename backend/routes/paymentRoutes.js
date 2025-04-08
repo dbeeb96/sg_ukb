@@ -4,10 +4,10 @@ const router = express.Router();
 
 // MySQL connection setup
 const db = mysql.createConnection({
-    host: 'ukb.clw6e00uwrd5.eu-north-1.rds.amazonaws.com',
-    user: 'admin',
-    password: 'Passer2025',
-    database: 'ukb_db',
+    host: 'localhost',
+    user: 'dbeeb',
+    password: 'papesaloum',
+    database: 'sgt_st',
 
 });
 
@@ -97,6 +97,7 @@ router.put("/:id", (req, res) => {
         res.status(200).json({ message: "Payment updated successfully", data: results });
     });
 });
+
 // GET request to fetch all payments
 router.get("/", (req, res) => {
     const query = "SELECT * FROM payments";
@@ -260,49 +261,45 @@ router.delete('/:id', (req, res) => {
 });
 
 // Route pour l'historique des paiements
-// Standardize on :id for student identifiers
-router.get('/history/:id', async (req, res) => {
-    try {
-        const studentId = parseInt(req.params.id);
-        
-        if (isNaN(studentId)) {
-            return res.status(400).json({
+router.get('/history/:id', (req, res) => {
+    const studentId = parseInt(req.params.id);
+    
+    if (isNaN(studentId)) {
+        return res.status(400).json({
+            success: false,
+            error: "ID étudiant invalide"
+        });
+    }
+
+    const query = `
+        SELECT 
+            id,
+            DATE_FORMAT(date, '%Y-%m-%d %H:%i:%s') as date,
+            montantReçu,
+            paymentMethod,
+            status,
+            receiptNumber
+        FROM payments
+        WHERE student_id = ?
+        ORDER BY date DESC
+        LIMIT 100
+    `;
+    
+    db.query(query, [studentId], (error, results) => {
+        if (error) {
+            console.error('Erreur DB:', error);
+            return res.status(500).json({
                 success: false,
-                error: "ID étudiant invalide"
+                error: "Erreur base de données"
             });
         }
 
-        const query = `
-            SELECT 
-                p.date,
-                p.montantReçu,
-                p.paymentMethod,
-                p.status,
-                p.receiptNumber
-            FROM payments p
-            WHERE p.student_id = ?
-            ORDER BY p.date DESC
-        `;
-        
-        db.query(query, [studentId], (error, results) => {
-            if (error) {
-                console.error('Erreur DB:', error);
-                return res.status(500).json({
-                    success: false,
-                    error: "Erreur base de données"
-                });
-            }
-
-            res.json({
-                success: true,
-                payments: results,
-                count: results.length
-            });
+        res.json({
+            success: true,
+            payments: results,
+            count: results.length
         });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Server error' });
-    }
+    });
 });
 
 // Similarly update the recent payments route
