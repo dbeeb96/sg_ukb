@@ -236,35 +236,56 @@ const PaymentDashboard = () => {
             });
     }, []);
 
-    const handleStudentChange = (e) => {
-        const studentId = e.target.value;
-        const student = students.find((s) => s.id === parseInt(studentId, 10));
-        if (student && !selectedStudents.some((s) => s.id === student.id)) {
-            const newStudent = {
-                ...student,
-                montantReçu: 0,
-                reste: student.totalFees,
-                status: "Non Payé"
-            };
+const handleStudentChange = (e) => {
+    const studentId = e.target.value;
+    const student = students.find((s) => s.id === parseInt(studentId, 10));
+    
+    if (student && !selectedStudents.some((s) => s.id === student.id)) {
+        const newStudent = {
+            ...student,
+            montantReçu: 0,
+            reste: student.totalFees || 0, // Ensure default value
+            status: "Non Payé"
+        };
 
-            setSelectedStudents([...selectedStudents, newStudent]);
+        // Prepare the payload with all required fields
+        const payload = {
+            student_id: student.id,
+            firstName: student.firstName,
+            lastName: student.lastName,
+            filiere: student.filiere,
+            level: student.level,
+            studentId: student.studentId,
+            totalFees: student.totalFees || 0,
+            montantReçu: 0,
+            reste: student.totalFees || 0,
+            status: "Non Payé",
+            date: new Date().toISOString(),
+            paymentMethod: "cash", // Default value
+            receiptNumber: "" // Default value
+        };
 
-            axios.post("https://sg-ukb.onrender.com/api/payments", {
-                student_id: student.id,
-                montantReçu: 0,
-                reste: student.totalFees,
-                status: "Non Payé",
-                date: new Date().toISOString(),
+        console.log("Sending payload:", payload); // Debug log
+
+        axios.post("https://sg-ukb.onrender.com/api/payments", payload)
+            .then((response) => {
+                console.log("Student added to payment records:", response.data);
+                // Only update state after successful API call
+                setSelectedStudents([...selectedStudents, {
+                    ...newStudent,
+                    ...response.data // Include any server-generated fields
+                }]);
             })
-                .then((response) => {
-                    console.log("Student added to payment records:", response.data);
-                })
-                .catch((error) => {
-                    console.error("Error saving student to the database:", error);
-                    alert("Unable to save student. Please try again later.");
+            .catch((error) => {
+                console.error("Error saving student:", {
+                    message: error.message,
+                    response: error.response?.data,
+                    status: error.response?.status
                 });
-        }
-    };
+                alert(`Error saving student: ${error.response?.data?.message || error.message}`);
+            });
+    }
+};
 
     const openPaymentPopup = (student) => {
         setCurrentStudent(student);
