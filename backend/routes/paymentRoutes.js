@@ -43,60 +43,97 @@ router.use(cors({
 }));
 
 
-// POST request to add a payment
 router.post("/", (req, res) => {
+    console.log("Requête reçue:", req.body); // Log la requête entrante
+    
     const { student_id, montantReçu, reste, status, date, paymentMethod, receiptNumber } = req.body;
 
-    // Get all student details including level and studentId
+    if (!student_id) {
+        console.error("ID étudiant manquant");
+        return res.status(400).json({ 
+            success: false,
+            message: "L'ID étudiant est requis." 
+        });
+    }
+
+    console.log("Tentative de récupération de l'étudiant:", student_id);
+    
     const getStudentQuery = 'SELECT firstName, lastName, subject, totalFees, level, studentId FROM students WHERE id = ?';
+    
     db.query(getStudentQuery, [student_id], (error, results) => {
         if (error) {
-            return res.status(500).json({ message: "Error fetching student data.", error });
+            console.error("Erreur DB:", error);
+            return res.status(500).json({ 
+                success: false,
+                message: "Erreur serveur", 
+                error: error.message,
+                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            });
         }
 
         if (results.length === 0) {
-            return res.status(404).json({ message: "Student not found." });
+            console.error("Étudiant non trouvé:", student_id);
+            return res.status(404).json({ 
+                success: false,
+                message: "Étudiant non trouvé." 
+            });
         }
 
-        const { firstName, lastName, subject, totalFees, level, studentId } = results[0];
-        const filiere = subject || "Unknown";
-        const finalDate = date ? new Date(date).toISOString().slice(0, 19).replace('T', ' ') : new Date().toISOString().slice(0, 19).replace('T', ' ');
-        const finalMontantReçu = montantReçu || 0.00;
-        const finalReste = reste || 0.00;
-        const finalStatus = status || "Unpaid";
-        const finalPaymentMethod = paymentMethod || "cash";
-        const finalReceiptNumber = receiptNumber || null;
-        
-            const query = `
+        const student = results[0];
+        console.log("Étudiant trouvé:", student);
+
+        const query = `
             INSERT INTO payments 
-            (student_id, studentId, firstName, lastName, filiere, level, totalFees, montantReçu, reste, status, date, lastReceived, paymentMethod, receiptNumber) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (student_id, studentId, firstName, lastName, filiere, level, totalFees, 
+             montantReçu, reste, status, date, paymentMethod, receiptNumber) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
+        
         const values = [
             student_id, 
-            studentId,
-            firstName, 
-            lastName, 
-            filiere, 
-            level,
-            totalFees, 
-            finalMontantReçu, 
-            finalReste, 
-            finalStatus, 
-            finalDate,
-            0.00, // lastReceived
-            finalPaymentMethod,
-            finalReceiptNumber
+            student.studentId,
+            student.firstName, 
+            student.lastName, 
+            student.subject || "Unknown", 
+            student.level,
+            student.totalFees,
+            montantReçu || 0,
+            reste || student.totalFees,
+            status || "Non Payé",
+            date ? new Date(date).toISOString().slice(0, 19).replace('T', ' ') : 
+                  new Date().toISOString().slice(0, 19).replace('T', ' '),
+            paymentMethod || "cash",
+            receiptNumber || null
         ];
+
+        console.log("Exécution de la requête avec valeurs:", values);
         
         db.query(query, values, (error, results) => {
             if (error) {
-                return res.status(500).json({ message: "Error saving payment.", error });
+                console.error("Erreur d'insertion:", {
+                    message: error.message,
+                    code: error.code,
+                    sqlMessage: error.sqlMessage,
+                    sql: error.sql
+                });
+                return res.status(500).json({ 
+                    success: false,
+                    message: "Erreur lors de l'enregistrement",
+                    error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+                    code: error.code
+                });
             }
-            res.status(200).json({ message: "Payment saved successfully", data: results });
+            
+            console.log("Paiement enregistré avec ID:", results.insertId);
+            res.status(201).json({ 
+                success: true,
+                message: "Paiement enregistré",
+                paymentId: results.insertId
+            });
         });
     });
 });
+
 
 router.put("/:id", (req, res) => {
     const { id } = req.params;
