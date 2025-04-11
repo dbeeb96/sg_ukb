@@ -249,7 +249,7 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            axios.post("http://localhost:5000/api/payments", {
+            axios.post("https://sg-ukb.onrender.com/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
                 reste: student.totalFees,
