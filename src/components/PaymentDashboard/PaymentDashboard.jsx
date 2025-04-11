@@ -236,41 +236,38 @@ const PaymentDashboard = () => {
             });
     }, []);
 
-const handleStudentChange = (e) => {
-    const studentId = e.target.value;
-    const student = students.find((s) => s.id === parseInt(studentId, 10));
-    
-    if (!student) return;
+    const handleStudentChange = (e) => {
+        const studentId = e.target.value;
+        const student = students.find((s) => s.id === parseInt(studentId, 10));
+        if (student && !selectedStudents.some((s) => s.id === student.id)) {
+            const newStudent = {
+                ...student,
+                montantReçu: 0,
+                reste: student.totalFees,
+                status: "Non Payé"
+            };
 
-    if (!selectedStudents.some((s) => s.id === student.id)) {
-        axios.post("https://sg-ukb.onrender.com/api/payments", {
-            student_id: student.id,
-            montantReçu: 0,
-            reste: student.totalFees,
-            status: "Non Payé",
-            date: new Date().toISOString(),
-            paymentMethod: "cash",
-            receiptNumber: null
-        })
-        .then((response) => {
-            if (response.data.success) {
-                setSelectedStudents([...selectedStudents, {
-                    ...student,
-                    montantReçu: 0,
-                    reste: student.totalFees,
-                    status: "Non Payé",
-                    id: response.data.paymentId
-                }]);
-            } else {
-                throw new Error(response.data.message || "Erreur inconnue");
-            }
-        })
-        .catch((error) => {
-            console.error("Erreur:", error.response?.data || error.message);
-            alert(`Erreur: ${error.response?.data?.message || error.message}`);
-        });
-    }
-};
+            setSelectedStudents([...selectedStudents, newStudent]);
+
+            axios.post("http://localhost:5000/api/payments", {
+                student_id: student.id,
+                montantReçu: 0,
+                reste: student.totalFees,
+                status: "Non Payé",
+                date: new Date().toISOString(),
+                paymentMethod: "cash",
+                receiptNumber: null
+            })
+                .then((response) => {
+                    console.log("Student added to payment records:", response.data);
+                })
+                .catch((error) => {
+                    console.error("Error saving student to the database:", error);
+                    alert("Unable to save student. Please try again later.");
+                });
+        }
+    };
+    
     const openPaymentPopup = (student) => {
         setCurrentStudent(student);
         setShowPopup(true);
