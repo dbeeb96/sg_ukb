@@ -236,50 +236,37 @@ const PaymentDashboard = () => {
             });
     }, []);
 
-   const handleStudentChange = async (e) => {
-    const studentId = e.target.value;
-    const student = students.find((s) => s.id === parseInt(studentId, 10));
-    
-    if (!student || selectedStudents.some((s) => s.id === student.id)) {
-        return;
-    }
+    const handleStudentChange = (e) => {
+        const studentId = e.target.value;
+        const student = students.find((s) => s.id === parseInt(studentId, 10));
+        if (student && !selectedStudents.some((s) => s.id === student.id)) {
+            const newStudent = {
+                ...student,
+                montantReçu: 0,
+                reste: student.totalFees,
+                status: "Non Payé"
+            };
 
-    const newStudent = {
-        ...student,
-        montantReçu: 0,
-        reste: student.totalFees,
-        status: "Non Payé"
+            setSelectedStudents([...selectedStudents, newStudent]);
+
+            axios.post("http://localhost:5000/api/payments", {
+                student_id: student.id,
+                montantReçu: 0,
+                reste: student.totalFees,
+                status: "Non Payé",
+                date: new Date().toISOString(),
+                paymentMethod: "cash",
+                receiptNumber: null
+            })
+                .then((response) => {
+                    console.log("Student added to payment records:", response.data);
+                })
+                .catch((error) => {
+                    console.error("Error saving student to the database:", error);
+                    alert("Unable to save student. Please try again later.");
+                });
+        }
     };
-
-    setSelectedStudents([...selectedStudents, newStudent]);
-
-    try {
-        const response = await axios.post("https://sg-ukb.onrender.com/api/payments", {
-            student_id: student.id,
-            montantReçu: 0,
-            reste: student.totalFees,
-            status: "Non Payé",
-            date: new Date().toISOString(),
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        });
-
-        console.log("Student added to payment records:", response.data);
-    } catch (error) {
-        console.error("Detailed error:", {
-            message: error.message,
-            response: error.response?.data,
-            status: error.response?.status,
-            headers: error.response?.headers,
-            config: error.config
-        });
-        
-        alert(`Erreur lors de l'enregistrement: ${error.response?.data?.message || error.message}`);
-    }
-};
 
     const openPaymentPopup = (student) => {
         setCurrentStudent(student);
