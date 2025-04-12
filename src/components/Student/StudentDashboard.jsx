@@ -107,41 +107,27 @@ const StudentDashboard = () => {
 
 
     const endpoint = currentStudent === null ? 
-        axios.post('https://sg-ukb.onrender.com/api/students', studentData) :
-        axios.put(`https://sg-ukb.onrender.com/api/students/${students[currentStudent].id}`, studentData);
+    axios.post('https://sg-ukb.onrender.com/api/students', studentData) :
+    axios.put(`https://sg-ukb.onrender.com/api/students/${currentStudent}`, studentData);
 
-    endpoint.then(response => {
-        // Solution 1: Rafraîchir toute la liste depuis le serveur
-        axios.get('https://sg-ukb.onrender.com/api/students')
-            .then(updatedResponse => {
-                const formattedStudents = updatedResponse.data.map(student => ({
-                    ...student,
-                    birthDay: formatDateDisplay(student.birthDay),
-                    startDate: formatDateDisplay(student.startDate),
-                    endDate: formatDateDisplay(student.endDate)
-                }));
-                setStudents(formattedStudents);
-                
-                // Si c'est un nouvel étudiant, l'ajouter aux paiements
-                if (currentStudent === null) {
-                    const newStudent = response.data;
-                    axios.post("https://sg-ukb.onrender.com/api/payments", {
-                        student_id: newStudent.id,
-                        montantReçu: 0,
-                        reste: newStudent.totalFees,
-                        status: "Non Payé",
-                        date: new Date().toISOString(),
-                    }).catch(error => {
-                        console.error("Error adding student to payments:", error);
-                    });
-                }
-                
-                resetForm();
-            });
-    }).catch(error => {
-        console.error('Error saving student:', error);
-        alert(`Error ${currentStudent === null ? 'adding' : 'updating'} student. Please try again.`);
-    });
+endpoint.then(response => {
+    // Rafraîchir toute la liste
+    axios.get('https://sg-ukb.onrender.com/api/students')
+        .then(updatedResponse => {
+            const formattedStudents = updatedResponse.data.map(student => ({
+                ...student,
+                birthDay: formatDateDisplay(student.birthDay),
+                startDate: formatDateDisplay(student.startDate),
+                endDate: formatDateDisplay(student.endDate)
+            }));
+            setStudents(formattedStudents);
+            resetForm();
+        });
+}).catch(error => {
+    console.error('Error saving student:', error);
+    alert(`Error ${currentStudent === null ? 'adding' : 'updating'} student. Please try again.`);
+});
+
 };
     const resetForm = () => {
         setNewStudent({
@@ -162,15 +148,22 @@ const StudentDashboard = () => {
                 date.toLocaleDateString("fr-FR", { year: "numeric", month: "2-digit", day: "2-digit" });
         };
         
-        const handleEdit = (index) => {
-            const student = students[index];
-            setCurrentStudent(index);
+        const handleEdit = (student) => {
+            // Trouver l'étudiant complet dans la liste originale par son ID
+            const fullStudent = students.find(s => s.id === student.id);
             
-            // Fonction pour convertir la date au format attendu par l'input date (AAAA-MM-JJ)
+            if (!fullStudent) {
+                console.error("Student not found");
+                return;
+            }
+        
+            setCurrentStudent(fullStudent.id); // Stocker l'ID plutôt que l'index
+            
+            // Convertir les dates pour l'input date (AAAA-MM-JJ)
             const formatForDateInput = (dateString) => {
                 if (!dateString) return '';
                 
-                // Si la date est déjà au format JJ/MM/AAAA
+                // Si déjà au format JJ/MM/AAAA
                 if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
                     const [day, month, year] = dateString.split('/');
                     return `${year}-${month}-${day}`;
@@ -187,10 +180,10 @@ const StudentDashboard = () => {
             };
         
             setNewStudent({
-                ...student,
-                birthDay: formatForDateInput(student.birthDay),
-                startDate: formatForDateInput(student.startDate),
-                endDate: formatForDateInput(student.endDate)
+                ...fullStudent,
+                birthDay: formatForDateInput(fullStudent.birthDay),
+                startDate: formatForDateInput(fullStudent.startDate),
+                endDate: formatForDateInput(fullStudent.endDate)
             });
             setShowModal(true);
         };
@@ -201,19 +194,20 @@ const StudentDashboard = () => {
         }, [searchQuery, filteredSubjects, filterLevel]);
     
 
-    const handleDelete = (index) => {
-        const studentId = students[index].id;
-        if (window.confirm("Are you sure you want to delete this student?")) {
-            axios.delete(`https://sg-ukb.onrender.com/api/students/${studentId}`)
-                .then(() => {
-                    setStudents(prev => prev.filter((_, i) => i !== index));
-                    if (currentPage > 1 && currentStudents.length === 1) {
-                        setCurrentPage(prev => prev - 1);
-                    }
-                })
-                .catch(error => console.error('Error deleting student:', error));
-        }
-    };
+        const handleDelete = (studentId) => {
+            if (window.confirm("Are you sure you want to delete this student?")) {
+                axios.delete(`https://sg-ukb.onrender.com/api/students/${studentId}`)
+                    .then(() => {
+                        setStudents(prev => prev.filter(student => student.id !== studentId));
+                        // Ajuster la pagination si nécessaire
+                        if (currentPage > 1 && currentStudents.length === 1) {
+                            setCurrentPage(prev => prev - 1);
+                        }
+                    })
+                    .catch(error => console.error('Error deleting student:', error));
+            }
+        };
+        
 
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -325,8 +319,8 @@ const filteredStudents = students.filter(student => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentStudents.map((student, index) => (
-                                <tr key={index}>
+                            {currentStudents.map((student) => (
+                                <tr key={student.id}>
                                     <td data-label="ID">{student.id}</td>
                                     <td data-label="Nom">{student.firstName}</td>
                                     <td data-label="Prénom">{student.lastName}</td>
@@ -342,8 +336,8 @@ const filteredStudents = students.filter(student => {
                                     <td data-label="Filière">{student.subject}</td>
                                     <td data-label="Niveau">{student.level}</td>
                                     <td className="btn" data-label="Actions">
-                                        <button onClick={() => handleEdit(index)} aria-label="Edit"><FaEdit/></button>
-                                        <button onClick={() => handleDelete(index)} aria-label="Delete"><FaTrash/></button>
+                                        <button onClick={() => handleEdit(student)} aria-label="Edit"><FaEdit/></button>
+                                        <button onClick={() => handleDelete(student.id)} aria-label="Delete"><FaTrash/></button>
                                     </td>
                                 </tr>
                             ))}
