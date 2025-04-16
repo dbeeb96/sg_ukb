@@ -26,7 +26,7 @@
   font-size: 35px;
 }
 
-.icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7 {
+.icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7, .icon-btn-edit {
   background-color: #010101;
   color: white;
   border: none;
@@ -34,8 +34,8 @@
   cursor: pointer;
   border-radius: 4px;
   margin-right: 10px;
-  width: 15px;
-  min-width: 80px;
+  width: 10px;
+  min-width: 50px;
   font-size: 14 px;
 }
 
@@ -602,11 +602,11 @@ thead {
       transform: translateX(0);
       display: block;
   }
-  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7 {
+  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7, .icon-btn-edit {
     background: none;
 
   }
-  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7:hover{
+  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7, .icon-btn-edit:hover{
     background: none;
 
   }
@@ -715,11 +715,11 @@ thead {
   }
   
   
-  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7 {
+  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7, .icon-btn-edit {
     background: none;
 
   }
-  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7:hover{
+  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7, .icon-btn-edit:hover{
     background: none;
     margin: 5px;
   }
@@ -772,11 +772,11 @@ thead {
   .mobile-row-item {
       padding: 0 5px;
   }
-  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7 {
+  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7, .icon-btn-edit {
     background: none;
 
   }
-  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7:hover{
+  .icon-btn1, .icon-btn2, .icon-btn3, .icon-btn4, .icon-btn5, .icon-btn6, .icon-btn7, .icon-btn-edit:hover{
     background: none;
     margin: 5px;
   }
