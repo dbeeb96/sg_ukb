@@ -125,7 +125,7 @@ const PaymentDashboard = () => {
                 throw new Error("Identifiant étudiant invalide");
             }
             
-            const response = await axios.get(`https://sg-ukb.onrender.com/api/payments/history/${student.id}`);
+            const response = await axios.get(`http://localhost:5000/api/payments/history/${student.id}`);
             
             if (!response.data?.success) {
                 throw new Error(response.data?.error || "Erreur du serveur");
@@ -234,7 +234,7 @@ const PaymentDashboard = () => {
     
     useEffect(() => {
         axios
-            .get("https://sg-ukb.onrender.com/api/students")
+            .get("http://localhost:5000/api/students")
             .then((response) => setStudents(response.data))
             .catch((error) => {
                 console.error("Error fetching students:", error);
@@ -242,7 +242,7 @@ const PaymentDashboard = () => {
             });
     
         axios
-            .get("https://sg-ukb.onrender.com/api/payments")
+            .get("http://localhost:5000/api/payments")
             .then((response) => {
                 const studentsWithPayments = response.data.map(payment => {
                     const student = students.find(s => s.id === payment.student_id);
@@ -272,7 +272,7 @@ const PaymentDashboard = () => {
 
             setSelectedStudents([...selectedStudents, newStudent]);
 
-            axios.post("https://sg-ukb.onrender.com/api/payments", {
+            axios.post("http://localhost:5000/api/payments", {
                 student_id: student.id,
                 montantReçu: 0,
                 reste: student.totalFees,
@@ -318,7 +318,7 @@ const PaymentDashboard = () => {
 
         setSelectedStudents((prev) => prev.filter((student) => student.id !== id));
 
-        axios.delete(`https://sg-ukb.onrender.com/api/payments/${id}`)
+        axios.delete(`http://localhost:5000/api/payments/${id}`)
             .then(() => {
                 console.log("Delete succeeded");
             })
@@ -403,7 +403,7 @@ const PaymentDashboard = () => {
             updateTotals(updatedStudents);
     
             axios
-                .put(`https://sg-ukb.onrender.com/api/payments/${currentStudent.id}`, {
+                .put(`http://localhost:5000/api/payments/${currentStudent.id}`, {
                     student_id: currentStudent.id,
                     montantReçu: totalReceived,
                     reste: remainingAmount,
@@ -486,10 +486,34 @@ const PaymentDashboard = () => {
             </div>
             Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
            <hr>
+                                        <br/> <br/> <br/>
+                                             <hr/>       
 
-            <center>-------------------------------------------------------------------------------------------------------
-            --------- </center> 
-        
+        <img src="../../../public/img.png" alt="Logo" class="logo" />
+                <div class="university-name">
+                    KOCC BARMA, PREMIERE UNIVERSITE PRIVEE<br />
+                    DE SAINT-LOUIS<br />
+                    MENSUALITE: ${student.filiere || "N/A"}
+                </div>   
+                <div>
+                    <p>Date: ${formattedDate}</p>
+                    <p>Heure: ${formattedTime}</p>
+                </div>
+            </div>
+            <div class="details">
+               <div class="studentNameId">
+                    <p>Nom de l'étudiant: <strong>${student.firstName || "N/A"} ${student.lastName || "N/A"}</strong></p>
+                    <p> Identifiant de l'étudiant : <strong>${student.studentId}<strong> </p>
+               </div>
+                <p>Dernier Montant Reçu: <strong>${(student.lastReceived || 0).toLocaleString()} CFA </strong></p>
+                <p>Montant Total Reçu: <strong>${(student.montantReçu || 0).toLocaleString()} CFA </strong></p>
+                <p>Reste: <strong>${(student.reste || 0).toLocaleString()} CFA </strong> </p>
+                <p>Statut: <strong><span class="status">${student.status || "N/A"} </strong></span> </p>
+                <p>Date de paiement: <strong>${formatDate(student.paymentDate)}</strong></p>
+            </div>
+            Le Chef du Service et des Finances et de la comptabilité(Cachet et Signature) 
+           <hr>
+
             <script>
                 window.onload = function() {
                     setTimeout(() => window.print(), 300);
