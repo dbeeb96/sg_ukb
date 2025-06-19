@@ -3,12 +3,16 @@ const router = express.Router();
 const mysql = require('mysql');
 
 // Database connection
-const db = mysql.createConnection({
-    host: 'ukb.clw6e00uwrd5.eu-north-1.rds.amazonaws.com',
-    user: 'admin',
-    password: 'Passer2025',
-    database: 'ukb_db',
+const db = mysql.createPool({
+  host: "containers-us-west-157.railway.app",
+  port: 3306,
+  user: "root",
+  password: "HXaOyjgFfGaygrwWAFTcNIvPdqDjfBdB",
+  database: "railway",
+  connectionLimit: 10,
+  ssl: { rejectUnauthorized: false } // nécessaire avec Railway
 });
+
 
 // Fonctions de conversion de dates
 const toMySQLDate = (frenchDate) => {
