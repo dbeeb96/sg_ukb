@@ -14,7 +14,7 @@ const db = mysql.createPool({
 
 
 // Gestion des erreurs de connexion
-db.connect(err => {
+db.getConnection(err => {
   if (err) {
     console.error('Error connecting to MySQL:', err);
     // Réessayer la connexion ou quitter selon votre préférence
