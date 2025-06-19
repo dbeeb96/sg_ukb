@@ -1,71 +1,46 @@
+// server.js
+require('dotenv').config(); // Load .env first
 const express = require("express");
-const mysql = require("mysql");
 const cors = require("cors");
+const db = require("./config/db"); // Database connection pool
 const authRoutes = require("./routes/authRoutes");
-
+const studentRoutes = require("./routes/studentRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Database connection (Using createPool)
-const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    connectionLimit: 10,
-    ssl: { rejectUnauthorized: false } // Needed for Railway
-});
-
-
-// ✅ Check DB connection at startup (Proper way)
-db.getConnection((err, connection) => {
-    if (err) {
-        console.error("❌ Database connection error:", err);
-        process.exit(1);
-    } else {
-        console.log("✅ Connected to MySQL database");
-        connection.release(); // ✅ Release connection after checking
-    }
-});
-
-// Import routes
-const studentRoutes = require("./routes/studentRoutes");
-const paymentRoutes = require("./routes/paymentRoutes");
-
-// ✅ Use routes correctly
+// Routes
 app.use("/api", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/payments", paymentRoutes);
 
-// ✅ Default route with correct documentation
+// Default root
 app.get("/", (req, res) => {
-    res.json({
-        message: "✅ API is running...",
-        routes: [
-            { method: "GET", path: "/api/students", description: "Retrieve student data" },
-            { method: "GET", path: "/api/payments", description: "Retrieve all payments" },
-            { method: "POST", path: "/api/payments", description: "Create a new payment" },
-        ],
-    });
+  res.json({
+    message: "✅ API is running...",
+    routes: [
+      { method: "GET", path: "/api/students", description: "Retrieve student data" },
+      { method: "GET", path: "/api/payments", description: "Retrieve all payments" },
+      { method: "POST", path: "/api/payments", description: "Create a new payment" },
+    ],
+  });
 });
 
-// ✅ Global error handling (Fixed)
+// Error handling
 app.use((err, req, res, next) => {
-    console.error("❌ Unhandled error:", err);
-    res.status(err.status || 500).json({ message: err.message || "An unexpected error occurred." });
+  console.error("❌ Unhandled error:", err);
+  res.status(err.status || 500).json({ message: err.message || "An unexpected error occurred." });
 });
 
 // Start server
 app.listen(port, () => {
-    console.log(`🚀 Server running at http://localhost:${port}`);
+  console.log(`🚀 Server running at http://localhost:${port}`);
 });
 
-// ✅ Export app and DB connection for reuse
-module.exports = { app, db };
+module.exports = app;
