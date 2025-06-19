@@ -2,13 +2,13 @@
 const mysql = require('mysql');
 
 const db = mysql.createPool({
-    host: process.env.mysql.railway.internal,
-    port: process.env.3306 || 3306,
-    user: process.env.root,
-    password: process.env.HXaOyjgFfGaygrwWAFTcNIvPdqDjfBdB,
-    database: process.env.railway,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
     connectionLimit: 10,
-    ssl: { rejectUnauthorized: false } // Required by Railway
+    ssl: { rejectUnauthorized: false } // Needed for Railway
 });
 
 db.connect((err) => {
