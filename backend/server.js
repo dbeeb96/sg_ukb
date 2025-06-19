@@ -14,11 +14,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ Database connection (Using createPool)
 const db = mysql.createPool({
-    host: 'ukb.clw6e00uwrd5.eu-north-1.rds.amazonaws.com',
-    user: 'admin',
-    password: 'Passer2025',
-    database: 'ukb_db',
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    connectionLimit: 10,
+    ssl: { rejectUnauthorized: false } // Needed for Railway
 });
+
 
 // ✅ Check DB connection at startup (Proper way)
 db.getConnection((err, connection) => {
