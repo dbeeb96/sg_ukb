@@ -2,6 +2,7 @@
   "name": "sg_ukb",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://ukb.sencoser.sn/",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
@@ -29,9 +30,7 @@
     "react-router-dom": "^6.28.0",
     "react-scripts": "5.0.1",
     "uuid": "^11.0.3",
-    "web-vitals": "^2.1.0",
-    "dotenv": "^16.0.3"
-
+    "web-vitals": "^2.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
