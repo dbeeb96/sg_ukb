@@ -4,13 +4,13 @@ const mysql = require("mysql");
 
 // ✅ Use a pool for multiple connections
 const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
+  host: "containers-us-west-157.railway.app",
+  port: 3306,
+  user: "root",
+  password: "HXaOyjgFfGaygrwWAFTcNIvPdqDjfBdB",
+  database: "railway",
   connectionLimit: 10,
-  ssl: { rejectUnauthorized: false } // Needed for Railway
+  ssl: { rejectUnauthorized: false } // nécessaire avec Railway
 });
 
 // ✅ Check connection using getConnection (not connect)
