@@ -3,13 +3,11 @@ const mysql = require("mysql");
 const router = express.Router();
 
 const db = mysql.createPool({
-  host: "containers-us-west-157.railway.app",
-  port: 3306,
-  user: "root",
-  password: "HXaOyjgFfGaygrwWAFTcNIvPdqDjfBdB",
-  database: "railway",
-  connectionLimit: 10,
-  ssl: { rejectUnauthorized: false } // nécessaire avec Railway
+    host: '91.216.107.183',
+    user: 'senco2446602',
+    password: 'Passer@2025',
+    database: 'senco2446602', 
+    connectionLimit: 10,
 });
 
 
